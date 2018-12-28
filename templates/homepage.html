@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+
+    <title>Matkonim</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+
+
+    <!-- Custom fonts -->
+    <link href="../static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles -->
+    <link href="../static/css/homepage.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+    <!-- Masthead -->
+    <header class="masthead text-black text-center">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-9 mx-auto">
+			<h1 class="mb-auto">Matkonim</h1>
+          </div>
+	   </div>
+	   <div class="row"> 
+		<div class="col-11">      
+			<h2 class="mb-auto">Find food and cocktail recipes based on your nutritional preferences!</h2>
+		</div>
+	   </div>
+    </div>
+
+
+<!-- Icons Grid -->
+    <section class="features-icons text-center">
+      <div class="container">
+        <div class="row">
+          <div class="col-3">
+	          <div class="lettuce-icon-item mx-auto mb-5">
+              <form method="post">
+                <input type="hidden" name="submit" value="rcps-by-ntrtnl">
+                <input type="image" src="../static/img/lettuce.png" class="img-fluid" id="lettuceIcon" alt="Responsive image">
+              </form>
+              <h3>Recipe by Nutritional Values</h3>
+              <p class="lead mb-0">Find the perfect recipe for you, according to your nutrituional preferences!</p>
+            </div>
+          </div>
+          <div class="col-3">
+		        <div class="cocktail-icon-item mx-auto mb-5">
+              <form method="post">
+                <input type="hidden" name="submit" value="ccktl-by-ntrtnl">
+                <input type="image" src="../static/img/cocktail.png" class="img-fluid" id="cocktailIcon" alt="Responsive image">
+              </form>
+            <h3>Cocktail by Nutritional Values</h3>
+              <p class="lead mb-0">Find your next amazing cocktail according to your nutritional preferences!</p>
+            </div>
+          </div>
+      
+          <div class="col-3">
+            <div class="covering-icon-item mx-auto mb-5">
+              <form method="post">
+                <input type="hidden" name="submit" value="dly-ml-pln">
+                <input type="image" src="../static/img/covering.png" class="img-fluid" id="coveringIcon" alt="Responsive image">
+              </form>
+              <h3>Daily Meal Plan</h3>
+              <p class="lead mb-0">Plan your next meal according to your recommended daily intake of each nutritional value!</p>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="loaf-icon-item mx-auto mb-5">
+              <form method="post">
+                <input type="hidden" name="submit" value="rcps-by-alrgs">
+                <input type="image" src="../static/img/loaf.png" class="img-fluid" id="loafIcon" alt="Responsive image">
+              </form>
+              <h3>Recipe by Allergies</h3>
+              <p class="lead mb-0">Find an awesome recipe fitting your allergies or ingredients you wish to avoid!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+</header>
+
+
+
+<script>
+function foodRecipeNotChosen() {
+  $(document.getElementById("which-food")).hide();
+}
+
+function foodRecipeChosen() {
+  $(document.getElementById("which-food")).show();
+}
+
+$(document).ready(function() {
+    $(".dropdown-toggle").dropdown();
+});
+
+function caloriesCheckChange() {
+	if ($('#calories-check').is(':checked')) {  
+		document.getElementById("calories-form").disabled = false;
+	}
+	else {	
+		document.getElementById("calories-form").disabled = true;
+		$('#calories-form').val('');
+	}
+}
+
+</script>
+  
+    <!-- Bootstrap core JavaScript -->
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+  </body>
+
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+
+    <title>Cocktails by Nutritional Values</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+
+
+    <!-- Custom fonts -->
+    <link href="../static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles -->
+    <link href="../static/css/cocktails_by_nutritional.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+    <!-- Masthead -->
+    <header class="masthead text-black text-center">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-2 mx-auto">
+			<h1 class="mb-auto">Matkonim</h1>
+          </div>
+		<div class="col-2 mx-auto">      
+			<h2 class="text-nowrap mb-auto">Cocktails by Nutritional Preferences</h2>
+		</div>
+ 		<div class="col-3">
+                <div class="cocktail-icon-item mx-auto mb-5 mb">
+               	 <img src="../static/img/cocktail.png" class="img-fluid" id="lettuceIcon" alt="Responsive image"></img>
+         		</div>
+           </div>
+	  </div>
+	</div>
+
+
+<!-- NUTRITIONAL VALUES SELECTION -->
+<div class="mb-auto text-center">
+<h3 class="text-nowrap mb-auto" id="preferences-header">Choose your nutritional preferences:</h3></div>   
+<form class="col-3">
+<div class="nutri-group" id="nutri1">
+ <div class="form-group row col-10">
+  <label for="sugar-form" class="col-form-label col-3">Sugar:</label>
+    <div class="col-8">
+	<select class="custom-select col-11" id="suger-form">
+      <option value="">Don't care</option>
+      <option value="1">None</option>
+      <option value="2">less than 5%</option>
+      <option value="3">over 30%</option>
+    </select>
+  </div>
+ </div>
+ <div class="form-group row col-10">
+  <label for="iron-form" class="col-form-label col-3">Iron:</label>
+  <div class="col-8">
+    <select class="custom-select col-11" id="iron-form">
+      <option value="">Don't care</option>
+      <option value="1">None</option>
+      <option value="2">less than 5%</option>
+      <option value="3">over 30%</option>
+    </select>
+  </div>
+ </div>
+ <div class="form-group row col-10">
+  <label for="calcium-form" class="col-form-label col-3">Calcium:</label>
+    <div class="col-8">
+    <select class="custom-select col-11" id="calcium-form">
+      <option value="">Don't care</option>
+      <option value="1">None</option>
+      <option value="2">less than 5%</option>
+      <option value="3">over 30%</option>
+    </select>
+ </div>
+ </div>
+ <div class="form-group row col-10">
+  <label for="sodium-form" class="col-form-label col-3">Sodium:</label>
+    <div class="col-8">
+    <select class="custom-select col-11" id="sodium-form">
+      <option value="">Don't care</option>
+      <option value="1">None</option>
+      <option value="2">less than 5%</option>
+      <option value="3">over 30%</option>
+    </select>
+ </div>
+ </div>
+<div class="form-group row col-10">
+  <label for="protein-form" class="col-form-label col-3">Protein:</label>
+  <div class="col-8">
+    <select class="custom-select col-11" id="protein-form">
+      <option value="">Don't care</option>
+      <option value="1">None</option>
+      <option value="2">less than 5%</option>
+      <option value="3">over 30%</option>
+    </select>
+  </div>
+ </div>
+</div>
+<div class="nutri-group" id="nutri2">
+ <div class="form-group row col-10">
+  <label for="cholesterol-form" class="col-form-label col-4">Cholesterol:</label>
+   <div class="col-8">
+    <select class="custom-select col-11" id="cholesterol-form">
+      <option value="">Don't care</option>
+      <option value="1">None</option>
+      <option value="2">less than 5%</option>
+      <option value="3">over 30%</option>
+    </select>
+ </div>
+ </div>
+<div class="form-group row col-10">
+  <label for="potassium-form" class="col-form-label col-4">Potassium:</label>
+  <div class="col-8">
+    <select class="custom-select col-11" id="potassium-form">
+      <option value="">Don't care</option>
+      <option value="1">None</option>
+      <option value="2">less than 5%</option>
+      <option value="3">over 30%</option>
+    </select>
+  </div>
+ </div>
+ <div class="form-group row col-10">
+  <label for="lactose-form" class="col-form-label col-4">Lactose:</label>
+    <div class="col-8">
+    <select class="custom-select col-11" id="Lactose-form">
+      <option value="">Don't care</option>
+      <option value="1">None</option>
+      <option value="2">less than 5%</option>
+      <option value="3">over 30%</option>
+    </select>
+ </div>
+ </div>
+<div class="form-group row mr-2">
+  <label for="vitaminC-form" class="col-form-label col-4">Vitamin C:</label>
+  <div class>
+    <select class="custom-select" id="vitaminC-form">
+      <option value="">Don't care</option>
+      <option value="1">None</option>
+      <option value="2">less than 5%</option>
+      <option value="3">over 30%</option>
+    </select>
+  </div>
+ </div>
+</div>
+<div class="nutri-group" id="nutri3">
+<div class="form-group row">
+  <label for="satfat-form" class="col-form-label col-5">Saturated Fat:</label>
+  <div class>
+    <select class="custom-select" id="satfat-form">
+      <option value="">Don't care</option>
+      <option value="1">None</option>
+      <option value="2">less than 5%</option>
+      <option value="3">over 30%</option>
+    </select>
+  </div>
+ </div>
+<div class="form-group row">
+  <label for="fiber-form" class="col-form-label col-5">Dietary Fiber:</label>
+  <div class>
+    <select class="custom-select" id="fiber-form">
+      <option value="">Don't care</option>
+      <option value="1">None</option>
+      <option value="2">less than 5%</option>
+      <option value="3">over 30%</option>
+    </select>
+  </div>
+ </div>
+<div class="form-group row">
+  <label for="alcohol-form" class="col-form-label col-4">Alcoholic:</label>
+  <div class="col-6">
+    <select class="custom-select col-10" id="alcohol-form">
+      <option value="">Don't care</option>
+      <option value="1">Of course!</option>
+      <option value="2">No thanks</option>
+    </select>
+  </div>
+ </div>
+<div class="input-group">
+  <div class="input-group-prepend mr-1">
+	<label for="calories-check" class="col-form-label col-10">Max Calories:</label>
+	    <div class="input-group-text mr-2">
+     		 <input type="checkbox" id="calories-check" data-toggle="toggle" onchange="caloriesCheckChange()" aria-label="Checkbox for following text input">
+    	    </div>
+	  </div>
+	  <input type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==4) return false;" min="100" max="9999"	class="form-control col-3" aria-label="Text input with checkbox" id="calories-form" disabled>
+ <small id="caloriesHelpInline" class="text-muted">
+      (100-9999 cal.)
+    </small>
+  </div>
+ </div>
+</form>
+
+
+<!-- SUBMIT BUTTON -->
+<div class="button" id="submit-button">
+ 	<button type="button" class="btn btn-lg btn-success">Find me a cocktail!</button>      
+</div>
+
+
+
+<!-- BACK BUTTON -->
+<form method="post">
+  <div class="button" id="back-button">
+    <input type="submit" class="btn btn-lg btn-secondary" name="submit_button" value="Back to Main Menu">
+  </div>
+</form>
+
+
+</header>
+
+<script>
+function caloriesCheckChange() {
+	if ($('#calories-check').is(':checked')) {  
+		document.getElementById("calories-form").disabled = false;
+	}
+	else {	
+		document.getElementById("calories-form").disabled = true;
+		$('#calories-form').val('');
+	}
+}
+
+function prepCheckChange() {
+	if ($('#prep-check').is(':checked')) {  
+		document.getElementById("prep-form").disabled = false;
+	}
+	else {	
+		document.getElementById("prep-form").disabled = true;
+		$('#prep-form').val('');
+	}
+}
+
+</script>
+
+ 
+    <!-- Bootstrap core JavaScript -->
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+
+  </body>
+
+</html>
+

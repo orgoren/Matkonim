@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+
+    <title>Recipes by Allergies</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+
+
+    <!-- Custom fonts -->
+    <link href="../static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles -->
+    <link href="../static/css/recipes_by_allergies.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+    <!-- Masthead -->
+    <header class="masthead text-black text-center">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-2 mx-auto">
+			<h1 class="mb-auto">Matkonim</h1>
+          </div>
+		<div class="col-2 mx-auto">
+			<h2 class="text-nowrap mb-auto">Recipes by Allergies</h2>
+		</div>
+ <div class="col-3">
+                <div class="loaf-icon-item mx-auto mb-5 mb">
+                <img src="../static/img/loaf.png" class="img-fluid" id="loafIcon" alt="Responsive image"></img>
+            </div>
+          </div>
+	</div>
+	</div>
+
+
+<!-- FOOD OR COCKTAIL SELECTION -->
+<div class="btn-group btn-group-toggle" data-toggle="buttons" id="food-or-cocktail">
+  <label class="btn btn-outline-dark" onclick="foodRecipeChosen()">
+    <input type="radio" name="options" id="option1" autocomplete="off" checked><b>I'm hungry!</b>
+  </label>
+  <label class="btn btn-outline-dark" onclick="foodRecipeNotChosen()">
+    <input type="radio" name="options" id="option2" autocomplete="off"><b>Cocktail please!</b>
+  </label>
+  <label class="btn btn-outline-dark active" onclick="foodRecipeNotChosen()">
+    <input type="radio" name="options" id="option3" autocomplete="off"><b>I'm feeling lucky (random)</b>
+  </label>
+</div>
+
+
+<!-- WHICH FOOD COURSE SELECTION -->
+<div class="btn-group btn-group-toggle col-12" data-toggle="buttons" id="which-food">
+  <label class="btn btn-outline-success active">
+    <input type="radio" name="main_dish" id="option-main" autocomplete="off" checked><b>Main dish</b></label>
+  <label class="btn btn-outline-success">
+    <input type="radio" name="side_dish" id="option-side" autocomplete="off"><b>Side dish</b></label>
+  <label class="btn btn-outline-success">
+    <input type="radio" name="appetizers" id="option-appetizer" autocomplete="off"><b>Appetizers</b></label>
+  <label class="btn btn-outline-success">
+    <input type="radio" name="lunch" id="option-lunch" autocomplete="off"><b>Lunch</b></label>
+<label class="btn btn-outline-success">
+    <input type="radio" name="breakfast_and_brunch" id="option-breakfast" autocomplete="off"><b>Breakfast and Brunch</b></label>
+<label class="btn btn-outline-success">
+    <input type="radio" name="snack" id="option-snack" autocomplete="off"><b>Snack</b></label>
+  <label class="btn btn-outline-success">
+    <input type="radio" name="soup" id="option-soup" autocomplete="off"><b>Soup</b></label>
+  <label class="btn btn-outline-success">
+    <input type="radio" name="salad" id="option-salad" autocomplete="off"><b>Salad</b></label>
+<label class="btn btn-outline-success">
+    <input type="radio" name="bread" id="option-bread" autocomplete="off"><b>Bread</b></label>
+  <label class="btn btn-outline-success">
+    <input type="radio" name="condiments_and_sauces" id="option-sauce" autocomplete="off"><b>Condiments and Sauces</b></label>
+  <label class="btn btn-outline-success">
+    <input type="radio" name="dessert" id="option-dessert" autocomplete="off"><b>Dessert</b></label>
+</div>
+
+
+<!-- ALLERGANS INPUT FROM USER -->
+<h3 class="mb-auto text-center" id="allergans-header">Insert allergies or ingredients you don't like:</h3>
+<form class="form-inline" id="allergans-form">
+  <div class="form-group col-md-6" id="allergans-wrapper">
+    <div class="col-8 my-1">
+      <input type="text" onkeypress="return /[A-Za-z ]/i.test(event.key)" maxlength="30" class="form-control" id="inlineFormAllergan1" name="inlineFormAllergan1" placeholder="Enter an ingredient you wish to avoid...">
+    </div>
+    <div class="col-8 my-1">
+        <input type="text" onkeypress="return /[A-Za-z ]/i.test(event.key)" maxlength="30" class="form-control" id="inlineFormAllergan2" name="inlineFormAllergan2" placeholder="Enter an ingredient you wish to avoid...">
+      </div>
+    <div class="col-8 my-1">
+      <input type="text" onkeypress="return /[A-Za-z ]/i.test(event.key)" maxlength="30"  class="form-control" id="inlineFormAllergan3" name="inlineFormAllergan3" placeholder="Enter an ingredient you wish to avoid...">
+    </div>
+    </div>
+</form>
+
+
+<!-- SUBMIT BUTTON -->
+<div class="button" id="submit-button">
+ 	<button type="button" class="btn btn-lg btn-success" onclick="ValidateForm()">Find me a recipe!</button>
+</div>
+
+<!-- BACK BUTTON -->
+<form  method="POST">
+<div class="button" id="back-button">
+<input type="submit" class="btn btn-lg btn-secondary" name="submit" value="Back to Main Menu">
+</div>
+</form>
+
+
+</header>
+
+
+<script>
+function ValidateForm() {
+var formValid = false;
+  $('#allergans-form input').each(function() {
+    if ($(this).val() !== '') {
+      formValid = true;
+    }
+  });
+
+  if (!formValid)
+    alert('Must insert at least one ingredient.');
+}
+
+function foodRecipeNotChosen() {
+  $(document.getElementById("which-food")).hide();
+}
+
+function foodRecipeChosen() {
+  $(document.getElementById("which-food")).show();
+}
+</script>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+  </body>
+
+</html>
+

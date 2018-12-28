@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+
+    <title>Daily Meal Plan</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+
+
+    <!-- Custom fonts -->
+    <link href="../static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles -->
+    <link href="../static/css/daily_meal_plan.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+    <!-- Masthead -->
+    <header class="masthead text-black text-center">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-2 mx-auto">
+			<h1 class="mb-auto">Matkonim</h1>
+          </div>
+		<div class="col-2 mx-auto">      
+			<h2 class="text-nowrap mb-auto">Daily Meal Plan by Recommended Intake</h2>
+		</div>
+ 		<div class="col-3">
+                <div class="coering-icon-item mx-auto mb-5 mb">
+               	 <img src="../static/img/covering.png" class="img-fluid" id="coveringIcon" alt="Responsive image"></img>
+         		</div>
+           </div>
+	  </div>
+	</div>
+
+
+<!-- WHO ARE YOU SELECTION -->
+<div class="mb-auto text-center">
+<h3 class="mb-auto" id="who-are-you-header">Who are you?</h3>
+</div>
+<label for="gender-choice" class="col-form-label col-3" id="gender-label">gender:</label>
+<div class="btn-group btn-group-toggle col-10" data-toggle="buttons" id="gender-choice">
+  <label class="btn btn-outline-info active btn-sm">
+    <input type="radio" name="option_female" id="option-female" autocomplete="off" checked>Female</label>
+  <label class="btn btn-outline-info btn-sm">
+    <input type="radio" name="option_male" id="option-male" autocomplete="off">Male</label>
+</div>
+<label for="age-choice" class="col-form-label col-3" id="age-label">age:</label>
+<div class="btn-group btn-group-toggle col-10" data-toggle="buttons" id="age-choice">
+  <label class="btn btn-outline-info btn-sm active">
+    <input type="radio" name="option_14_18" id="option-14-18" autocomplete="off" checked>14-18</label>
+  <label class="btn btn-outline-info btn-sm">
+    <input type="radio" name="option_19_30" id="option-19-30" autocomplete="off" checked>19-30</label>
+  <label class="btn btn-outline-info btn-sm">
+    <input type="radio" name="option_31_40" id="option-31-40" autocomplete="off" checked>31-40</label>
+  <label class="btn btn-outline-info btn-sm">
+    <input type="radio" name="option_41_50" id="option-41-50" autocomplete="off" checked>41-50</label>
+  <label class="btn btn-outline-info btn-sm">
+    <input type="radio" name="option_51_60" id="option-51-60" autocomplete="off" checked>51-60</label>
+  <label class="btn btn-outline-info btn-sm">
+    <input type="radio" name="option_61_70" id="option-61-70" autocomplete="off" checked>61-70</label>
+  <label class="btn btn-outline-info btn-sm">
+    <input type="radio" name="option_71" id="option-71" autocomplete="off" checked>71+</label>
+</div>
+
+
+<!-- WHAT MEAL SELECTION -->
+<div class="mb-auto">
+<h3 class="mb-auto" id="what-meal-header">What meal would you like to plan?</h3>
+</div>
+<div class="btn-group btn-group-toggle" data-toggle="buttons" id="what-meal-choice">
+  <label class="btn btn-outline-info active btn-sm">
+    <input type="radio" name="option_breakfast" id="option-breakfast" autocomplete="off" checked>Breakfast</label>
+  <label class="btn btn-outline-info btn-sm">
+    <input type="radio" name="option_lunch" id="option-lunch" autocomplete="off">Lunch</label>
+  <label class="btn btn-outline-info btn-sm">
+    <input type="radio" name="option_dinner" id="option-dinner" autocomplete="off">Dinner</label>
+  <label class="btn btn-outline-info btn-sm">
+    <input type="radio" name="option_full_day" id="option-full-day" autocomplete="off">Full-Day Meal Plan (Breakfast+Lunch+Dinner)</label>
+</div>
+
+
+
+<!-- NUTRITIONAL VALUES SELECTION -->
+<div class="mb-auto text-center">
+<h3 class="text-nowrap mb-auto" id="preferences-header">Choose your nutritional preferences:</h3><h5 class="text-nowrap mb-auto" id="preferences-header">(as a percentage of your recommended daily intake)</h5></div>   
+<form class="col-3">
+<div class="nutri-group" id="nutri1">
+<div class="form-group row col-10">
+	<label for="sugar-form" class="col-form-label col-3">Sugar:</label>
+	  <div class="col-7">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="sugar-form" placeholder="Don't Care">
+  </div>
+<div class="my-2 mr-3 nutri-percent-sign">%</div>
+</div>
+<div class="form-group row col-10">
+	<label for="iron-form" class="col-form-label col-3">Iron:</label>
+	  <div class="col-7">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="iron-form" placeholder="Don't Care">
+  </div>
+<div class="my-2 mr-3 nutri-percent-sign">%</div>
+</div>
+<div class="form-group row col-10">
+	<label for="calcium-form" class="col-form-label col-3">Calcium:</label>
+	  <div class="col-7">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="calcium-form" placeholder="Don't Care">
+  </div>
+<div class="my-2 mr-3 nutri-percent-sign">%</div>
+</div>
+<div class="form-group row col-10">
+	<label for="sodium-form" class="col-form-label col-3">Sodium:</label>
+	  <div class="col-7">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="sodium-form" placeholder="Don't Care">
+  </div>
+<div class="my-2 mr-3 nutri-percent-sign">%</div>
+</div>
+</div>
+<div class="nutri-group" id="nutri2">
+<div class="form-group row col-11">
+	<label for="protein-form" class="col-form-label col-4 nutri2-label">Protein:</label>
+	  <div class="col-6 mr-8">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="protein-form" placeholder="Don't Care">
+  </div>
+<div class="my-2 mr-3 nutri-percent-sign">%</div>
+</div>
+<div class="form-group row col-11">
+	<label for="cholesterol-form" class="col-form-label col-4 nutri2-label">Cholesterol:</label>
+	  <div class="col-6 mr-8">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="cholesterol-form" placeholder="Don't Care">
+  </div>
+<div class="my-2 mr-3 nutri-percent-sign">%</div>
+</div>
+<div class="form-group row col-11">
+	<label for="potassium-form" class="col-form-label col-4 nutri2-label">Potassium:</label>
+	  <div class="col-6 mr-8">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="potassium-form" placeholder="Don't Care">
+  </div>
+<div class="my-2 mr-3 nutri-percent-sign">%</div>
+</div>
+<div class="form-group row col-11">
+	<label for="lactose-form" class="col-form-label col-4 nutri2-label">Lactose:</label>
+	  <div class="col-6 mr-8">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="lactose-form" placeholder="Don't Care">
+  </div>
+<div class="my-2 mr-3 nutri-percent-sign">%</div>
+</div>
+</div>
+<div class="nutri-group" id="nutri3">
+<div class="form-group row">
+	<label for="vitaminC-form" class="col-form-label col-5 nutri3-label">Vitamin C:</label>
+	  <div class="col-5 mr-8">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="vitaminC-form" placeholder="Don't Care">
+  </div>
+<div class="my-2 mr-3 nutri3-percent-sign">%</div>
+</div>
+<div class="form-group row">
+	<label for="satfat-form" class="col-form-label col-5 nutri3-label">Saturated Fat:</label>
+	  <div class="col-5 mr-8">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="satfat-form" placeholder="Don't Care">
+  </div>
+<div class="my-2 mr-3 nutri3-percent-sign">%</div>
+</div>
+<div class="form-group row">
+	<label for="fiber-form" class="col-form-label col-5 nutri3-label">Dietary Fiber:</label>
+	  <div class="col-5 mr-8">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="fiber-form" placeholder="Don't Care">
+  </div>
+<div class="my-2 mr-3 nutri3-percent-sign">%</div>
+</div>
+<div class="form-group row">
+	<label for="calories-form" class="col-form-label col-5 nutri3-label">Calories:</label>
+	  <div class="col-5 mr-8">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="c	alories-form" placeholder="Don't Care">
+  </div>
+<div class="my-2 mr-3 nutri3-percent-sign">%</div>
+</div>
+</div>
+</form>
+
+
+<!-- EXPLANATION -->
+<div class="card bg-light" style="width: 29rem;" id="explanation-card">
+ <h5 class="card-header">Explanation:</h5>
+  <h6 class="card-body px-2 py-2">Based on your age and gender, there are recommended daily intake amounts of each nutritional value. You can choose planning a specific meal or a full-day meal-plan, choosing the percentage of recommended daily intake of each nutritional value. If you know about other health limitations you have (such as diabetes, lactose intolernce, high cholesterol, etc.) you might want a meal plan with different percentage than the recommended daily amounts. If you have no other health limitations, we recommend choosing a full-day meal plan with 100% of each recommended nutritional value.</h6>
+</div>
+
+
+<!-- SUBMIT BUTTON -->
+<div class="button" id="submit-button">
+ 	<button type="button" class="btn btn-lg btn-success">Find me a meal plan!</button>      
+</div>
+
+<!-- BACK BUTTON -->
+<form  method="POST">
+<div class="button" id="back-button">
+<input type="submit" class="btn btn-lg btn-secondary" name="submit" value="Back to Main Menu">
+</div>
+</form>
+
+</header>
+
+ 
+    <!-- Bootstrap core JavaScript -->
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  </body>
+
+</html>
+

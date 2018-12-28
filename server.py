@@ -22,16 +22,16 @@ def main():
 
     elif request.method == 'POST':
         if request.form['submit'] == "rcps-by-ntrtnl":
-        	return redirect('/recipes_by_nutritional')
+            return redirect('/recipes_by_nutritional')
 
         if request.form['submit'] == "ccktl-by-ntrtnl":
-        	return redirect('/cocktails_by_nutritional')
+            return redirect('/cocktails_by_nutritional')
 
         if request.form['submit'] == "dly-ml-pln":
-        	return redirect('/daily_meal')
+            return redirect('/daily_meal')
 
         if request.form['submit'] == "rcps-by-alrgs":
-        	return redirect('/find_recipes_by_allergies')
+            return redirect('/find_recipes_by_allergies')
 
 
 @app.route('/cocktails_by_nutritional', methods=['GET', 'POST'])
@@ -77,10 +77,10 @@ def recipes_by_allergies():
     if request.method == 'POST':
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
-        if "Find me a recipe!" == request.form['find_recipe']:
-            _inlineFormAllergan1 = request.form["inlineFormAllergan1"]
-            _inlineFormAllergan2 = request.form["inlineFormAllergan2"]
-            _inlineFormAllergan3 = request.form["inlineFormAllergan3"]
+        if "Find me a recipe!" == request.form['submit']:
+            # _inlineFormAllergan1 = request.form["inlineFormAllergan1"]
+            # _inlineFormAllergan2 = request.form["inlineFormAllergan2"]
+            # _inlineFormAllergan3 = request.form["inlineFormAllergan3"]
             return redirect('/recipes_results')
 
 
@@ -98,7 +98,7 @@ def recipes_by_nutritional():
     if request.method == 'GET':
         return render_template('recipes_by_nutritional.html')
     if request.method == 'POST':
-    	print request.form
+        print request.form
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
 

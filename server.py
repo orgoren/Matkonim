@@ -34,7 +34,7 @@ def main():
         	return redirect('/find_recipes_by_allergies')
 
 
-@app.route('/cocktails_by_nutritional', methods=['GET'])
+@app.route('/cocktails_by_nutritional', methods=['GET', 'POST'])
 def cocktails_by_nutritional():
     if request.method == 'GET':
         return render_template('cocktails_by_nutritional.html')

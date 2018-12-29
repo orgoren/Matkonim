@@ -194,15 +194,17 @@
 
 
 <!-- SUBMIT BUTTON -->
-<div class="button" id="submit-button">
- 	<button type="button" class="btn btn-lg btn-success">Find me a meal plan!</button>      
-</div>
+<form method="POST">
+  <div class="button" id="submit-button">
+    <input type="submit" class="btn btn-lg btn-success" name="submit" value="Find me a meal plan!" onclick="ValidateForm()">
+  </div>
+</form>
 
 <!-- BACK BUTTON -->
 <form  method="POST">
-<div class="button" id="back-button">
-<input type="submit" class="btn btn-lg btn-secondary" name="submit" value="Back to Main Menu">
-</div>
+  <div class="button" id="back-button">
+    <input type="submit" class="btn btn-lg btn-secondary" name="submit" value="Back to Main Menu">
+  </div>
 </form>
 
 </header>

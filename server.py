@@ -31,7 +31,7 @@ def main():
             return redirect('/daily_meal')
 
         if request.form['submit'] == "rcps-by-alrgs":
-            return redirect('/find_recipes_by_allergies')
+            return redirect('/recipes_by_allergies')
 
 
 @app.route('/cocktails_by_nutritional', methods=['GET', 'POST'])
@@ -41,6 +41,9 @@ def cocktails_by_nutritional():
     if request.method == 'POST':
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
+        if "Find me a cocktail!" == request.form['submit']:
+        	# TODO - get query values
+        	return redirect('/cocktails_results')
 
 
 @app.route('/cocktails_results', methods=['GET', 'POST'])
@@ -50,6 +53,8 @@ def cocktails_by_nutritional_results():
     if request.method == 'POST':
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
+        if "New search" == request.form['submit']:
+            return redirect('/cocktails_by_nutritional')
 
 
 @app.route('/daily_meal', methods=['GET', 'POST'])
@@ -59,6 +64,9 @@ def daily_meal_plan():
     if request.method == 'POST':
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
+        if "Find me a meal plan!" == request.form['submit']:
+        	# TODO - get query values
+        	return redirect('/daily_meal_results')
 
 
 @app.route('/daily_meal_results', methods=['GET', 'POST'])
@@ -68,9 +76,11 @@ def daily_meal_plan_results():
     if request.method == 'POST':
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
+        if "New search" == request.form['submit']:
+            return redirect('/daily_meal')
 
 
-@app.route('/find_recipes_by_allergies', methods=['GET', 'POST'])
+@app.route('/recipes_by_allergies', methods=['GET', 'POST'])
 def recipes_by_allergies():
     if request.method == 'GET':
         return render_template('recipes_by_allergies.html')
@@ -81,16 +91,19 @@ def recipes_by_allergies():
             # _inlineFormAllergan1 = request.form["inlineFormAllergan1"]
             # _inlineFormAllergan2 = request.form["inlineFormAllergan2"]
             # _inlineFormAllergan3 = request.form["inlineFormAllergan3"]
-            return redirect('/recipes_results')
+            # TODO - get query values and handle insufficient input case
+            return redirect('/recipes_by_allergies_results')
 
 
-@app.route('/recipes_results', methods=['GET', 'POST'])
+@app.route('/recipes_by_allergies_results', methods=['GET', 'POST'])
 def allergies_results():
     if request.method == 'GET':
         return render_template('recipes_by_allergies_results.html')
     if request.method == 'POST':
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
+        if "New search" == request.form['submit']:
+            return redirect('/recipes_by_allergies')
 
 
 @app.route('/recipes_by_nutritional', methods=['GET', 'POST'])
@@ -101,6 +114,9 @@ def recipes_by_nutritional():
         print request.form
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
+        if "Find me a recipe!" == request.form['submit']:
+        	# TODO - get query values
+        	return redirect('/recipes_by_nutritional_results')
 
 
 @app.route('/recipes_by_nutritional_results', methods=['GET', 'POST'])
@@ -110,6 +126,9 @@ def recipes_by_nutritional_results():
     if request.method == 'POST':
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
+        if "New search" == request.form['submit']:
+            return redirect('/recipes_by_nutritional')
+
 
 # @app.route('/something_to_get/<param>', methods=['Get'])
 # def get_something(param):

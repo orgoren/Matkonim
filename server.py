@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 import os
 import sys
-# import MySQLdb as mdb
-from flask import Flask, render_template, redirect, url_for, request, make_response, session, g, abort, flash
 import datetime
+import MySQLdb as mdb
+from flask import Flask, render_template, redirect, url_for, request, make_response, session, g, abort, flash
+from gevent.pywsgi import WSGIServer
+import sshtunnel
 
 # Create the application instance
 app = Flask(__name__)
 SERVER_NAME = ""
 SERVER_PORT = 3306
 DB_USERNAME = "DbMysql11"
-DB_PASSWORD = "DbMysql11"  # Maybe don't need password  - ""
+DB_PASSWORD = "DbMysql11"
 DB_NAME = "DbMysql11"
-VALID_RANDOM_PORT = 44444
+VALID_RANDOM_PORT = 40326
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -167,26 +169,28 @@ def recipes_by_nutritional_results():
         if "New search" == request.form['submit']:
             return redirect('/recipes_by_nutritional')
 
-
-# @app.route('/something_to_get/<param>', methods=['Get'])
-# def get_something(param):
-#     res = []
-#     if request.method == 'GET':
-#         try:
-#             con = mdb.connect(host=SERVER_NAME, port=SERVER_PORT, user=DB_USERNAME, passwd=DB_PASSWORD, db=DB_NAME)
-#             with con:
-#                 cur = con.cursor(mdb.cursors.DictCursor)
-#                 query1 = "Select * from Some_table where x = {}".format(param)
-#                 cur.execute(query1)
-#                 res = [item['something'] for item in cur.fetchall()]
-#                 cur.close()
-#                 cur = con.cursor(mdb.cursors.DictCursor)
-#         except Exception as e:
-#             return render_template('homepage.html', error=str(e))ba
-#     return render_template('homepage.html', attribyte=res)
-
+@app.route('/test', methods=['GET'])
+def connect_to_db(username='', password=''):
+	with sshtunnel.SSHTunnelForwarder(
+	        ('nova.cs.tau.ac.il', 22),
+	        ssh_username=username,
+	        ssh_password=password,
+	        remote_bind_address=("mysqlsrv1.cs.tau.ac.il", 3306),
+	        local_bind_address=("127.0.0.1", 3307)
+	) as tunnel:
+	    con = mdb.connect(host='127.0.0.1',    # your host, usually localhost
+	                         user=DB_USERNAME,         # your username
+	                         passwd=DB_PASSWORD,  # your password
+	                         db=DB_NAME,
+	                         port = 3307)        # name of the data base
+	    cur = con.cursor(mdb.cursors.DictCursor)
+	    query1 = "Select * from ALL_RECIPES where recipe_id = {}".format(1)
+	    cur.execute(query1)
+	    res = [item['recipe_name'] for item in cur.fetchall()]
+	    cur.close()
+	    return ','.join(res)
 
 if __name__ == '__main__':
-    app.run(port=8888, host="0.0.0.0", debug=True)
-    # http_server = WSGIServer(('0.0.0.0', VALID_RANDOM_PORT), app)
-    # http_server.serve_forever()
+    # app.run(port=8888, host="0.0.0.0", debug=True)
+    http_server = WSGIServer(('0.0.0.0', VALID_RANDOM_PORT), app)
+    http_server.serve_forever()

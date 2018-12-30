@@ -45,12 +45,12 @@
 <!-- NUTRITIONAL VALUES SELECTION -->
 <div class="mb-auto text-center">
 <h3 class="text-nowrap mb-auto" id="preferences-header">Choose your nutritional preferences:</h3></div>   
-<form class="col-3">
+<form class="col-3" method="POST">
 <div class="nutri-group" id="nutri1">
  <div class="form-group row col-10">
   <label for="sugar-form" class="col-form-label col-3">Sugar:</label>
     <div class="col-8">
-	<select class="custom-select col-11" id="suger-form">
+	<select class="custom-select col-11" id="sugar-form" name="sugar-form">
       <option value="">Don't care</option>
       <option value="1">None</option>
       <option value="2">less than 5%</option>
@@ -61,7 +61,7 @@
  <div class="form-group row col-10">
   <label for="iron-form" class="col-form-label col-3">Iron:</label>
   <div class="col-8">
-    <select class="custom-select col-11" id="iron-form">
+    <select class="custom-select col-11" id="iron-form" name="iron-form">
       <option value="">Don't care</option>
       <option value="1">None</option>
       <option value="2">less than 5%</option>
@@ -72,7 +72,7 @@
  <div class="form-group row col-10">
   <label for="calcium-form" class="col-form-label col-3">Calcium:</label>
     <div class="col-8">
-    <select class="custom-select col-11" id="calcium-form">
+    <select class="custom-select col-11" id="calcium-form" name="calcium-form">
       <option value="">Don't care</option>
       <option value="1">None</option>
       <option value="2">less than 5%</option>
@@ -83,7 +83,7 @@
  <div class="form-group row col-10">
   <label for="sodium-form" class="col-form-label col-3">Sodium:</label>
     <div class="col-8">
-    <select class="custom-select col-11" id="sodium-form">
+    <select class="custom-select col-11" id="sodium-form" name="sodium-form">
       <option value="">Don't care</option>
       <option value="1">None</option>
       <option value="2">less than 5%</option>
@@ -94,7 +94,7 @@
 <div class="form-group row col-10">
   <label for="protein-form" class="col-form-label col-3">Protein:</label>
   <div class="col-8">
-    <select class="custom-select col-11" id="protein-form">
+    <select class="custom-select col-11" id="protein-form" name="protein-form">
       <option value="">Don't care</option>
       <option value="1">None</option>
       <option value="2">less than 5%</option>
@@ -107,7 +107,7 @@
  <div class="form-group row col-10">
   <label for="cholesterol-form" class="col-form-label col-4">Cholesterol:</label>
    <div class="col-8">
-    <select class="custom-select col-11" id="cholesterol-form">
+    <select class="custom-select col-11" id="cholesterol-form" name="cholesterol-form">
       <option value="">Don't care</option>
       <option value="1">None</option>
       <option value="2">less than 5%</option>
@@ -118,7 +118,7 @@
 <div class="form-group row col-10">
   <label for="potassium-form" class="col-form-label col-4">Potassium:</label>
   <div class="col-8">
-    <select class="custom-select col-11" id="potassium-form">
+    <select class="custom-select col-11" id="potassium-form" name="potassium-form">
       <option value="">Don't care</option>
       <option value="1">None</option>
       <option value="2">less than 5%</option>
@@ -129,7 +129,7 @@
  <div class="form-group row col-10">
   <label for="lactose-form" class="col-form-label col-4">Lactose:</label>
     <div class="col-8">
-    <select class="custom-select col-11" id="Lactose-form">
+    <select class="custom-select col-11" id="lactose-form" name="lactose-form">
       <option value="">Don't care</option>
       <option value="1">None</option>
       <option value="2">less than 5%</option>
@@ -140,7 +140,7 @@
 <div class="form-group row mr-2">
   <label for="vitaminC-form" class="col-form-label col-4">Vitamin C:</label>
   <div class>
-    <select class="custom-select" id="vitaminC-form">
+    <select class="custom-select" id="vitaminC-form" name="vitaminC-form">
       <option value="">Don't care</option>
       <option value="1">None</option>
       <option value="2">less than 5%</option>
@@ -153,7 +153,7 @@
 <div class="form-group row">
   <label for="satfat-form" class="col-form-label col-5">Saturated Fat:</label>
   <div class>
-    <select class="custom-select" id="satfat-form">
+    <select class="custom-select" id="satfat-form" name="satfat-form">
       <option value="">Don't care</option>
       <option value="1">None</option>
       <option value="2">less than 5%</option>
@@ -164,7 +164,7 @@
 <div class="form-group row">
   <label for="fiber-form" class="col-form-label col-5">Dietary Fiber:</label>
   <div class>
-    <select class="custom-select" id="fiber-form">
+    <select class="custom-select" id="fiber-form" name="fiber-form">
       <option value="">Don't care</option>
       <option value="1">None</option>
       <option value="2">less than 5%</option>
@@ -175,7 +175,7 @@
 <div class="form-group row">
   <label for="alcohol-form" class="col-form-label col-4">Alcoholic:</label>
   <div class="col-6">
-    <select class="custom-select col-10" id="alcohol-form">
+    <select class="custom-select col-10" id="alcohol-form" name="alcohol-form">
       <option value="">Don't care</option>
       <option value="1">Of course!</option>
       <option value="2">No thanks</option>
@@ -189,23 +189,17 @@
      		 <input type="checkbox" id="calories-check" data-toggle="toggle" onchange="caloriesCheckChange()" aria-label="Checkbox for following text input">
     	    </div>
 	  </div>
-	  <input type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==4) return false;" min="100" max="9999"	class="form-control col-3" aria-label="Text input with checkbox" id="calories-form" disabled>
+	  <input type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==4) return false;" min="100" max="9999"	class="form-control col-3" aria-label="Text input with checkbox" id="calories-form" name="calories-form" disabled>
  <small id="caloriesHelpInline" class="text-muted">
       (100-9999 cal.)
     </small>
   </div>
  </div>
-</form>
-
-
-
-<!-- SUBMIT BUTTON -->
-<form method="POST">
-  <div class="button" id="submit-button">
+ <!-- SUBMIT BUTTON -->
+ <div class="button" id="submit-button">
     <input type="submit" class="btn btn-lg btn-success" name="submit" value="Find me a cocktail!" onclick="ValidateForm()">
   </div>
 </form>
-
 
 
 <!-- BACK BUTTON -->

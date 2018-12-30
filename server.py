@@ -42,6 +42,19 @@ def cocktails_by_nutritional():
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
         if "Find me a cocktail!" == request.form['submit']:
+        	_inlineFormSugar = request.form.get("sugar-form")
+        	_inlineFormIron = request.form.get("iron-form")
+        	_inlineFormCalcium = request.form.get("calcium-form")
+        	_inlineFormSodium = request.form.get("sodium-form")
+        	_inlineFormProtein = request.form.get("protein-form")
+        	_inlineFormCholesterol = request.form.get("cholesterol-form")
+        	_inlineFormPotassium = request.form.get("potassium-form")
+        	_inlineFormLactose = request.form.get("lactose-form")
+        	_inlineFormVitaminC = request.form.get("vitaminC-form")
+        	_inlineFormSaturatedFat = request.form.get("satfat-form")
+        	_inlineFormDietaryFiber = request.form.get("fiber-form")
+        	_inlineFormAlcoholic = request.form.get("alcohol-form")
+        	_inlineFormMaxCalories = request.form.get("calories-form")
         	# TODO - get query values
         	return redirect('/cocktails_results')
 
@@ -65,6 +78,18 @@ def daily_meal_plan():
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
         if "Find me a meal plan!" == request.form['submit']:
+        	_inlineFormSugar = request.form.get("sugar-form")
+        	_inlineFormIron = request.form.get("iron-form")
+        	_inlineFormCalcium = request.form.get("calcium-form")
+        	_inlineFormSodium = request.form.get("sodium-form")
+        	_inlineFormProtein = request.form.get("protein-form")
+        	_inlineFormCholesterol = request.form.get("cholesterol-form")
+        	_inlineFormPotassium = request.form.get("potassium-form")
+        	_inlineFormLactose = request.form.get("lactose-form")
+        	_inlineFormVitaminC = request.form.get("vitaminC-form")
+        	_inlineFormSaturatedFat = request.form.get("satfat-form")
+        	_inlineFormDietaryFiber = request.form.get("fiber-form")
+        	_inlineFormMaxCalories = request.form.get("calories-form")
         	# TODO - get query values
         	return redirect('/daily_meal_results')
 
@@ -88,9 +113,9 @@ def recipes_by_allergies():
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
         if "Find me a recipe!" == request.form['submit']:
-            # _inlineFormAllergan1 = request.form["inlineFormAllergan1"]
-            # _inlineFormAllergan2 = request.form["inlineFormAllergan2"]
-            # _inlineFormAllergan3 = request.form["inlineFormAllergan3"]
+            _inlineFormAllergan1 = request.form["inlineFormAllergan1"]
+            _inlineFormAllergan2 = request.form["inlineFormAllergan2"]
+            _inlineFormAllergan3 = request.form["inlineFormAllergan3"]
             # TODO - get query values and handle insufficient input case
             return redirect('/recipes_by_allergies_results')
 
@@ -111,10 +136,23 @@ def recipes_by_nutritional():
     if request.method == 'GET':
         return render_template('recipes_by_nutritional.html')
     if request.method == 'POST':
-        print request.form
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
         if "Find me a recipe!" == request.form['submit']:
+        	_inlineFormSugar = request.form.get("sugar-form")
+        	_inlineFormIron = request.form.get("iron-form")
+        	_inlineFormCalcium = request.form.get("calcium-form")
+        	_inlineFormSodium = request.form.get("sodium-form")
+        	_inlineFormProtein = request.form.get("protein-form")
+        	_inlineFormCholesterol = request.form.get("cholesterol-form")
+        	_inlineFormPotassium = request.form.get("potassium-form")
+        	_inlineFormLactose = request.form.get("lactose-form")
+        	_inlineFormVitaminC = request.form.get("vitaminC-form")
+        	_inlineFormSaturatedFat = request.form.get("satfat-form")
+        	_inlineFormTransFat = request.form.get("transfat-form")
+        	_inlineFormDietaryFiber = request.form.get("fiber-form")
+        	_inlineFormMaxCalories = request.form.get("calories-form")
+        	_inlineFormMaxPrepTime = request.form.get("prep-form")
         	# TODO - get query values
         	return redirect('/recipes_by_nutritional_results')
 

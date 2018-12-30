@@ -85,7 +85,7 @@
 
 <!-- ALLERGANS INPUT FROM USER -->
 <h3 class="mb-auto text-center" id="allergans-header">Insert allergies or ingredients you don't like:</h3>
-<form class="form-inline" id="allergans-form">
+<form class="form-inline" id="allergans-form" method="POST">
   <div class="form-group col-md-6" id="allergans-wrapper">
     <div class="col-8 my-1">
       <input type="text" onkeypress="return /[A-Za-z ]/i.test(event.key)" maxlength="30" class="form-control" id="inlineFormAllergan1" name="inlineFormAllergan1" placeholder="Enter an ingredient you wish to avoid...">
@@ -97,15 +97,14 @@
       <input type="text" onkeypress="return /[A-Za-z ]/i.test(event.key)" maxlength="30"  class="form-control" id="inlineFormAllergan3" name="inlineFormAllergan3" placeholder="Enter an ingredient you wish to avoid...">
     </div>
     </div>
+    <!-- SUBMIT BUTTON -->
+    
+    <div class="button" id="submit-button">
+      <input type="submit" class="btn btn-lg btn-success" name="submit" value="Find me a recipe!" onclick="ValidateForm()">
+    </div>
 </form>
 
 
-<!-- SUBMIT BUTTON -->
-<form method="POST">
-  <div class="button" id="submit-button">
-    <input type="submit" class="btn btn-lg btn-success" name="submit" value="Find me a recipe!" onclick="ValidateForm()">
-  </div>
-</form>
 
 <!-- BACK BUTTON -->
 <form  method="POST">

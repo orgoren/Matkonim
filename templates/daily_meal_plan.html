@@ -92,33 +92,33 @@
 <!-- NUTRITIONAL VALUES SELECTION -->
 <div class="mb-auto text-center">
 <h3 class="text-nowrap mb-auto" id="preferences-header">Choose your nutritional preferences:</h3><h5 class="text-nowrap mb-auto" id="preferences-header">(as a percentage of your recommended daily intake)</h5></div>   
-<form class="col-3">
+<form class="col-3" id="nutritional-form" method="POST">
 <div class="nutri-group" id="nutri1">
 <div class="form-group row col-10">
 	<label for="sugar-form" class="col-form-label col-3">Sugar:</label>
 	  <div class="col-7">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="sugar-form" placeholder="Don't Care">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="sugar-form" name="sugar-form" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri-percent-sign">%</div>
 </div>
 <div class="form-group row col-10">
 	<label for="iron-form" class="col-form-label col-3">Iron:</label>
 	  <div class="col-7">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="iron-form" placeholder="Don't Care">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="iron-form" name="iron-form" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri-percent-sign">%</div>
 </div>
 <div class="form-group row col-10">
 	<label for="calcium-form" class="col-form-label col-3">Calcium:</label>
 	  <div class="col-7">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="calcium-form" placeholder="Don't Care">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="calcium-form" name="calcium-form" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri-percent-sign">%</div>
 </div>
 <div class="form-group row col-10">
 	<label for="sodium-form" class="col-form-label col-3">Sodium:</label>
 	  <div class="col-7">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="sodium-form" placeholder="Don't Care">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="sodium-form" name="sodium-form" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri-percent-sign">%</div>
 </div>
@@ -127,28 +127,28 @@
 <div class="form-group row col-11">
 	<label for="protein-form" class="col-form-label col-4 nutri2-label">Protein:</label>
 	  <div class="col-6 mr-8">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="protein-form" placeholder="Don't Care">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="protein-form" name="protein-form" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri-percent-sign">%</div>
 </div>
 <div class="form-group row col-11">
 	<label for="cholesterol-form" class="col-form-label col-4 nutri2-label">Cholesterol:</label>
 	  <div class="col-6 mr-8">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="cholesterol-form" placeholder="Don't Care">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="cholesterol-form" name="cholesterol-form" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri-percent-sign">%</div>
 </div>
 <div class="form-group row col-11">
 	<label for="potassium-form" class="col-form-label col-4 nutri2-label">Potassium:</label>
 	  <div class="col-6 mr-8">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="potassium-form" placeholder="Don't Care">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="potassium-form" name="potassium-form" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri-percent-sign">%</div>
 </div>
 <div class="form-group row col-11">
 	<label for="lactose-form" class="col-form-label col-4 nutri2-label">Lactose:</label>
 	  <div class="col-6 mr-8">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="lactose-form" placeholder="Don't Care">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="lactose-form" name="lactose-form" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri-percent-sign">%</div>
 </div>
@@ -157,32 +157,36 @@
 <div class="form-group row">
 	<label for="vitaminC-form" class="col-form-label col-5 nutri3-label">Vitamin C:</label>
 	  <div class="col-5 mr-8">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="vitaminC-form" placeholder="Don't Care">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="vitaminC-form" name="vitaminC-form" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri3-percent-sign">%</div>
 </div>
 <div class="form-group row">
 	<label for="satfat-form" class="col-form-label col-5 nutri3-label">Saturated Fat:</label>
 	  <div class="col-5 mr-8">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="satfat-form" placeholder="Don't Care">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="satfat-form" name="satfat-form" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri3-percent-sign">%</div>
 </div>
 <div class="form-group row">
 	<label for="fiber-form" class="col-form-label col-5 nutri3-label">Dietary Fiber:</label>
 	  <div class="col-5 mr-8">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="fiber-form" placeholder="Don't Care">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="fiber-form" name="fiber-form" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri3-percent-sign">%</div>
 </div>
 <div class="form-group row">
 	<label for="calories-form" class="col-form-label col-5 nutri3-label">Calories:</label>
 	  <div class="col-5 mr-8">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="c	alories-form" placeholder="Don't Care">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="calories-form" name="calories-form" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri3-percent-sign">%</div>
 </div>
 </div>
+<!-- SUBMIT BUTTON -->
+<div class="button" id="submit-button">
+    <input type="submit" class="btn btn-lg btn-success" name="submit" value="Find me a meal plan!" onclick="ValidateForm()">
+  </div>
 </form>
 
 
@@ -192,13 +196,6 @@
   <h6 class="card-body px-2 py-2">Based on your age and gender, there are recommended daily intake amounts of each nutritional value. You can choose planning a specific meal or a full-day meal-plan, choosing the percentage of recommended daily intake of each nutritional value. If you know about other health limitations you have (such as diabetes, lactose intolernce, high cholesterol, etc.) you might want a meal plan with different percentage than the recommended daily amounts. If you have no other health limitations, we recommend choosing a full-day meal plan with 100% of each recommended nutritional value.</h6>
 </div>
 
-
-<!-- SUBMIT BUTTON -->
-<form method="POST">
-  <div class="button" id="submit-button">
-    <input type="submit" class="btn btn-lg btn-success" name="submit" value="Find me a meal plan!" onclick="ValidateForm()">
-  </div>
-</form>
 
 <!-- BACK BUTTON -->
 <form  method="POST">

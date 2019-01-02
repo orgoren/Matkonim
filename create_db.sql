@@ -7,7 +7,8 @@ CREATE TABLE DbMysql11.ALL_RECIPES(
   recipe_id SMALLINT UNSIGNED NOT NULL,
   recipe_name VARCHAR(55) NULL DEFAULT NULL,  
   picture VARCHAR(255),
-  PRIMARY KEY (recipe_id))
+  PRIMARY KEY (recipe_id),
+  INDEX recipe_id (recipe_id ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
@@ -17,7 +18,7 @@ CREATE TABLE DbMysql11.FOOD_RECIPES(
   recipe_id SMALLINT UNSIGNED NOT NULL,
   prep_time_in_minutes SMALLINT UNSIGNED NOT NULL,
   food_details VARCHAR(2500) NOT NULL,
-  INDEX recipe_id (recipe_id ASC),
+  INDEX food_id (food_id ASC),
   FOREIGN KEY (recipe_id)
   REFERENCES DbMysql11.ALL_RECIPES (recipe_id)
   ON UPDATE CASCADE) 
@@ -30,7 +31,7 @@ CREATE TABLE DbMysql11.COCKTAIL_RECIPES (
   recipe_id SMALLINT UNSIGNED NOT NULL,
   is_alcoholic TINYINT UNSIGNED NOT NULL,
   cocktail_details VARCHAR(2500) NOT NULL,
-  INDEX recipe_id (recipe_id ASC),
+  INDEX cocktail_id (cocktail_id ASC),
   FOREIGN KEY (recipe_id)
   REFERENCES DbMysql11.ALL_RECIPES (recipe_id)
   ON UPDATE CASCADE)
@@ -45,8 +46,8 @@ CREATE TABLE DbMysql11.INGREDIENTS (
   serving_quantity TINYINT UNSIGNED NOT NULL, -- check with carmel if need to change to SMALLINT (up to 65535)
   serving_unit TINYINT UNSIGNED NOT NULL,  -- check with carmel if need to change to SMALLINT (up to 65535)
   PRIMARY KEY (ingredient_id),
-  FULLTEXT INDEX ingredient_name (ingredient_name),
-  INDEX ingredient_id (ingredient_id ASC))
+  INDEX ingredient_id (ingredient_id ASC),
+  FULLTEXT INDEX ingredient_name (ingredient_name))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
@@ -89,7 +90,7 @@ CREATE TABLE DbMysql11.INGREDIENT_NUTIRITION (
 	fat Float(3) DEFAULT 0,
 	alcoholic Float(3) DEFAULT 0,
    PRIMARY KEY (ingredient_name),
-   INDEX ingredient_name (ingredient_name ASC),
+   INDEX (ingredient_id, ingredient_name),
    FOREIGN KEY (ingredient_id)
    REFERENCES DbMysql11.INGREDIENTS(ingredient_id)
    ON UPDATE CASCADE)

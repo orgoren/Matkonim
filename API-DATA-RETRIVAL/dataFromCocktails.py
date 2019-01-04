@@ -33,7 +33,7 @@ with open(INPUT_FILE, 'r') as fin:
         picture = row[5].replace("'","''")
         cocktail_details = row[6].replace("'","''")
 
-        if (cocktail_id, cocktail_details, is_alcoholic) in cocktails or cocktail_id == 17223:
+        if (cocktail_id, cocktail_details, is_alcoholic) in cocktails or cocktail_id == 17233:
             continue
         else:
             # adding new cocktail to set

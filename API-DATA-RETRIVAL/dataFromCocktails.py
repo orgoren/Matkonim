@@ -12,7 +12,7 @@ add_cocktail_queries = ""
 add_recipce_queries = ""
 add_ingredient_queries = ""
 
-ingredient_id = -1
+ingredient_id = 0
 count_cocktails = 0
 # define sql queries
 add_cocktail = "INSERT INTO COCKTAIL_RECIPES (cocktail_id, is_alcoholic, cocktail_details) VALUES ({},{},'{}');"
@@ -26,6 +26,8 @@ with open(INPUT_FILE, 'r') as fin:
     reader = csv.reader(fin, lineterminator='\n')
 
     for row in reader:
+        if row[1] == 'cocktail_id':
+            continue
         cocktail_id = row[1]
         cocktail_name = row[2].replace("'","''")
         is_alcoholic = 1 if row[3] == 'Alcoholic' else 0
@@ -53,8 +55,7 @@ with open(INPUT_FILE, 'r') as fin:
 
             if (ingredient_name, quantity, unit, full_ingredient_line) not in ingredients:
                 ingredient_id += 1
-                if ingredient_id > 0:
-                    add_ingredient_queries += add_ingredient.format(int(ingredient_id), str(ingredient_name), quantity, str(unit), str(full_ingredient_line))
+                add_ingredient_queries += add_ingredient.format(int(ingredient_id), str(ingredient_name), quantity, str(unit), str(full_ingredient_line))
                 ingredients.add((ingredient_name, quantity, unit, full_ingredient_line))
 
 cocktail_sql = open('insert_cocktail_recipes.sql', 'w')

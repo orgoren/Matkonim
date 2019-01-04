@@ -3,77 +3,87 @@ CREATE SCHEMA IF NOT EXISTS DbMysql11;
 USE DbMysql11;
 
 
-CREATE TABLE DbMysql11.ALL_RECIPES(
-  recipe_id SMALLINT UNSIGNED NOT NULL,
-  recipe_name VARCHAR(55) NULL DEFAULT NULL,  
-  picture VARCHAR(255),
-  PRIMARY KEY (recipe_id),
-  INDEX recipe_id (recipe_id ASC))
+CREATE TABLE DbMysql11.ALL_RECIPES( -- DONE
+	recipe_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  	recipe_name VARCHAR(55) NULL DEFAULT NULL,  
+  	picture VARCHAR(255),
+  	PRIMARY KEY (recipe_id),
+  	INDEX recipe_id (recipe_id ASC))
 ENGINE = InnoDB
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 
 CREATE TABLE DbMysql11.FOOD_RECIPES(
-  food_id SMALLINT UNSIGNED NOT NULL,
-  recipe_id SMALLINT UNSIGNED NOT NULL,
-  prep_time_in_minutes SMALLINT UNSIGNED NOT NULL,
-  food_details VARCHAR(2500) NOT NULL,
-  INDEX food_id (food_id ASC),
-  FOREIGN KEY (recipe_id)
-  REFERENCES DbMysql11.ALL_RECIPES (recipe_id)
-  ON UPDATE CASCADE) 
-ENGINE = MyISAM
+	recipe_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  	food_id SMALLINT UNSIGNED NOT NULL,
+  	prep_time_in_minutes SMALLINT UNSIGNED NOT NULL,
+  	food_details VARCHAR(2500) NOT NULL,
+  	INDEX food_id (food_id ASC),
+  	CONSTRAINT food2recipe_id 
+	FOREIGN KEY (recipe_id)
+  	REFERENCES DbMysql11.ALL_RECIPES (recipe_id)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE) 
+ENGINE = InnoDB
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 
-CREATE TABLE DbMysql11.COCKTAIL_RECIPES (
-  cocktail_id SMALLINT UNSIGNED NOT NULL,
-  recipe_id SMALLINT UNSIGNED NOT NULL,
-  is_alcoholic TINYINT UNSIGNED NOT NULL,
-  cocktail_details VARCHAR(2500) NOT NULL,
-  INDEX cocktail_id (cocktail_id ASC),
-  FOREIGN KEY (recipe_id)
-  REFERENCES DbMysql11.ALL_RECIPES (recipe_id)
-  ON UPDATE CASCADE)
-ENGINE = MyISAM
+CREATE TABLE DbMysql11.COCKTAIL_RECIPES ( -- DONE
+	recipe_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  	cocktail_id SMALLINT UNSIGNED NOT NULL,
+  	is_alcoholic TINYINT UNSIGNED NOT NULL,
+  	cocktail_details VARCHAR(3500) NOT NULL,
+  	INDEX cocktail_id (cocktail_id ASC),
+  	CONSTRAINT cocktail2recipe_id 
+	FOREIGN KEY (recipe_id)
+  	REFERENCES DbMysql11.ALL_RECIPES (recipe_id))
+ENGINE = InnoDB
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 
 CREATE TABLE DbMysql11.INGREDIENTS (
-  ingredient_id SMALLINT UNSIGNED NOT NULL,
-  ingredient_name VARCHAR(55) NOT NULL,
-  serving_weight TINYINT UNSIGNED NOT NULL, -- check with carmel if need to change to SMALLINT (up to 65535)
-  serving_quantity TINYINT UNSIGNED NOT NULL, -- check with carmel if need to change to SMALLINT (up to 65535)
-  serving_unit TINYINT UNSIGNED NOT NULL,  -- check with carmel if need to change to SMALLINT (up to 65535)
-  PRIMARY KEY (ingredient_id),
-  INDEX ingredient_id (ingredient_id ASC),
-  FULLTEXT INDEX ingredient_name (ingredient_name))
+  	ingredient_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  	ingredient_name VARCHAR(55) NOT NULL,
+  	serving_weight TINYINT UNSIGNED NOT NULL, -- check with carmel if need to change to SMALLINT (up to 65535)
+  	serving_quantity TINYINT UNSIGNED NOT NULL, -- check with carmel if need to change to SMALLINT (up to 65535)
+  	serving_unit TINYINT UNSIGNED NOT NULL,  -- check with carmel if need to change to SMALLINT (up to 65535)
+  	PRIMARY KEY (ingredient_id),
+  	INDEX ingredient_id (ingredient_id ASC),
+  	FULLTEXT INDEX ingredientName (ingredient_name) )
 ENGINE = InnoDB
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 
-CREATE TABLE DbMysql11.RECIPE2INGREDIENTS(
-  recipe_id SMALLINT UNSIGNED NOT NULL,
-  ingredient_id SMALLINT UNSIGNED NOT NULL,
-  amount_in_recipe SMALLINT UNSIGNED NOT NULL,
-  quantity SMALLINT UNSIGNED NOT NULL,
-  unit VARCHAR(20) NOT NULL,
-  full_ingredient_line VARCHAR(90) NOT NULL,
-  INDEX recipe_id (recipe_id ASC),
-  FOREIGN KEY (recipe_id)
-  REFERENCES DbMysql11.ALL_RECIPES(recipe_id)
-  ON UPDATE CASCADE,
-  INDEX ingredient_id (ingredient_id ASC),
-  FOREIGN KEY (ingredient_id)
-  REFERENCES DbMysql11.INGREDIENTS(ingredient_id)
-  ON UPDATE CASCADE)
-ENGINE = MyISAM
+CREATE TABLE DbMysql11.RECIPE2INGREDIENTS( -- DONE
+  	recipe_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  	ingredient_id SMALLINT UNSIGNED NOT NULL,
+	ingredient_name VARCHAR(55) NOT NULL,
+  	quantity SMALLINT UNSIGNED NOT NULL,
+  	unit VARCHAR(20) NOT NULL,
+  	full_ingredient_line VARCHAR(90) NOT NULL,
+  	INDEX recipe_id (recipe_id ASC),
+  	CONSTRAINT ingredient_id_for_recipe 
+	FOREIGN KEY (ingredient_id)
+  	REFERENCES DbMysql11.INGREDIENTS (ingredient_id)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE,
+  	CONSTRAINT recipe2ingredient_id 
+	FOREIGN KEY (recipe_id)
+  	REFERENCES DbMysql11.ALL_RECIPES (recipe_id)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 
 CREATE TABLE DbMysql11.INGREDIENT_NUTIRITION (
-   ingredient_name VARCHAR(55) NOT NULL,
-	ingredient_id SMALLINT UNSIGNED NOT NULL,
+	ingredient_name VARCHAR(55) NOT NULL,
+	ingredient_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	sugars Float(3) DEFAULT 0,
 	iron Float(3) DEFAULT 0,
 	calcium Float(3) DEFAULT 0,
@@ -90,16 +100,19 @@ CREATE TABLE DbMysql11.INGREDIENT_NUTIRITION (
 	fat Float(3) DEFAULT 0,
 	alcoholic Float(3) DEFAULT 0,
    PRIMARY KEY (ingredient_name),
-   INDEX (ingredient_id, ingredient_name),
-   FOREIGN KEY (ingredient_id)
-   REFERENCES DbMysql11.INGREDIENTS(ingredient_id)
-   ON UPDATE CASCADE)
+   INDEX (ingredient_id),
+  	CONSTRAINT ingredient2nutirition_id 
+	FOREIGN KEY (ingredient_id)
+	REFERENCES DbMysql11.INGREDIENTS (ingredient_id)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE)
 ENGINE = InnoDB
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 
 CREATE TABLE DbMysql11.RECOMMEND_BY_AGE_GENDER(
-   age TINYINT NOT NULL,
+	age TINYINT NOT NULL,
 	gender BIT NOT NULL, -- 1 for Female, 0 for Male
    ingredient_name VARCHAR(55) NOT NULL,
 	sugars Float(3) DEFAULT 0,
@@ -119,14 +132,10 @@ CREATE TABLE DbMysql11.RECOMMEND_BY_AGE_GENDER(
 	alcoholic Float(3) DEFAULT 0,
    PRIMARY KEY (age, gender),
    INDEX (age, gender),
-   FOREIGN KEY (ingredient_name)
-   REFERENCES DbMysql11.INGREDIENT_NUTIRITION(ingredient_name)
-   ON UPDATE CASCADE)
-ENGINE = MyISAM
+   CONSTRAINT recommend_agr_gender_ingredient_name 
+	FOREIGN KEY (ingredient_name)
+  	REFERENCES DbMysql11.INGREDIENT_NUTIRITION (ingredient_name)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE)
+ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
-
-Insert into DbMysql11.ALL_RECIPES
-Values (1, "Test", "Test details");
-
-Insert into DbMysql11.FOOD_RECIPES
-Values (11, 1, 2300, "FOOD_TEST");

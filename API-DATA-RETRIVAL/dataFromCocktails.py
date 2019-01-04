@@ -27,13 +27,13 @@ with open(INPUT_FILE, 'r') as fin:
 
     for row in reader:
         cocktail_id = row[1]
-        cocktail_name = row[2]
+        cocktail_name = row[2].replace("'","''")
         is_alcoholic = 1 if row[3] == 'Alcoholic' else 0
         serving_glass = row[4]  # what to do with this
-        picture = row[5]
-        cocktail_details = row[6]
+        picture = row[5].replace("'","''")
+        cocktail_details = row[6].replace("'","''")
 
-        if (cocktail_id, cocktail_details, is_alcoholic) in cocktails:
+        if (cocktail_id, cocktail_details, is_alcoholic) in cocktails or cocktail_id != 17223:
             continue
         else:
             # adding new cocktail to set
@@ -46,10 +46,11 @@ with open(INPUT_FILE, 'r') as fin:
         num_ingredients = (len(row) - 7)/4
         for ingredient_index in range(0, num_ingredients):
 
-            ingredient_name = str(row[7 + 4*ingredient_index])
+            ingredient_name = str(row[7 + 4*ingredient_index]).replace("'","''")
             quantity = row[8 + 4*ingredient_index]
-            unit = str(row[9 + 4*ingredient_index])
-            full_ingredient_line = str(row[10 + 4*ingredient_index])
+            unit = str(row[9 + 4*ingredient_index]).replace("'","''")
+            unit.replace("\''", "''")
+            full_ingredient_line = str(row[10 + 4*ingredient_index]).replace("'","''")
 
             if (ingredient_name, quantity, unit, full_ingredient_line) not in ingredients:
                 ingredient_id += 1

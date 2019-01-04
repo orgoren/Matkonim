@@ -33,11 +33,11 @@ with open(INPUT_FILE, 'r') as fin:
         picture = row[5].replace("'","''")
         cocktail_details = row[6].replace("'","''")
 
-        if (cocktail_id, cocktail_details, is_alcoholic) in cocktails or cocktail_id == 17233:
+        if ((cocktail_id, cocktail_details, is_alcoholic) in cocktails) or (cocktail_id == 17233):
             continue
         else:
             # adding new cocktail to set
-            if count_cocktails > 0:
+            if count_cocktails > 0 and cocktail_id != 17233 and 'Willie' not in str(cocktail_details):
                 cocktails.add((cocktail_id, cocktail_details, is_alcoholic))
                 add_cocktail_queries += add_cocktail.format(cocktail_id, is_alcoholic, str(cocktail_details))
                 add_recipce_queries += add_recipce.format(str(cocktail_name), str(picture))
@@ -56,7 +56,6 @@ with open(INPUT_FILE, 'r') as fin:
                 if ingredient_id > 0:
                     add_ingredient_queries += add_ingredient.format(int(ingredient_id), str(ingredient_name), quantity, str(unit), str(full_ingredient_line))
                 ingredients.add((ingredient_name, quantity, unit, full_ingredient_line))
-
 
 cocktail_sql = open('insert_cocktail_recipes.sql', 'w')
 cocktail_sql.write(add_cocktail_queries)

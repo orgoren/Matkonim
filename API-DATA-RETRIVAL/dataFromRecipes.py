@@ -29,11 +29,11 @@ with open(INPUT_FILE, 'r') as fin:
         if row[1] == 'food_id':
             continue
         food_id = row[1]
-        food_name = row[2]
+        food_name = row[2].replace("'","''")
         course_type = row[3]  # what to do with this?
         prep_time_minutes = row[4]
         picture = row[5]
-        food_details = row[6]
+        food_details = row[6].replace("'","''")
 
         if (food_id, prep_time_minutes, food_details) in food_set:
             continue
@@ -46,7 +46,7 @@ with open(INPUT_FILE, 'r') as fin:
         num_ingredients = (len(row) - 7)/4
         for ingredient_index in range(0, num_ingredients):
 
-            ingredient_name = row[7 + 4*ingredient_index]
+            ingredient_name = row[7 + 4*ingredient_index].replace("'","''")
             quantity = row[8 + 4*ingredient_index]
             unit = row[9 + 4*ingredient_index]
             full_ingredient_line = row[10 + 4*ingredient_index]

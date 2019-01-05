@@ -8,7 +8,7 @@ CREATE TABLE DbMysql11.ALL_RECIPES( -- DONE
   	recipe_name VARCHAR(255) NULL DEFAULT NULL,  
   	picture VARCHAR(255),
   	PRIMARY KEY (recipe_id),
-  	INDEX recipe_id (recipe_id ASC))
+  	INDEX recipe_index (recipe_id ASC))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
@@ -20,10 +20,8 @@ CREATE TABLE DbMysql11.FOOD_RECIPES(
   	prep_time_in_minutes SMALLINT UNSIGNED NOT NULL,
   	food_details VARCHAR(2500) NOT NULL,
   	INDEX food_id (food_id ASC),
-  	CONSTRAINT food2recipe_id 
 	FOREIGN KEY (recipe_id)
   	REFERENCES DbMysql11.ALL_RECIPES (recipe_id)
-	ON DELETE CASCADE
 	ON UPDATE CASCADE) 
 ENGINE = InnoDB
 AUTO_INCREMENT = 1
@@ -36,7 +34,6 @@ CREATE TABLE DbMysql11.COCKTAIL_RECIPES ( -- DONE
   	is_alcoholic TINYINT UNSIGNED NOT NULL,
   	cocktail_details VARCHAR(3500) NOT NULL,
   	INDEX cocktail_id (cocktail_id ASC),
-  	CONSTRAINT cocktail2recipe_id 
 	FOREIGN KEY (recipe_id)
   	REFERENCES DbMysql11.ALL_RECIPES (recipe_id))
 ENGINE = InnoDB
@@ -66,15 +63,11 @@ CREATE TABLE DbMysql11.RECIPE2INGREDIENTS( -- DONE
   	unit VARCHAR(20) NOT NULL,
   	full_ingredient_line VARCHAR(90) NOT NULL,
   	INDEX recipe_id (recipe_id ASC),
-  	CONSTRAINT ingredient_id_for_recipe 
 	FOREIGN KEY (ingredient_id)
   	REFERENCES DbMysql11.INGREDIENTS (ingredient_id)
-	ON DELETE CASCADE
 	ON UPDATE CASCADE,
-  	CONSTRAINT recipe2ingredient_id 
 	FOREIGN KEY (recipe_id)
   	REFERENCES DbMysql11.ALL_RECIPES (recipe_id)
-	ON DELETE CASCADE
 	ON UPDATE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 1
@@ -102,10 +95,8 @@ CREATE TABLE DbMysql11.INGREDIENT_NUTRITION (
 	zinc_mg Float(3) DEFAULT 0,
    PRIMARY KEY (ingredient_name),
    INDEX (ingredient_id),
-  	CONSTRAINT ingredient2nutrition_id 
 	FOREIGN KEY (ingredient_id)
 	REFERENCES DbMysql11.INGREDIENTS (ingredient_id)
-	ON DELETE CASCADE
 	ON UPDATE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 1
@@ -133,10 +124,8 @@ CREATE TABLE DbMysql11.RECOMMEND_BY_AGE_GENDER(
 	alcoholic Float(3) DEFAULT 0,
    PRIMARY KEY (age, gender),
    INDEX (age, gender),
-   CONSTRAINT recommend_agr_gender_ingredient_name 
 	FOREIGN KEY (ingredient_name)
   	REFERENCES DbMysql11.INGREDIENT_NUTRITION (ingredient_name)
-	ON DELETE CASCADE
 	ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;

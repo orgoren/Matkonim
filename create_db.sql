@@ -3,7 +3,7 @@ CREATE SCHEMA IF NOT EXISTS DbMysql11;
 USE DbMysql11;
 
 
-CREATE TABLE DbMysql11.ALL_RECIPES( -- DONE
+CREATE TABLE DbMysql11.ALL_RECIPES(
 	recipe_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   	recipe_name VARCHAR(255) NULL DEFAULT NULL,  
   	picture VARCHAR(255),
@@ -28,7 +28,7 @@ AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 
-CREATE TABLE DbMysql11.COCKTAIL_RECIPES ( -- DONE
+CREATE TABLE DbMysql11.COCKTAIL_RECIPES (
 	recipe_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   	cocktail_id SMALLINT UNSIGNED NOT NULL,
   	is_alcoholic TINYINT UNSIGNED NOT NULL,
@@ -44,9 +44,9 @@ DEFAULT CHARACTER SET = utf8mb4;
 CREATE TABLE DbMysql11.INGREDIENTS (
   	ingredient_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   	ingredient_name VARCHAR(55) NOT NULL,
-  	serving_quantity TINYINT UNSIGNED NOT NULL, -- check with carmel if need to change to SMALLINT (up to 65535)
+  	serving_quantity TINYINT UNSIGNED NOT NULL,
   	serving_unit VARCHAR(15) NOT NULL,
-  	serving_weight TINYINT UNSIGNED NOT NULL, -- check with carmel if need to change to SMALLINT (up to 65535)
+  	serving_weight TINYINT UNSIGNED NOT NULL,
   	PRIMARY KEY (ingredient_id),
   	INDEX ingredient_id (ingredient_id ASC),
   	FULLTEXT INDEX ingredientName (ingredient_name) )
@@ -55,14 +55,15 @@ AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 
-CREATE TABLE DbMysql11.RECIPE2INGREDIENTS( -- DONE
+CREATE TABLE DbMysql11.RECIPE2INGREDIENTS(
   	recipe_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   	ingredient_id SMALLINT UNSIGNED NOT NULL,
 	ingredient_name VARCHAR(55) NOT NULL,
   	quantity SMALLINT UNSIGNED NOT NULL,
   	unit VARCHAR(20) NOT NULL,
   	full_ingredient_line VARCHAR(90) NOT NULL,
-  	INDEX recipe_id (recipe_id ASC),
+  	PRIMARY KEY (recipe_id, ingredient_id),
+  	INDEX (recipe_id, ingredient_id),
 	FOREIGN KEY (ingredient_id)
   	REFERENCES DbMysql11.INGREDIENTS (ingredient_id)
 	ON UPDATE CASCADE,

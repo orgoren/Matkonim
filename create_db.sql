@@ -104,28 +104,20 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 CREATE TABLE DbMysql11.RECOMMEND_BY_AGE_GENDER(
-	age TINYINT NOT NULL,
-	gender BIT NOT NULL, -- 1 for Female, 0 for Male
-   ingredient_name VARCHAR(55) NOT NULL,
-	sugars Float(3) DEFAULT 0,
-	iron Float(3) DEFAULT 0,
-	calcium Float(3) DEFAULT 0,
-	sodium Float(3) DEFAULT 0,
-	protein Float(3) DEFAULT 0,
-	cholesterol Float(3) DEFAULT 0,
-	potassium Float(3) DEFAULT 0,
-	lactose Float(3) DEFAULT 0,
-	vitaminC Float(3) DEFAULT 0,
-	saturated_fat Float(3) DEFAULT 0,
-	trans_fat Float(3) DEFAULT 0,
-	dietary_fiber Float(3) DEFAULT 0,
-	calories Float(3) DEFAULT 0,
-	fat Float(3) DEFAULT 0,
-	alcoholic Float(3) DEFAULT 0,
-   PRIMARY KEY (age, gender),
-   INDEX (age, gender),
-	FOREIGN KEY (ingredient_name)
-  	REFERENCES DbMysql11.INGREDIENT_NUTRITION (ingredient_name)
-	ON UPDATE CASCADE)
+	gender VARCHAR(7) NOT NULL,
+	age TINYINT NOT NULL, -- 0: 14-18, 1:19-30, 2: 31-40, 3: 41-50, 4:51-60, 5:61-70, 6: 71+
+	protein_mg Float(3) DEFAULT 0,
+	cholesterol_mg_MAX Float(3) DEFAULT 0,
+	potassium_mg Float(3) DEFAULT 0,
+	lactose_mg Float(3) DEFAULT 0,
+	vitaminC_mg Float(3) DEFAULT 0,
+	saturated_fat_mg_MAX Float(3) DEFAULT 0,
+	dietary_fiber_mg Float(3) DEFAULT 0,
+	calories_kcal Float(3) DEFAULT 0,
+	alcohol_mg_MAX Float(3) DEFAULT 0,
+	magnesium_mg Float(3) DEFAULT 0,
+	zinc_mg Float(3) DEFAULT 0,
+   PRIMARY KEY (gender, age),
+   INDEX (gender, age))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;

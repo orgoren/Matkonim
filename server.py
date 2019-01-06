@@ -6,6 +6,7 @@ import MySQLdb as mdb
 from flask import Flask, render_template, redirect, url_for, request, make_response, session, g, abort, flash
 from gevent.pywsgi import WSGIServer
 import sshtunnel
+import getpass
 
 # Create the application instance
 app = Flask(__name__)
@@ -15,7 +16,12 @@ DB_USERNAME = "DbMysql11"
 DB_PASSWORD = "DbMysql11"
 DB_NAME = "DbMysql11"
 VALID_RANDOM_PORT = 40326
+USERNAME = "orgoren1"
+PASSWORD = ""
+NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
+        		"lactose", "vitaminC", "satfat",  "fiber",  "alcohol", "calories"]
 
+VALUES = {"1" : "none", "": "dont care", "2" : "less than 5%", "3" : "over 30%"}
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
@@ -44,6 +50,13 @@ def cocktails_by_nutritional():
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
         if "Find me a cocktail!" == request.form['submit']:
+        	nutritions_values = {}
+        	for nutrition_value in NUTRITIONS:
+        		nutritions_values[nutrition_value] = request.form.get(nutrition_value + "-form")
+
+        	print nutritions_values
+
+        	deleta = """
         	_inlineFormSugar = request.form.get("sugar-form")
         	_inlineFormIron = request.form.get("iron-form")
         	_inlineFormCalcium = request.form.get("calcium-form")
@@ -57,6 +70,7 @@ def cocktails_by_nutritional():
         	_inlineFormDietaryFiber = request.form.get("fiber-form")
         	_inlineFormAlcoholic = request.form.get("alcohol-form")
         	_inlineFormMaxCalories = request.form.get("calories-form")
+        	"""
         	# TODO - get query values
         	return redirect('/cocktails_results')
 
@@ -80,6 +94,13 @@ def daily_meal_plan():
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
         if "Find me a meal plan!" == request.form['submit']:
+        	nutritions_values = {}
+        	for nutrition_value in NUTRITIONS:
+        		nutritions_values[nutrition_value] = request.form.get(nutrition_value + "-form")
+
+        	print nutritions_values
+
+        	delete = """
         	_inlineFormSugar = request.form.get("sugar-form")
         	_inlineFormIron = request.form.get("iron-form")
         	_inlineFormCalcium = request.form.get("calcium-form")
@@ -92,6 +113,7 @@ def daily_meal_plan():
         	_inlineFormSaturatedFat = request.form.get("satfat-form")
         	_inlineFormDietaryFiber = request.form.get("fiber-form")
         	_inlineFormMaxCalories = request.form.get("calories-form")
+        	"""
         	# TODO - get query values
         	return redirect('/daily_meal_results')
 
@@ -141,6 +163,13 @@ def recipes_by_nutritional():
         if "Back to Main Menu" == request.form['submit']:
             return redirect('/')
         if "Find me a recipe!" == request.form['submit']:
+        	nutritions_values = {}
+        	for nutrition_value in NUTRITIONS:
+        		nutritions_values[nutrition_value] = request.form.get(nutrition_value + "-form")
+
+        	print nutritions_values
+
+        	delete = """
         	_inlineFormSugar = request.form.get("sugar-form")
         	_inlineFormIron = request.form.get("iron-form")
         	_inlineFormCalcium = request.form.get("calcium-form")
@@ -155,6 +184,7 @@ def recipes_by_nutritional():
         	_inlineFormDietaryFiber = request.form.get("fiber-form")
         	_inlineFormMaxCalories = request.form.get("calories-form")
         	_inlineFormMaxPrepTime = request.form.get("prep-form")
+        	"""
         	# TODO - get query values
         	return redirect('/recipes_by_nutritional_results')
 
@@ -170,11 +200,11 @@ def recipes_by_nutritional_results():
             return redirect('/recipes_by_nutritional')
 
 @app.route('/test', methods=['GET'])
-def connect_to_db(username='', password=''):
+def connect_to_db():#username='', password=''):
 	with sshtunnel.SSHTunnelForwarder(
 	        ('nova.cs.tau.ac.il', 22),
-	        ssh_username=username,
-	        ssh_password=password,
+	        ssh_username=USERNAME,
+	        ssh_password=PASSWORD,
 	        remote_bind_address=("mysqlsrv1.cs.tau.ac.il", 3306),
 	        local_bind_address=("127.0.0.1", 3307)
 	) as tunnel:
@@ -184,13 +214,21 @@ def connect_to_db(username='', password=''):
 	                         db=DB_NAME,
 	                         port = 3307)        # name of the data base
 	    cur = con.cursor(mdb.cursors.DictCursor)
-	    query1 = "Select * from ALL_RECIPES where recipe_id = {}".format(1)
+	    #query1 = "Select * from ALL_RECIPES where recipe_id = {}".format(1)
+	    query1 = "select * from ALL_RECIPES"
 	    cur.execute(query1)
-	    res = [item['recipe_name'] for item in cur.fetchall()]
+	    print cur.fetchall()
+	    #res = [item['recipe_name'] for item in cur.fetchall()]
 	    cur.close()
 	    return ','.join(res)
+
+def get_username_and_password():
+	global PASSWORD
+	USERNAME = raw_input("enter username (for nova): ")
+	PASSWORD = getpass.getpass("enter password (for nova): ")
 
 if __name__ == '__main__':
     # app.run(port=8888, host="0.0.0.0", debug=True)
     http_server = WSGIServer(('0.0.0.0', VALID_RANDOM_PORT), app)
+    get_username_and_password()
     http_server.serve_forever()

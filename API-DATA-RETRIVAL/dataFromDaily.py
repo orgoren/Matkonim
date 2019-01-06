@@ -12,9 +12,8 @@ add_age_gender = """INSERT INTO RECOMMEND_BY_AGE_GENDER (gender, age, protein_mg
 
 with open(INPUT_FILE, 'r') as fin:
     reader = csv.reader(fin, lineterminator='\n')
-
     for row in reader:
-        if row[0] == 'age':
+        if row[0] != 'male' and row[0] != 'female':
             continue
         gender = row[0]
         age = row[1]

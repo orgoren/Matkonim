@@ -14,21 +14,21 @@ with open(INPUT_FILE, 'r') as fin:
     reader = csv.reader(fin, lineterminator='\n')
 
     for row in reader:
-        if row[1] == 'age':
+        if row[0] == 'age':
             continue
-        gender = row[1]
-        age = row[2]
-        protein_mg = row[3]
-        cholesterol_mg_MAX = row[4]
-        potassium_mg = row[5]
-        lactose_mg = row[6]
-        vitaminC_mg = row[7]
-        saturated_fat_mg_MAX = row[8]
-        dietary_fiber_mg = row[9]
-        calories_kcal = row[10]
-        alcohol_mg_MAX = row[11]
-        magnesium_mg = row[12]
-        zinc_mg = row[13]
+        gender = row[0]
+        age = row[1]
+        protein_mg = row[2]
+        cholesterol_mg_MAX = row[3]
+        potassium_mg = row[4]
+        lactose_mg = row[5]
+        vitaminC_mg = row[6]
+        saturated_fat_mg_MAX = row[7]
+        dietary_fiber_mg = row[8]
+        calories_kcal = row[9]
+        alcohol_mg_MAX = row[10]
+        magnesium_mg = row[11]
+        zinc_mg = row[12]
 
         if (gender, age, protein_mg, cholesterol_mg_MAX, potassium_mg, lactose_mg, vitaminC_mg, saturated_fat_mg_MAX, dietary_fiber_mg, calories_kcal, alcohol_mg_MAX, magnesium_mg, zinc_mg) in age_gender:
             continue

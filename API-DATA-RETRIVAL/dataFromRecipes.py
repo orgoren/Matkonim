@@ -20,7 +20,7 @@ add_food = """INSERT INTO FOOD_RECIPES (food_id, prep_time_in_minutes, food_deta
 
 add_recipce = """INSERT INTO ALL_RECIPES (recipe_name, picture) VALUES ('{}','{}');"""
 
-add_ingredient = """INSERT INTO RECIPE2INGREDIENTS (ingredient_id, ingredient_name, quantity, unit, full_ingredient_line) VALUES ({},'{}',{},'{}','{}');"""
+add_ingredient = """INSERT INTO RECIPE2INGREDIENTS (ingredient_id, ingredient_name, servings, full_ingredient_line) VALUES ({},'{}',{},'{}');"""
 
 with open(INPUT_FILE, 'r') as fin:
     reader = csv.reader(fin, lineterminator='\n')
@@ -30,7 +30,7 @@ with open(INPUT_FILE, 'r') as fin:
             continue
         food_id = row[1]
         food_name = row[2].replace("'","''")
-        course_type = row[3]  # what to do with this?
+        course = row[3]  # what to do with this?
         prep_time_minutes = row[4]
         picture = row[5]
         food_details = row[6].replace("'","''")
@@ -43,20 +43,19 @@ with open(INPUT_FILE, 'r') as fin:
             recipe_set.add((food_name, picture))
             add_food_recipe_queries += add_food.format(food_id, prep_time_minutes, str(food_details))
             add_all_recipes_queries += add_recipce.format(food_name, picture)
-        num_ingredients = (len(row) - 7)/4
+        num_ingredients = (len(row) - 7)/3
         for ingredient_index in range(0, num_ingredients):
 
-            ingredient_name = row[7 + 4*ingredient_index].replace("'","''")
-            quantity = row[8 + 4*ingredient_index]
-            unit = row[9 + 4*ingredient_index]
-            full_ingredient_line = row[10 + 4*ingredient_index]
+            ingredient_name = row[7 + 3*ingredient_index].replace("'","''")
+            servings = row[8 + 3*ingredient_index]
+            full_ingredient_line = row[9 + 3*ingredient_index]
 
-            if (ingredient_name, quantity, unit, full_ingredient_line) in ingredient_set:
+            if (ingredient_name, servings, full_ingredient_line) in ingredient_set:
                 continue
             else:
                 # adding new ingredient to set
-                ingredient_set.add((ingredient_name, quantity, unit, full_ingredient_line))
-                add_ingredient_queries += add_ingredient.format(ingredient_num, str(ingredient_name), quantity, str(unit), str(full_ingredient_line))
+                ingredient_set.add((ingredient_name, servings, full_ingredient_line))
+                add_ingredient_queries += add_ingredient.format(ingredient_num, str(ingredient_name), servings, str(full_ingredient_line))
                 ingredient_num += 1
 
 recipe_ingredient_sql = open('insert_recipe_ingredient.sql', 'w')

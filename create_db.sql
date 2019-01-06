@@ -59,7 +59,7 @@ CREATE TABLE DbMysql11.RECIPE2INGREDIENTS(
   	recipe_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   	ingredient_id SMALLINT UNSIGNED NOT NULL,
 	ingredient_name VARCHAR(55) NOT NULL,
-  	serving FLOAT(7) UNSIGNED NOT NULL,
+  	servings FLOAT(7) UNSIGNED NOT NULL,
   	full_ingredient_line VARCHAR(90) NOT NULL,
   	PRIMARY KEY (recipe_id, ingredient_id),
   	INDEX (recipe_id, ingredient_id),

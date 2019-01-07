@@ -61,8 +61,8 @@ CREATE TABLE DbMysql11.RECIPE2INGREDIENTS(
 	ingredient_name VARCHAR(55) NOT NULL,
   	servings FLOAT(7) UNSIGNED NOT NULL,
   	full_ingredient_line VARCHAR(90) NOT NULL,
-  	PRIMARY KEY (recipe_id, ingredient_id),
-  	INDEX (recipe_id, ingredient_id),
+  	PRIMARY KEY (recipe_id),
+  	INDEX (recipe_id),
 	FOREIGN KEY (ingredient_id)
   	REFERENCES DbMysql11.INGREDIENTS (ingredient_id)
 	ON UPDATE CASCADE,
@@ -75,49 +75,66 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 CREATE TABLE DbMysql11.INGREDIENT_NUTRITION (
-	ingredient_name VARCHAR(55) NOT NULL,
-	ingredient_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-	suger_mg Float(3) DEFAULT 0,
-	iron_mg Float(3) DEFAULT 0,
-	calcium_mg Float(3) DEFAULT 0,
-	sodium_mg Float(3) DEFAULT 0,
-	protein_mg Float(3) DEFAULT 0,
-	cholesterol_mg Float(3) DEFAULT 0,
-	potassium_mg Float(3) DEFAULT 0,
-	lactose_mg Float(3) DEFAULT 0,
-	vitamin_C_mg Float(3) DEFAULT 0,
-	staurated_fat_mg Float(3) DEFAULT 0,
-	trans_fat_mg Float(3) DEFAULT 0,
-	dietary_fiber_mg Float(3) DEFAULT 0,
-	calories_kcal Float(3) DEFAULT 0,
-	alcohol_mg Float(3) DEFAULT 0,
-	magnesium_mg Float(3) DEFAULT 0,
-	zinc_mg Float(3) DEFAULT 0,
-   PRIMARY KEY (ingredient_name),
+	ingredient_id SMALLINT UNSIGNED NOT NULL,
+	nutrition_id SMALLINT UNSIGNED NOT NULL,
+	weight_mg Float(3) DEFAULT 0,
    INDEX (ingredient_id),
 	FOREIGN KEY (ingredient_id)
 	REFERENCES DbMysql11.INGREDIENTS (ingredient_id)
 	ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
+CREATE TABLE DbMysql11.NUTRITIONS ( -- DONE
+	nutrition_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+	nutrition_name VARCHAR(30) NOT NULL,
+	PRIMARY KEY (nutrition_id),
+	INDEX(nutrition_id))
+ENGINE = InnoDB
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE DbMysql11.RECOMMEND_BY_AGE_GENDER(
 	gender VARCHAR(7) NOT NULL,
 	age TINYINT NOT NULL, -- 0: 14-18, 1:19-30, 2: 31-40, 3: 41-50, 4:51-60, 5:61-70, 6: 71+
-	protein_mg Float(3) DEFAULT 0,
-	cholesterol_mg_MAX Float(3) DEFAULT 0,
-	potassium_mg Float(3) DEFAULT 0,
-	lactose_mg Float(3) DEFAULT 0,
-	vitaminC_mg Float(3) DEFAULT 0,
-	saturated_fat_mg_MAX Float(3) DEFAULT 0,
-	dietary_fiber_mg Float(3) DEFAULT 0,
-	calories_kcal Float(3) DEFAULT 0,
-	alcohol_mg_MAX Float(3) DEFAULT 0,
-	magnesium_mg Float(3) DEFAULT 0,
-	zinc_mg Float(3) DEFAULT 0,
-   PRIMARY KEY (gender, age),
-   INDEX (gender, age))
+	nutrition_id SMALLINT UNSIGNED NOT NULL,
+	weight_mg Float(3) DEFAULT 0,
+   PRIMARY KEY (gender, age, nutrition_id),
+   INDEX (gender, age, nutrition_id),
+	FOREIGN KEY (nutrition_id)
+  	REFERENCES DbMysql11.NUTRITIONS (nutrition_id)
+	ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
+
+
+CREATE VIEW RECIPE_WEIGHTS AS
+SELECT ar.recipe_id as recipe_id, SUM(st.tot_weight) as weight
+FROM 	ALL_RECIPES          as ar, 
+		INGREDIENTS          as i, 
+		RECIPE2INGREDIENTS   as r2i,
+		(
+			SELECT (r2i.servings * i.serving_weight) as tot_weight, ar.recipe_id as recipe_id
+			FROM  	ALL_RECIPES          as ar, 
+					INGREDIENTS          as i, 
+					RECIPE2INGREDIENTS   as r2i
+			WHERE
+					ar.recipe_id = r2i.recipe_id
+		) as st
+WHERE
+	ar.recipe_id = r2i.recipe_id AND
+	st.recipe_id = r2i.recipe_id
+GROUP BY 
+	ar.recipe_id;
+	
+
+CREATE VIEW RECIPE_NUTRITIONS_WEIGHTS AS
+SELECT ar.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg) as weight
+FROM	ALL_RECIPES as ar,
+		RECIPE2INGREDIENTS as r2i,
+		INGREDIENT_NUTRITION as inn
+WHERE
+	ar.recipe_id = r2i.recipe_id AND
+	inn.ingredient_id = r2i.ingredient_id
+GROUP BY
+	ar.recipe_id, inn.nutrition_id

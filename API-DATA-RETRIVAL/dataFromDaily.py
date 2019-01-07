@@ -7,19 +7,20 @@ INPUT_FILE = os.path.dirname(os.getcwd()) + "/API-DATA-RETRIVAL/daily_intake.csv
 age_gender = set()
 nutrition = {
 	'sugar' : 1,
-	'calcium' : 2,
-	'sodium' : 3,
-	'protein' : 4,
-	'cholesterol' : 5,
-	'potassium' : 6,
-	'lactose' : 7,
-	'vitaminC' : 8,
-	'saturated' : 9,
-	'dietary_fiber' : 10,
-	'calories_kcal' : 11,
-	'magnesium' : 12,
-	'zinc' : 13,
-	'alcohol' : 14
+	'iron' : 2,
+	'calcium' : 3,
+	'sodium' : 4,
+	'protein' : 5,
+	'cholesterol' : 6,
+	'potassium' : 7,
+	'lactose' : 8,
+	'vitaminC' : 9,
+	'saturated' : 10,
+	'dietary_fiber' : 11,
+	'calories_kcal' : 12,
+	'magnesium' : 13,
+	'zinc' : 14,
+	'alcohol' : 15
 }
 
 age_gender_queries = ""

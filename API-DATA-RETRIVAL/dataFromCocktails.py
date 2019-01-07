@@ -19,12 +19,13 @@ add_cocktail = "INSERT INTO COCKTAIL_RECIPES (cocktail_id, is_alcoholic, cocktai
 
 add_recipce = """INSERT INTO ALL_RECIPES (recipe_name, picture) VALUES ('{}','{}');"""
 
-add_ingredient = """INSERT INTO RECIPE2INGREDIENTS (ingredient_id, ingredient_name, quantity, unit, full_ingredient_line) VALUES ({},'{}',{},'{}','{}');"""
+add_ingredient = """INSERT INTO RECIPE2INGREDIENTS (ingredient_id, ingredient_name, servings, full_ingredient_line) VALUES ({},'{}',{},'{}');"""
 
 
 with open(INPUT_FILE, 'r') as fin:
     reader = csv.reader(fin, lineterminator='\n')
-
+    count_rows = 1  # for smaller files
+    file_number = 1
     for row in reader:
         if row[1] == 'cocktail_id':
             continue
@@ -48,22 +49,22 @@ with open(INPUT_FILE, 'r') as fin:
         num_ingredients = (len(row) - 7)/4
         for ingredient_index in range(0, num_ingredients):
 
-            ingredient_name = str(row[7 + 4*ingredient_index]).replace("'","''")
-            quantity = row[8 + 4*ingredient_index]
-            unit = str(row[9 + 4*ingredient_index]).replace("'","''")
-            full_ingredient_line = str(row[10 + 4*ingredient_index]).replace("'","''")
+            ingredient_name = str(row[7 + 3*ingredient_index]).replace("'","''")
+            servings = row[8 + 3*ingredient_index]
+            full_ingredient_line = str(row[9 + 3*ingredient_index]).replace("'","''")
 
-            if (ingredient_name, quantity, unit, full_ingredient_line) not in ingredients:
+            if (ingredient_name, servings, full_ingredient_line) not in ingredients:
                 ingredient_id += 1
-                add_ingredient_queries += add_ingredient.format(int(ingredient_id), str(ingredient_name), quantity, str(unit), str(full_ingredient_line))
-                ingredients.add((ingredient_name, quantity, unit, full_ingredient_line))
+                add_ingredient_queries += add_ingredient.format(int(ingredient_id), str(ingredient_name), servings, str(full_ingredient_line))
+                ingredients.add((ingredient_name, servings, full_ingredient_line))
 
-cocktail_sql = open('insert_cocktail_recipes.sql', 'w')
+
+cocktail_sql = open('insert_to_cocktail_recipes_from_cocktails.sql', 'w')
 cocktail_sql.write(add_cocktail_queries)
 
-recipes_sql = open('insert_all_recipes.sql', 'w')
+recipes_sql = open('insert_all_recipes_from_cocktails.sql', 'w')
 recipes_sql.write(add_recipce_queries)
 
-ingredients_sql = open('insert_recipe2ingredients.sql', 'w')
+ingredients_sql = open('insert_recipe2ingredients_from_cocktails.sql', 'w')
 ingredients_sql.write(add_ingredient_queries)
 

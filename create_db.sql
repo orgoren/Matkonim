@@ -15,8 +15,9 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 CREATE TABLE DbMysql11.FOOD_RECIPES(
-	recipe_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  	food_id INT UNSIGNED NOT NULL,
+	recipe_id SMALLINT UNSIGNED NOT NULL,
+	food_id INT UNSIGNED NOT NULL,
+  	course VARCHAR(20) NOT NULL,
   	prep_time_in_minutes SMALLINT UNSIGNED NOT NULL,
   	food_details VARCHAR(2500) NOT NULL,
   	INDEX food_id (food_id ASC),
@@ -24,29 +25,28 @@ CREATE TABLE DbMysql11.FOOD_RECIPES(
   	REFERENCES DbMysql11.ALL_RECIPES (recipe_id)
 	ON UPDATE CASCADE) 
 ENGINE = InnoDB
-AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 
 CREATE TABLE DbMysql11.COCKTAIL_RECIPES (
-	recipe_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+	recipe_id SMALLINT UNSIGNED NOT NULL,
   	cocktail_id SMALLINT UNSIGNED NOT NULL,
   	is_alcoholic TINYINT UNSIGNED NOT NULL,
   	cocktail_details VARCHAR(3500) NOT NULL,
+	serving_glasss VARCHAR(100) NOT NULL,
   	INDEX cocktail_id (cocktail_id ASC),
 	FOREIGN KEY (recipe_id)
   	REFERENCES DbMysql11.ALL_RECIPES (recipe_id))
 ENGINE = InnoDB
-AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 
 CREATE TABLE DbMysql11.INGREDIENTS (
-  	ingredient_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  	ingredient_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   	ingredient_name VARCHAR(55) NOT NULL,
-  	serving_quantity TINYINT UNSIGNED NOT NULL,
-  	serving_unit VARCHAR(15) NOT NULL,
-  	serving_weight TINYINT UNSIGNED NOT NULL,
+  	serving_quantity SMALLINT UNSIGNED NOT NULL,
+  	serving_unit VARCHAR(55) NOT NULL,
+  	serving_weight_grams SMALLINT UNSIGNED NOT NULL,
   	PRIMARY KEY (ingredient_id),
   	INDEX ingredient_id (ingredient_id ASC),
   	FULLTEXT INDEX ingredientName (ingredient_name) )
@@ -56,12 +56,10 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 CREATE TABLE DbMysql11.RECIPE2INGREDIENTS(
-  	recipe_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  	ingredient_id SMALLINT UNSIGNED NOT NULL,
-	ingredient_name VARCHAR(55) NOT NULL,
+  	recipe_id SMALLINT UNSIGNED NOT NULL,
+  	ingredient_id INT UNSIGNED NOT NULL,
   	servings FLOAT(7) UNSIGNED NOT NULL,
   	full_ingredient_line VARCHAR(90) NOT NULL,
-  	PRIMARY KEY (recipe_id),
   	INDEX (recipe_id),
 	FOREIGN KEY (ingredient_id)
   	REFERENCES DbMysql11.INGREDIENTS (ingredient_id)
@@ -70,14 +68,13 @@ CREATE TABLE DbMysql11.RECIPE2INGREDIENTS(
   	REFERENCES DbMysql11.ALL_RECIPES (recipe_id)
 	ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 
-CREATE TABLE DbMysql11.INGREDIENT_NUTRITION (
-	ingredient_id SMALLINT UNSIGNED NOT NULL,
+CREATE TABLE DbMysql11.INGREDIENT_NUTRITION(
+	ingredient_id INT UNSIGNED NOT NULL,
 	nutrition_id SMALLINT UNSIGNED NOT NULL,
-	weight_mg Float(3) DEFAULT 0,
+	weight_mg_from_ingredient Float(3) DEFAULT 0,
    INDEX (ingredient_id),
 	FOREIGN KEY (ingredient_id)
 	REFERENCES DbMysql11.INGREDIENTS (ingredient_id)
@@ -85,9 +82,10 @@ CREATE TABLE DbMysql11.INGREDIENT_NUTRITION (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE DbMysql11.NUTRITIONS ( -- DONE
+CREATE TABLE DbMysql11.NUTRITIONS (
 	nutrition_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	nutrition_name VARCHAR(30) NOT NULL,
+	max_or_min VARCHAR(7) NOT NULL,
 	PRIMARY KEY (nutrition_id),
 	INDEX(nutrition_id))
 ENGINE = InnoDB
@@ -114,7 +112,7 @@ FROM 	ALL_RECIPES          as ar,
 		INGREDIENTS          as i, 
 		RECIPE2INGREDIENTS   as r2i,
 		(
-			SELECT (r2i.servings * i.serving_weight) as tot_weight, ar.recipe_id as recipe_id
+			SELECT (r2i.servings * i.serving_weight_grams) as tot_weight, ar.recipe_id as recipe_id
 			FROM  	ALL_RECIPES          as ar, 
 					INGREDIENTS          as i, 
 					RECIPE2INGREDIENTS   as r2i

@@ -55,7 +55,7 @@ with open(INPUT_FILE, 'r') as fin:
                 db.rollback()
                 break
         offset = 5
-        for index in range(0, len(row[5:]))
+        for index in range(0, len(row[5:])):
             weight_mg_from_ingredient = row[offset + index]
 
             if (ingredient_id, nutrition_id, weight_mg_from_ingredient) in nutrition:

@@ -34,20 +34,85 @@ GROUP BY
 	ar.recipe_id, inn.nutrition_id
 """
 
+# food recipes by nutritional values
 query1 = """
 SELECT ar.recipe_name, rnw.nutrition_id
 FROM	ALL_RECIPES as ar,
 		RECIPE_WEIGHTS as rw,
+		FOOD_RECIPES as fr,
 		RECIPE_NUTRITIONS_WEIGHTS as rnw
 WHERE
 	ar.recipe_id = rw.recipe_id AND
+	fr.recipe_id = ar.recipe_id AND
 	ar.recipe_id = rnw.recipe_id AND
-	rnw.nutrition_id = {} AND
-	rnw.weight / rw.weight <= 0.05 AND
-	rnw.nutrition_id = {} AND
-	rnw.weight / rw.weight >- 0.3 AND
-		rnw.nutrition_id = {} AND
-	rnw.weight = 0
+	<OTHER QUERIES OF THE FORM OF:
+		rnw.nutrition_id = {} & rnw.weight > 0.3 AND
+		rnw.nutrition_id = {} & rnw.weight < 0.05 AND
+		rnw.nutrition_id = {} & rnw.weight = 0
+	>
+"""
 
+# cocktails recipes by nutritional values
+query2 = """
+SELECT ar.recipe_name, rnw.nutrition_id
+FROM	ALL_RECIPES as ar,
+		RECIPE_WEIGHTS as rw,
+		COCKTAIL_RECIPES as cr,
+		RECIPE_NUTRITIONS_WEIGHTS as rnw
+WHERE
+	ar.recipe_id = rw.recipe_id AND
+	ar.recipe_id = cr.recipe_id AND
+	ar.recipe_id = rnw.recipe_id AND
+	<OTHER QUERIES OF THE FORM OF:
+		rnw.nutrition_id = {} AND rnw.weight > 0.3 AND
+		rnw.nutrition_id = {} AND rnw.weight < 0.05 AND
+		rnw.nutrition_id = {} AND rnw.weight = 0
+	>
+"""
+
+query3 = """
+SELECT 	*
+FROM 	RECOMMEND_BY_AGE_GENDER as rbag,
+		FOOD_RECIPES as fr,
+		ALL_RECIPES as ar,
+		RECIPE_NUTRITIONS_WEIGHTS as rnw
+WHERE
+		rbag.gender = {} AND
+		rbag.age = {} AND
+		fr.recipe_id = ar.recipe_id AND
+		ar.recipe_id = rnw.recipe_id AND
+		fr.course = {} AND
+		(rnw.nutrition_id = {} and ((rnw.bad & rnw.weight <= rbag.weight_mg) or (rnw.good & rnw.weight >= rbag.weight_mg)))
+"""
+
+query4 = """
+SELECT	*
+FROM 	RECOMMEND_BY_AGE_GENDER as rbag,
+		FOOD_RECIPES as fr,
+		ALL_RECIPES as ar,
+		RECIPE_NUTRITIONS_WEIGHTS as rnw	 
+WHERE	
 
 """
+
+query5 = """
+SELECT 	*
+FROM 	ALL_RECIPES as ar,
+		FOOD_RECIPES as fr,
+		COCKTAIL_RECIPES as cr,
+		RECIPE2INGREDIENTS as r2i
+WHERE
+		ar.recipe_id = r2i.recipe_id
+HAVING () 
+"""
+
+
+
+
+
+
+
+
+
+
+

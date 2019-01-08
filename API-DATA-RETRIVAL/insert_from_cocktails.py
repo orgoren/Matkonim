@@ -15,7 +15,7 @@ add_cocktail = "INSERT INTO COCKTAIL_RECIPES (recipe_id, cocktail_id, is_alcohol
 
 add_recipce = """INSERT INTO ALL_RECIPES (recipe_name, picture) VALUES ('{}','{}');"""
 
-add_ingredient = """INSERT INTO RECIPE2INGREDIENTS (recipe_id, ingredient_id, ingredient_name, servings, full_ingredient_line) VALUES ({},{},'{}',{},'{}');"""
+add_ingredient = """INSERT INTO RECIPE2INGREDIENTS (recipe_id, ingredient_id, servings, full_ingredient_line) VALUES ({},{},{},'{}');"""
 
 # Open database connection
 db = MySQLdb.connect(host=SERVER_NAME, port=SERVER_PORT, user=DB_USERNAME, passwd=DB_PASSWORD, db=DB_NAME)
@@ -75,6 +75,7 @@ with open(INPUT_FILE, 'r') as fin:
             count_cocktails += 1
 
         num_ingredients = (len(row) - 7)/4
+        recipe_id = get_foreign_key(get_recipe_id, cocktail_name)
         for ingredient_index in range(0, num_ingredients):
 
             ingredient_name = str(row[7 + 3*ingredient_index]).replace("'","''")
@@ -84,7 +85,7 @@ with open(INPUT_FILE, 'r') as fin:
             if (ingredient_name, servings, full_ingredient_line) not in ingredients:
                 ingredient_id = get_foreign_key(get_ingredient_id, ingredient_name)
                 try:
-                    cursor.execute(add_ingredient, (recipe_id, int(ingredient_id), str(ingredient_name), servings, str(full_ingredient_line)))
+                    cursor.execute(add_ingredient, (recipe_id, int(ingredient_id), servings, str(full_ingredient_line)))
                     db.commit()
                 except Exception as e:
                     print("error")

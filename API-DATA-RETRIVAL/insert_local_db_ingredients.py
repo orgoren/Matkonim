@@ -55,21 +55,19 @@ with open(INPUT_FILE, 'r') as fin:
                 db.rollback()
                 break
         offset = 5
-        for index in range(0, len(row[5:]))
+        for index in range(0, len(row[5:])):
             weight_mg_from_ingredient = row[offset + index]
-
             if (ingredient_id, nutrition_id, weight_mg_from_ingredient) in nutrition:
                 continue
             else:
                 nutrition.add(ingredient_id, nutrition_id, weight_mg_from_ingredient)
-    	        try:
-    		        cursor.execute(add_nutrition, (ingredient_id, nutrition_id, weight_mg_from_ingredient))
-    		        db.commit()
-    		    except Exception as e:
-    		        print("error")
-    		        print(e)
-    		        db.rollback()
-    		        break
-
+                try:
+                    cursor.execute(add_nutrition, (ingredient_id, nutrition_id, weight_mg_from_ingredient))
+                    db.commit()
+                except Exception as e:
+                    print("error")
+                    print(e)
+                    db.rollback()
+                    break
 # disconnect from server
 db.close()

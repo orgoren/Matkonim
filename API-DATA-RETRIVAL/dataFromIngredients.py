@@ -66,6 +66,8 @@ with open(INPUT_FILE, 'r') as fin:
             ingredients_nutrition_sql = open('insert_ingredients_nutrition_{}.sql'.format(file_number), 'w')
             ingredients_nutrition_sql.write(add_nutrition_queries)
             file_number += 1
+            add_ingredient_queries = ""
+            add_nutrition_queries = ""
         row_counter += 1
 
 ingredients_sql = open('insert_ingredients_{}.sql'.format(file_number), 'w')

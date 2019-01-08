@@ -1,1 +1,0 @@
-INSERT INTO INGREDIENTS (ingredient_name, serving_quantity, serving_unit, serving_weight) VALUES ('honey',1,'tbsp',21);INSERT INTO INGREDIENTS (ingredient_name, serving_quantity, serving_unit, serving_weight) VALUES ('milk',1,'cup',245);

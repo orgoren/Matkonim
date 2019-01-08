@@ -1,27 +1,25 @@
 import csv
-import requests
-import os
+from connectionInfo import *
+import MySQLdb
 
 INPUT_FILE = os.path.dirname(os.getcwd()) + "/API-DATA-RETRIVAL/ingredients.csv"
 
 ingredients = set()
 nutrition = set()
 
-add_ingredient_queries = ""
-add_nutrition_queries = ""
-
-ingredient_id = 0
 # define sql queries
-add_ingredient = "INSERT INTO INGREDIENTS (ingredient_name, serving_quantity, serving_unit, serving_weight_grams) VALUES ('{}',{},'{}',{});"
+add_ingredient = """INSERT INTO INGREDIENTS (ingredient_name, serving_quantity, serving_unit, serving_weight_grams) VALUES ('{}',{},'{}',{});"""
 
 add_nutrition = """INSERT INTO INGREDIENTS_NUTRITION (ingredient_name, suger_mg, iron_mg , calcium_mg, sodium_mg, protein_mg, cholesterol_mg, potassium_mg, lactose_mg, vitamin_C_mg, staurated_fat_mg, trans_fat_mg, dietart_fiber_mg, calories_kcal, alcohol_mg, magnesium_mg, zinc_mg) VALUES ('{}',{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{});"""
 
+# Open database connection
+db = MySQLdb.connect(host=SERVER_NAME, port=SERVER_PORT, user=DB_USERNAME, passwd=DB_PASSWORD, db=DB_NAME)
 
+# prepare a cursor object using cursor() method
+cursor = db.cursor()
 
 with open(INPUT_FILE, 'r') as fin:
     reader = csv.reader(fin, lineterminator='\n')
-    file_number = 1
-    row_counter = 1
     for row in reader:
         if row[1] == 'ingredient_name':
             continue
@@ -51,27 +49,27 @@ with open(INPUT_FILE, 'r') as fin:
         else:
             # adding new ingredient to set
             ingredients.add((ingredient_name, serving_quantity, serving_unit, serving_weight_grams))
-            add_ingredient_queries += add_ingredient.format(str(ingredient_name), serving_quantity, str(serving_unit), serving_weight_grams)
+	        try:
+		        cursor.execute(add_ingredient, (str(ingredient_name), serving_quantity, str(serving_unit), serving_weight_grams))
+		        db.commit()
+		    except Exception as e:
+		        print("error")
+		        print(e)
+		        db.rollback()
+		        break
 
         if ((ingredient_name, suger_mg, iron_mg , calcium_mg, sodium_mg, protein_mg, cholesterol_mg, potassium_mg, lactose_mg, vitamin_C_mg, staurated_fat_mg, trans_fat_mg, dietart_fiber_mg, calories_kcal, alcohol_mg, magnesium_mg, zinc_mg)) in nutrition:
             continue
         else:
             nutrition.add((ingredient_name, suger_mg, iron_mg, calcium_mg, sodium_mg, protein_mg, cholesterol_mg, potassium_mg, lactose_mg, vitamin_C_mg, staurated_fat_mg, trans_fat_mg, dietart_fiber_mg, calories_kcal, alcohol_mg, magnesium_mg, zinc_mg))
-            add_nutrition_queries += add_nutrition.format(ingredient_name, suger_mg, iron_mg, calcium_mg, sodium_mg, protein_mg, cholesterol_mg, potassium_mg, lactose_mg, vitamin_C_mg, staurated_fat_mg, trans_fat_mg, dietart_fiber_mg, calories_kcal, alcohol_mg, magnesium_mg, zinc_mg)
+	        try:
+		        cursor.execute(add_nutrition.format(ingredient_name, suger_mg, iron_mg, calcium_mg, sodium_mg, protein_mg, cholesterol_mg, potassium_mg, lactose_mg, vitamin_C_mg, staurated_fat_mg, trans_fat_mg, dietart_fiber_mg, calories_kcal, alcohol_mg, magnesium_mg, zinc_mg))
+		        db.commit()
+		    except Exception as e:
+		        print("error")
+		        print(e)
+		        db.rollback()
+		        break
 
-        if row_counter % 1000 == 0:
-            ingredients_sql = open('insert_ingredients_{}.sql'.format(file_number), 'w')
-            ingredients_sql.write(add_ingredient_queries)
-
-            ingredients_nutrition_sql = open('insert_ingredients_nutrition_{}.sql'.format(file_number), 'w')
-            ingredients_nutrition_sql.write(add_nutrition_queries)
-            file_number += 1
-            add_ingredient_queries = ""
-            add_nutrition_queries = ""
-        row_counter += 1
-
-ingredients_sql = open('insert_ingredients_{}.sql'.format(file_number), 'w')
-ingredients_sql.write(add_ingredient_queries)
-
-ingredients_nutrition_sql = open('insert_ingredients_nutrition_{}.sql'.format(file_number), 'w')
-ingredients_nutrition_sql.write(add_nutrition_queries)
+# disconnect from server
+db.close()

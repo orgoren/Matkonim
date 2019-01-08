@@ -18,6 +18,18 @@ db = MySQLdb.connect(host=SERVER_NAME, port=SERVER_PORT, user=DB_USERNAME, passw
 # prepare a cursor object using cursor() method
 cursor = db.cursor()
 
+get_ingredient_id = "Select ingredient_id from INGREDIENTS where ingredient_name = %s"
+
+def get_foreign_key(query, value, one_value_flag=True):
+    if one_value_flag:
+        cursor.execute(query, [value])
+    else:
+        cursor.execute(query, value)
+    data = cursor.fetchall()
+    if data == ():
+        return None
+    return data[0][0]
+
 with open(INPUT_FILE, 'r') as fin:
     reader = csv.reader(fin, lineterminator='\n')
     for row in reader:

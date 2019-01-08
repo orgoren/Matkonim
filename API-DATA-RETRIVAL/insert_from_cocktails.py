@@ -11,17 +11,31 @@ ingredients = set()
 ingredient_id = 0
 count_cocktails = 0
 # define sql queries
-add_cocktail = "INSERT INTO COCKTAIL_RECIPES (cocktail_id, is_alcoholic, cocktail_details, serving_glass) VALUES ({},{},'{}','{}');"
+add_cocktail = "INSERT INTO COCKTAIL_RECIPES (recipe_id, cocktail_id, is_alcoholic, cocktail_details, serving_glass) VALUES ({},{},{},'{}','{}');"
 
 add_recipce = """INSERT INTO ALL_RECIPES (recipe_name, picture) VALUES ('{}','{}');"""
 
-add_ingredient = """INSERT INTO RECIPE2INGREDIENTS (ingredient_id, ingredient_name, servings, full_ingredient_line) VALUES ({},'{}',{},'{}');"""
+add_ingredient = """INSERT INTO RECIPE2INGREDIENTS (recipe_id, ingredient_id, ingredient_name, servings, full_ingredient_line) VALUES ({},{},'{}',{},'{}');"""
 
 # Open database connection
 db = MySQLdb.connect(host=SERVER_NAME, port=SERVER_PORT, user=DB_USERNAME, passwd=DB_PASSWORD, db=DB_NAME)
 
 # prepare a cursor object using cursor() method
 cursor = db.cursor()
+
+def get_foreign_key(query, value, one_value_flag=True):
+    if one_value_flag:
+        cursor.execute(query, [value])
+    else:
+        cursor.execute(query, value)
+    data = cursor.fetchall()
+    if data == ():
+        return None
+    return data[0][0]
+
+get_recipe_id = "Select recipe_id from ALL_RECIPES where recipe_name = %s"
+
+get_ingredient_id = "Select ingredient_id from INGREDIENTS where ingredient_name = %s"
 
 with open(INPUT_FILE, 'r') as fin:
     reader = csv.reader(fin, lineterminator='\n')
@@ -41,8 +55,9 @@ with open(INPUT_FILE, 'r') as fin:
             # adding new cocktail to set
             if count_cocktails > 0 and cocktail_id != 17233 and 'Willie' not in str(cocktail_details):
                 cocktails.add((cocktail_id, cocktail_details, is_alcoholic, serving_glass))
+                recipe_id = get_foreign_key(get_recipe_id, str(cocktail_name))
                 try:
-                    cursor.execute(add_cocktail, (cocktail_id, is_alcoholic, str(cocktail_details), str(serving_glass)))
+                    cursor.execute(add_cocktail, (recipe_id, cocktail_id, is_alcoholic, str(cocktail_details), str(serving_glass)))
                     db.commit()
                 except Exception as e:
                     print("error")
@@ -50,7 +65,7 @@ with open(INPUT_FILE, 'r') as fin:
                     db.rollback()
                     break
                 try:
-                    cursor.execute(add_recipce,(str(cocktail_name), str(picture)))
+                    cursor.execute(add_recipce, (str(cocktail_name), str(picture)))
                     db.commit()
                 except Exception as e:
                     print("error")
@@ -67,9 +82,9 @@ with open(INPUT_FILE, 'r') as fin:
             full_ingredient_line = str(row[9 + 3*ingredient_index]).replace("'","''")
 
             if (ingredient_name, servings, full_ingredient_line) not in ingredients:
-                ingredient_id += 1
+                ingredient_id = get_foreign_key(get_ingredient_id, ingredient_name)
                 try:
-                    cursor.execute(add_ingredient, (int(ingredient_id), str(ingredient_name), servings, str(full_ingredient_line)))
+                    cursor.execute(add_ingredient, (recipe_id, int(ingredient_id), str(ingredient_name), servings, str(full_ingredient_line)))
                     db.commit()
                 except Exception as e:
                     print("error")

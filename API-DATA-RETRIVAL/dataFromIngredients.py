@@ -12,7 +12,7 @@ add_nutrition_queries = ""
 
 ingredient_id = 0
 # define sql queries
-add_ingredient = "INSERT INTO INGREDIENTS (ingredient_name, serving_quantity, serving_unit, serving_weight) VALUES ('{}',{},'{}',{});"
+add_ingredient = "INSERT INTO INGREDIENTS (ingredient_name, serving_quantity, serving_unit, serving_weight_grams) VALUES ('{}',{},'{}',{});"
 
 add_nutrition = """INSERT INTO INGREDIENTS_NUTRITION (ingredient_name, suger_mg, iron_mg , calcium_mg, sodium_mg, protein_mg, cholesterol_mg, potassium_mg, lactose_mg, vitamin_C_mg, staurated_fat_mg, trans_fat_mg, dietart_fiber_mg, calories_kcal, alcohol_mg, magnesium_mg, zinc_mg) VALUES ('{}',{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{});"""
 
@@ -20,14 +20,15 @@ add_nutrition = """INSERT INTO INGREDIENTS_NUTRITION (ingredient_name, suger_mg,
 
 with open(INPUT_FILE, 'r') as fin:
     reader = csv.reader(fin, lineterminator='\n')
-
+    file_number = 1
+    row_counter = 1
     for row in reader:
         if row[1] == 'ingredient_name':
             continue
         ingredient_name = row[1].replace("'","''")
         serving_quantity = row[2]
         serving_unit = row[3].replace("'","''")
-        serving_weight = row[4]
+        serving_weight_grams = row[4]
         suger_mg = row[5]
         iron_mg = row[6]
         calcium_mg = row[7]
@@ -45,12 +46,12 @@ with open(INPUT_FILE, 'r') as fin:
         magnesium_mg = row[19]
         zinc_mg = row[20]
 
-        if (ingredient_name, serving_quantity, serving_unit, serving_weight) in ingredients:
+        if (ingredient_name, serving_quantity, serving_unit, serving_weight_grams) in ingredients:
             continue
         else:
             # adding new ingredient to set
-            ingredients.add((ingredient_name, serving_quantity, serving_unit, serving_weight))
-            add_ingredient_queries += add_ingredient.format(str(ingredient_name), serving_quantity, str(serving_unit), serving_weight)
+            ingredients.add((ingredient_name, serving_quantity, serving_unit, serving_weight_grams))
+            add_ingredient_queries += add_ingredient.format(str(ingredient_name), serving_quantity, str(serving_unit), serving_weight_grams)
 
         if ((ingredient_name, suger_mg, iron_mg , calcium_mg, sodium_mg, protein_mg, cholesterol_mg, potassium_mg, lactose_mg, vitamin_C_mg, staurated_fat_mg, trans_fat_mg, dietart_fiber_mg, calories_kcal, alcohol_mg, magnesium_mg, zinc_mg)) in nutrition:
             continue
@@ -58,8 +59,17 @@ with open(INPUT_FILE, 'r') as fin:
             nutrition.add((ingredient_name, suger_mg, iron_mg, calcium_mg, sodium_mg, protein_mg, cholesterol_mg, potassium_mg, lactose_mg, vitamin_C_mg, staurated_fat_mg, trans_fat_mg, dietart_fiber_mg, calories_kcal, alcohol_mg, magnesium_mg, zinc_mg))
             add_nutrition_queries += add_nutrition.format(ingredient_name, suger_mg, iron_mg, calcium_mg, sodium_mg, protein_mg, cholesterol_mg, potassium_mg, lactose_mg, vitamin_C_mg, staurated_fat_mg, trans_fat_mg, dietart_fiber_mg, calories_kcal, alcohol_mg, magnesium_mg, zinc_mg)
 
-ingredients_sql = open('insert_ingredients.sql', 'w')
+        if row_counter % 1000 == 0:
+            ingredients_sql = open('insert_ingredients_{}.sql'.format(file_number), 'w')
+            ingredients_sql.write(add_ingredient_queries)
+
+            ingredients_nutrition_sql = open('insert_ingredients_nutrition_{}.sql'.format(file_number), 'w')
+            ingredients_nutrition_sql.write(add_nutrition_queries)
+            file_number += 1
+        row_counter += 1
+
+ingredients_sql = open('insert_ingredients_{}.sql'.format(file_number), 'w')
 ingredients_sql.write(add_ingredient_queries)
 
-ingredients_nutrition_sql = open('insert_ingredients_nutrition.sql', 'w')
+ingredients_nutrition_sql = open('insert_ingredients_nutrition_{}.sql'.format(file_number), 'w')
 ingredients_nutrition_sql.write(add_nutrition_queries)

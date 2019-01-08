@@ -24,8 +24,6 @@ add_ingredient = """INSERT INTO RECIPE2INGREDIENTS (ingredient_id, ingredient_na
 
 with open(INPUT_FILE, 'r') as fin:
     reader = csv.reader(fin, lineterminator='\n')
-    count_rows = 1  # for smaller files
-    file_number = 1
     for row in reader:
         if row[1] == 'cocktail_id':
             continue

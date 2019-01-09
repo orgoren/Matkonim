@@ -4,13 +4,12 @@ USE DbMysql11;
 
 
 CREATE TABLE DbMysql11.ALL_RECIPES(
-	recipe_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+	recipe_id SMALLINT UNSIGNED NOT NULL,
   	recipe_name VARCHAR(255) NULL DEFAULT NULL,  
   	picture VARCHAR(255),
   	PRIMARY KEY (recipe_id),
   	INDEX recipe_index (recipe_id ASC))
 ENGINE = InnoDB
-AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4;
 
 

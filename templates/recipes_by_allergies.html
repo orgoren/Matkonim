@@ -43,6 +43,7 @@
 
 
 <!-- FOOD OR COCKTAIL SELECTION -->
+<form id="whole-form" method="POST">
 <div class="btn-group btn-group-toggle" data-toggle="buttons" id="food-or-cocktail">
   <label class="btn btn-outline-dark" onclick="foodRecipeChosen()">
     <input type="radio" name="options" id="option1" autocomplete="off" checked><b>I'm hungry!</b>
@@ -84,8 +85,8 @@
 
 
 <!-- ALLERGANS INPUT FROM USER -->
-<h3 class="mb-auto text-center" id="allergans-header">Insert allergies or ingredients you don't like:</h3>
-<form class="form-inline" id="allergans-form" method="POST">
+<h3 class="col-12 mb-auto text-center" id="allergans-header">Insert allergies or ingredients you don't like:</h3>
+<div class="form-inline" id="allergans-form">
   <div class="form-group col-md-6" id="allergans-wrapper">
     <div class="col-8 my-1">
       <input type="text" onkeypress="return /[A-Za-z ]/i.test(event.key)" maxlength="30" class="form-control" id="inlineFormAllergan1" name="inlineFormAllergan1" placeholder="Enter an ingredient you wish to avoid...">
@@ -102,6 +103,7 @@
     <div class="button" id="submit-button">
       <input type="submit" class="btn btn-lg btn-success" name="submit" value="Find me a recipe!" onclick="ValidateForm()">
     </div>
+</div>
 </form>
 
 
@@ -120,20 +122,19 @@
 <script>
 function ValidateForm() {
 var formValid = false;
-  $('#allergans-form input').each(function() {
-    if ($(this).val() !== '') {
-      formValid = true;
-    }
-  });
-
-  if (!formValid)
-    alert('Must insert at least one ingredient.');
+var form1 = document.getElementById('inlineFormAllergan1');
+var form2 = document.getElementById('inlineFormAllergan2');
+var form3 = document.getElementById('inlineFormAllergan3');
+	if ((form1.value !== '') || (form2.value !== '') || (form3.value !== '')){
+		formValid = true;
+	}
+	if (!formValid){
+	    alert('Must insert at least one ingredient.');
+	}
 }
-
 function foodRecipeNotChosen() {
   $(document.getElementById("which-food")).hide();
 }
-
 function foodRecipeChosen() {
   $(document.getElementById("which-food")).show();
 }
@@ -147,4 +148,3 @@ function foodRecipeChosen() {
   </body>
 
 </html>
-

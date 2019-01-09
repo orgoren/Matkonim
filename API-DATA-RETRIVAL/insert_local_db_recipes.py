@@ -1,5 +1,5 @@
 import csv
-from connectionInfo import *
+from connectionDetails import *
 import MySQLdb
 
 INPUT_FILE = PATH_ROOT + "/API-DATA-RETRIVAL/recipes.csv"

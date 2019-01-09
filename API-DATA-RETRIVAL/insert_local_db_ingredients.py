@@ -1,5 +1,5 @@
 import csv
-from connectionInfo import *
+from connectionDetails import *
 import MySQLdb
 
 INPUT_FILE = os.path.dirname(os.getcwd()) + "/API-DATA-RETRIVAL/ingredients.csv"

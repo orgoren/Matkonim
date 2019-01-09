@@ -9,6 +9,8 @@ import sshtunnel
 import getpass
 import queries
 import re
+from utils import *
+
 # Create the application instance
 app = Flask(__name__)
 SERVER_NAME = ""
@@ -17,15 +19,8 @@ DB_USERNAME = "DbMysql11"
 DB_PASSWORD = "DbMysql11"
 DB_NAME = "DbMysql11"
 VALID_RANDOM_PORT = 40326
-USERNAME = "orgoren1"
+USERNAME = ""
 PASSWORD = ""
-NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
-				"lactose", "vitaminC", "satfat",  "fiber",  "alcohol", "calories"]
-
-FOOD_NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
-					"lactose", "vitaminC", "satfat",  "fiber"]
-
-VALUES = {"None" : "None", "1" : "None", "d": "dont care", "2" : "less than 5%", "3" : "over 30%"}
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
@@ -54,27 +49,12 @@ def cocktails_by_nutritional():
 		if "Back to Main Menu" == request.form['submit']:
 			return redirect('/')
 		if "Find me a cocktail!" == request.form['submit']:
+			nutritions_values = get_nutritions_values(request.form)
+				print nutritions_values
 			nutritions_values = {}
-			for nutrition_value in NUTRITIONS:
-				nutritions_values[nutrition_value] = request.form.get(nutrition_value + "-form")
-
+	
 			print nutritions_values
 
-			deleta = """
-			_inlineFormSugar = request.form.get("sugar-form")
-			_inlineFormIron = request.form.get("iron-form")
-			_inlineFormCalcium = request.form.get("calcium-form")
-			_inlineFormSodium = request.form.get("sodium-form")
-			_inlineFormProtein = request.form.get("protein-form")
-			_inlineFormCholesterol = request.form.get("cholesterol-form")
-			_inlineFormPotassium = request.form.get("potassium-form")
-			_inlineFormLactose = request.form.get("lactose-form")
-			_inlineFormVitaminC = request.form.get("vitaminC-form")
-			_inlineFormSaturatedFat = request.form.get("satfat-form")
-			_inlineFormDietaryFiber = request.form.get("fiber-form")
-			_inlineFormAlcoholic = request.form.get("alcohol-form")
-			_inlineFormMaxCalories = request.form.get("calories-form")
-			"""
 			# TODO - get query values
 			return redirect('/cocktails_results')
 
@@ -98,26 +78,9 @@ def daily_meal_plan():
 		if "Back to Main Menu" == request.form['submit']:
 			return redirect('/')
 		if "Find me a meal plan!" == request.form['submit']:
-			nutritions_values = {}
-			for nutrition_value in NUTRITIONS:
-				nutritions_values[nutrition_value] = request.form.get(nutrition_value + "-form")
-
+			nutritions_values = get_nutritions_values(request.form)
 			print nutritions_values
 
-			delete = """
-			_inlineFormSugar = request.form.get("sugar-form")
-			_inlineFormIron = request.form.get("iron-form")
-			_inlineFormCalcium = request.form.get("calcium-form")
-			_inlineFormSodium = request.form.get("sodium-form")
-			_inlineFormProtein = request.form.get("protein-form")
-			_inlineFormCholesterol = request.form.get("cholesterol-form")
-			_inlineFormPotassium = request.form.get("potassium-form")
-			_inlineFormLactose = request.form.get("lactose-form")
-			_inlineFormVitaminC = request.form.get("vitaminC-form")
-			_inlineFormSaturatedFat = request.form.get("satfat-form")
-			_inlineFormDietaryFiber = request.form.get("fiber-form")
-			_inlineFormMaxCalories = request.form.get("calories-form")
-			"""
 			# TODO - get query values
 			return redirect('/daily_meal_results')
 
@@ -167,60 +130,20 @@ def recipes_by_nutritional():
 		if "Back to Main Menu" == request.form['submit']:
 			return redirect('/')
 		if "Find me a recipe!" == request.form['submit']:
-			nutritions_values = {}
-			for nutrition_value in FOOD_NUTRITIONS:
-				nutritions_values[nutrition_value] = str(request.form.get(nutrition_value + "-form"))
-				if nutritions_values[nutrition_value] == "":
-					nutritions_values[nutrition_value] = "d"
+			nutritions_values = get_nutritions_values(request.form)
+			meal_option = get_meal_option(request.form)
 
-			q = queries.query1
-
+			print "nutritions_values:"
 			print nutritions_values
-			print "bbb"
+			print "meal_options:"
+			print meal_options
+
+			q = queries.get_query1(nutritions_values, meal_option)
 			print q
+			#ans = connect_to_db(q)
+			#print "results:::"
+			#print ans
 
-			q = re.sub("<(.\n)*>", "", q, re.MULTILINE)
-			line = " AND n.nutrition_name = \"<NUT_KEY>\" AND <NUT_IF>"
-			for nut in FOOD_NUTRITIONS:
-				if nutritions_values[nut] != "":
-					nline = line
-					nline = re.sub("<NUT_KEY>", nut, nline)
-					if VALUES[nutritions_values[nut]] == "over 30%":
-						nline = re.sub("<NUT_IF>", "rnw.weight >= 0.3", nline)
-						q += nline + "\n"
-						print nline
-					elif VALUES[nutritions_values[nut]] == "less than 5%":
-						nline = re.sub("<NUT_IF>", "rnw.weight <= 0.05", nline)
-						q += nline + "\n"
-						print nline
-					elif VALUES[nutritions_values[nut]] == "None":
-						nline = re.sub("<NUT_IF>", "rnw.weight == 0", nline)
-						q += nline + "\n"
-						print nline
-					elif  VALUES[nutritions_values[nut]] == "dont care":
-						print "dont care - nothing to do"
-					else:
-						print "ERROR - invalid value (" + str(nutritions_values[nut]) + ") for (" + nut + ")"
-
-			print q
-
-
-			delete = """
-	_inlineFormSugar = request.form.get("sugar-form")
-	_inlineFormIron = request.form.get("iron-form")
-	_inlineFormCalcium = request.form.get("calcium-form")
-	_inlineFormSodium = request.form.get("sodium-form")
-	_inlineFormProtein = request.form.get("protein-form")
-	_inlineFormCholesterol = request.form.get("cholesterol-form")
-	_inlineFormPotassium = request.form.get("potassium-form")
-	_inlineFormLactose = request.form.get("lactose-form")
-	_inlineFormVitaminC = request.form.get("vitaminC-form")
-	_inlineFormSaturatedFat = request.form.get("satfat-form")
-	_inlineFormTransFat = request.form.get("transfat-form")
-	_inlineFormDietaryFiber = request.form.get("fiber-form")
-	_inlineFormMaxCalories = request.form.get("calories-form")
-	_inlineFormMaxPrepTime = request.form.get("prep-form")
-	"""
 			# TODO - get query values
 			return redirect('/recipes_by_nutritional_results')
 
@@ -235,8 +158,9 @@ def recipes_by_nutritional_results():
 		if "New search" == request.form['submit']:
 			return redirect('/recipes_by_nutritional')
 
+
 @app.route('/test', methods=['GET'])
-def connect_to_db(query1):#username='', password=''):
+def connect_to_db(query=""):#username='', password=''):
 	with sshtunnel.SSHTunnelForwarder(
 			('nova.cs.tau.ac.il', 22),
 			ssh_username=USERNAME,
@@ -250,21 +174,31 @@ def connect_to_db(query1):#username='', password=''):
 							 db=DB_NAME,
 							 port = 3307)        # name of the data base
 		cur = con.cursor(mdb.cursors.DictCursor)
-		#query1 = "Select * from ALL_RECIPES where recipe_id = {}".format(1)
-		#query1 = "select * from ALL_RECIPES"
-		cur.execute(query1)
-		print cur.fetchall()
+		#query = "Select * from ALL_RECIPES where recipe_id = {}".format(1)
+		#query = "select * from NUTRITIONS"
+		if query == "":
+			res = {}
+			print "ERROR: no query in input"
+			return res
+
+		cur.execute(query)
+		ans = cur.fetchall()
+
 		#res = [item['recipe_name'] for item in cur.fetchall()]
 		cur.close()
-		return ','.join(res)
+		return ans
+		#return ','.join(res)
 
-def get_username_and_password():
-	global PASSWORD
-	USERNAME = raw_input("enter username (for nova): ")
-	PASSWORD = getpass.getpass("enter password (for nova): ")
+#def get_username_and_password():
+#	global PASSWORD
+#	USERNAME = raw_input("enter username (for nova): ")
+#	PASSWORD = getpass.getpass("enter password (for nova): ")
 
 if __name__ == '__main__':
 	# app.run(port=8888, host="0.0.0.0", debug=True)
 	http_server = WSGIServer(('0.0.0.0', VALID_RANDOM_PORT), app)
-	get_username_and_password()
+	#global USERNAME
+	#global PASSWORD
+	USERNAME, PASSWORD = get_username_and_password()
+	print "server started"
 	http_server.serve_forever()

@@ -8,7 +8,7 @@ def run():
 
 	PATH_ROOT = os.path.dirname(os.getcwd())
 
-	INPUT_FILE = PATH_ROOT + "/Save/recipes.csv"
+	INPUT_FILE = PATH_ROOT + "/API-DATA-RETRIVAL/recipes.csv"
 
 	food_set = set()
 	recipe_set = set()

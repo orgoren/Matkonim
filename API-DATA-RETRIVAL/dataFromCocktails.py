@@ -6,7 +6,7 @@ import commonFile
 def run():
     PATH_ROOT = os.path.dirname(os.getcwd())
 
-    INPUT_FILE = PATH_ROOT + "/Save/cocktails.csv"
+    INPUT_FILE = PATH_ROOT + "/API-DATA-RETRIVAL/cocktails.csv"
 
 
     cocktails = set()

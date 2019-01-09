@@ -5,7 +5,7 @@ import commonFile
 
 def run():
 
-    INPUT_FILE = os.path.dirname(os.getcwd()) + "/Save/ingredients.csv"
+    INPUT_FILE = os.path.dirname(os.getcwd()) + "/API-DATA-RETRIVAL/ingredients.csv"
 
     ingredients = set()
     nutrition = set()

@@ -2,83 +2,75 @@ import os
 import csv
 import requests
 import MySQLdb
+import commonFile
 
-INPUT_FILE = os.path.dirname(os.getcwd()) + "/API-DATA-RETRIVAL/recipes.csv"
+def run():
 
-food_set = set()
-recipe_set = set()
-ingredient_set = set()
-recipe_id = 1
-ingredient_id = 1
+	PATH_ROOT = os.path.dirname(os.getcwd())
 
-ingredient_num = 1
-add_ingredient_queries = ""
-add_food_recipe_queries = ""
-add_all_recipes_queries = ""
+	INPUT_FILE = PATH_ROOT + "/Save/recipes.csv"
 
-# define sql queries
-add_food = """INSERT INTO FOOD_RECIPES (food_id, course, prep_time_in_minutes, food_details) VALUES ({},'{}',{},'{}');"""
+	food_set = set()
+	recipe_set = set()
+	ingredient_set = set()
 
-add_recipce = """INSERT INTO ALL_RECIPES (recipe_name, picture) VALUES ('{}','{}');"""
+	add_ingredient_queries = ""
+	add_food_recipe_queries = ""
+	add_all_recipes_queries = ""
 
-add_ingredient = """INSERT INTO RECIPE2INGREDIENTS (ingredient_id, ingredient_name, servings, full_ingredient_line) VALUES ({},'{}',{},'{}');"""
+	# define sql queries
+	add_food = """INSERT INTO FOOD_RECIPES (recipe_id, food_id, course, prep_time_in_minutes, food_details) VALUES ({},{},'{}',{},'{}');"""
 
-with open(INPUT_FILE, 'r') as fin:
-    reader = csv.reader(fin, lineterminator='\n')
-    file_number = 1
-    row_counter = 1
-    for row in reader:
-        if row[1] == 'food_id':
-            continue
-        food_id = row[1]
-        food_name = row[2].replace("'","''")
-        course = row[3]
-        prep_time_minutes = row[4]
-        picture = row[5]
-        food_details = row[6].replace("'","''")
+	add_recipce = """INSERT INTO ALL_RECIPES (recipe_id, recipe_name, picture) VALUES ({},'{}','{}');"""
 
-        if (food_id, course, prep_time_minutes, food_details) in food_set:
-            continue
-        else:
-            # adding new food to set
-            food_set.add((food_id, course, recipe_id, prep_time_minutes, food_details))
-            recipe_set.add((food_name, picture))
-            add_food_recipe_queries += add_food.format(food_id, course, prep_time_minutes, str(food_details))
-            add_all_recipes_queries += add_recipce.format(food_name, picture)
-        num_ingredients = (len(row) - 7)/3
-        for ingredient_index in range(0, num_ingredients):
+	add_ingredient = """INSERT INTO RECIPE2INGREDIENTS (recipe_id, ingredient_id, servings, full_ingredient_line) VALUES ({},{},{},'{}');"""
 
-            ingredient_name = row[7 + 3*ingredient_index].replace("'","''")
-            servings = row[8 + 3*ingredient_index]
-            full_ingredient_line = row[9 + 3*ingredient_index]
+	with open(INPUT_FILE, 'r') as fin:
+	    reader = csv.reader(fin, lineterminator='\n')
+	    for row in reader:
+	        if row[1] == 'food_id':
+	            continue
+	        food_id = row[1]
+	        food_name = row[2].replace("'","''")
+	        course = row[3]
+	        prep_time_minutes = row[4]
+	        picture = row[5]
+	        food_details = row[6].replace("'","''")
 
-            if (ingredient_name, servings, full_ingredient_line) in ingredient_set:
-                continue
-            else:
-                # adding new ingredient to set
-                ingredient_set.add((ingredient_name, servings, full_ingredient_line))
-                add_ingredient_queries += add_ingredient.format(ingredient_num, str(ingredient_name), servings, str(full_ingredient_line))
-                ingredient_num += 1
+	        if (food_id, course, prep_time_minutes, food_details) in food_set:
+	            continue
+	        else:
+	            # adding new food to set
+	            food_set.add((food_id, commonFile.recipe_id, course, prep_time_minutes, food_details))
+	            recipe_set.add((food_name, picture))
+	            add_food_recipe_queries += add_food.format(commonFile.recipe_id, food_id, course, prep_time_minutes, str(food_details))
+	            add_all_recipes_queries += add_recipce.format(commonFile.recipe_id, food_name, picture)
+	            
+	        num_ingredients = (len(row) - 7)/3
+	        for ingredient_index in range(0, num_ingredients):
 
-            if row_counter % 1000 == 0:
-                recipe_ingredient_sql = open('insert_recipe_ingredient_from_recipes{}.sql'.format(file_number), 'w')
-                recipe_ingredient_sql.write(add_ingredient_queries)
+	            ingredient_name = row[7 + 3*ingredient_index].replace("'","''")
+	            servings = row[8 + 3*ingredient_index]
+	            full_ingredient_line = row[9 + 3*ingredient_index].replace("'","''")
+	            if servings is None or full_ingredient_line == '':
+	            	break
+	            if (ingredient_name, servings, full_ingredient_line) in ingredient_set:
+	                continue
+	            else:
+	                # adding new ingredient to set
+	                ingredient_set.add((commonFile.recipe_id, ingredient_name, servings, full_ingredient_line))
+	                add_ingredient_queries += add_ingredient.format(commonFile.recipe_id, commonFile.ingredient_id, servings, str(full_ingredient_line))
+	                commonFile.ingredient_id += 1
+	        commonFile.recipe_id += 1
+	    	if commonFile.recipe_id > 10000:
+	    		break
 
-                food_recipe_sql = open('insert_food_recipe_from_recipes{}.sql'.format(file_number), 'w')
-                food_recipe_sql.write(add_food_recipe_queries)
 
-                recipes_sql2 = open('insert_all_recipes_from_recipes{}.sql'.format(file_number), 'w')
-                recipes_sql2.write(add_all_recipes_queries)
-                file_number += 1
-                add_ingredient_queries = ""
-                add_nutrition_queries = ""
-            row_counter += 1
+	recipe_ingredient_sql = open('insert_recipe_ingredient_from_recipes.sql', 'w')
+	recipe_ingredient_sql.write(add_ingredient_queries)
 
-recipe_ingredient_sql = open('insert_recipe_ingredient_from_recipes{}.sql'.format(file_number), 'w')
-recipe_ingredient_sql.write(add_ingredient_queries)
+	food_recipe_sql = open('insert_food_recipe_from_recipes.sql', 'w')
+	food_recipe_sql.write(add_food_recipe_queries)
 
-food_recipe_sql = open('insert_food_recipe_from_recipes{}.sql'.format(file_number), 'w')
-food_recipe_sql.write(add_food_recipe_queries)
-
-recipes_sql2 = open('insert_all_recipes_from_recipes{}.sql'.format(file_number), 'w')
-recipes_sql2.write(add_all_recipes_queries)
+	recipes_sql2 = open('insert_all_recipes_from_recipes.sql', 'w')
+	recipes_sql2.write(add_all_recipes_queries)

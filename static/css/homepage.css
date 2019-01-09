@@ -1,0 +1,90 @@
+body{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif
+}
+h1{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-weight:700
+}
+h2{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-weight:400
+}
+h3,h4,h5,h6{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-weight:100
+}
+
+
+header.masthead{
+	position:relative;
+	background-color:#343a40;
+	background:url(../img/bg-masthead.jpg) no-repeat center center;
+	background-size:cover;
+	padding-top:8rem;
+	padding-bottom:8rem
+}
+header.masthead .overlay{
+	position:absolute;
+	background-color:#FFFFFF;
+	height:100%;
+	width:100%;
+	top:0;
+	left:0;
+	opacity:.8
+}
+@media (min-width:200px){
+	header.masthead{
+		padding-top:3rem;
+		padding-bottom:31rem;
+	}
+	header.masthead h1{
+		font-size:4rem;
+	}
+	header.masthead h2{
+		font-size:2rem;
+	}
+	header.masthead h3{
+		font-size:2rem;
+	}
+	
+}
+.features-icons{
+	position:absolute;
+	top:14rem;
+	padding-left:10%;
+	padding-right:10%;
+}
+#lettuceIcon{
+	height:130%;
+	width:50%;
+}
+#lettuceIcon:hover{
+	height:135%;
+	width:55%;
+}
+#loafIcon{
+	height:130%;
+	width:50%;
+}
+#loafIcon:hover{
+	height:135%;
+	width:55%;
+}
+#coveringIcon{
+	height:130%;
+	width:50%;
+}
+#coveringIcon:hover{
+	height:135%;
+	width:55%;
+}
+#cocktailIcon{
+	height:130%;
+	width:50%;
+}
+#cocktailIcon:hover{
+	height:135%;
+	width:55%;
+}
+
+

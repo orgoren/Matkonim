@@ -1,0 +1,171 @@
+body{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif
+}
+h1{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-weight:700
+}
+h2{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-weight:200
+}
+h3,h4,h5,h6{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-weight:100
+}
+
+
+header.masthead{
+	position:relative;
+	background-color:#343a40;
+	background:url(../img/bg-masthead.jpg) no-repeat center center;
+	background-size:cover;
+	padding-top:8rem;
+	padding-bottom:8rem
+}
+header.masthead .overlay{
+	position:absolute;
+	background-color:#FFFFFF;
+	height:100%;
+	width:100%;
+	top:0;
+	left:0;
+	opacity:.8
+}
+@media (min-width:200px){
+	header.masthead{
+		padding-top:0rem;
+		padding-bottom:26rem;
+	}
+	header.masthead h1{
+		font-size:3rem;
+	}
+	header.masthead h2{
+		font-size:1.7rem;
+	}
+	header.masthead h3{
+		font-size:2rem;
+	}	
+}
+
+#coveringIcon{
+	height:130%;
+	width:50%;
+	position:relative;
+	left:10rem;
+	top:2rem;
+	margin-right:auto;
+}
+header.masthead h1{
+	position:relative;
+	left:45rem;
+	top:3rem;
+}
+header.masthead h2{
+	position:relative;
+	left:4rem;
+	top:6.5rem;
+}
+#who-are-you-header{
+	position:absolute;
+	top:10rem;
+	left:10rem;
+	font-size:1.7rem;
+}
+#age-label{
+	position:absolute;
+	float:left;
+	top:11.7rem;
+	left:-3.5rem;
+}
+#age-choice{
+	position:absolute;
+	top:12rem;
+	left:8rem;
+}
+#gender-label{
+	position:absolute;
+	float:left;
+	top:14.2rem;
+	left:-4.2rem;
+}
+#gender-choice{
+	position:absolute;
+	top:14.5rem;
+	left:8rem;
+}
+#what-meal-header{
+	position:absolute;
+	left:36rem;
+	top:10rem;
+	font-size:1.7rem;
+
+}
+#what-meal-choice{
+	position:absolute;
+	top:12rem;
+	left:34rem;
+}
+
+#preferences-header{
+	position:relative;
+	top:6rem;
+	left:-13rem;
+}
+#nutri1{
+	position:absolute;
+	width:100%;
+	top:7rem;
+	left:3rem;
+}
+#nutri2{
+	position:absolute;
+	width:100%;
+	top:7rem;
+	left:19rem;
+}
+#nutri3{
+	position:absolute;
+	width:100%;
+	top:7rem;
+	left:35rem;
+}
+.nutri2-label{
+	position:relative;
+	left:0.7rem;
+}
+.nutri3-label{
+	position:relative;
+	left:2.5rem;
+}
+.nutri-percent-sign{
+	position:relative;
+	left:-0.5rem;	
+}
+.nutri3-percent-sign{
+	position:relative;
+	left:-1rem;	
+}
+#explanation-card{
+	position:absolute;
+	left:55rem;
+	top:16rem;
+	opacity:.7
+}
+#submit-button{
+	position:absolute;
+	top:34rem;
+	left:65rem;
+}
+#new-search-button{
+	position:absolute;
+	top:34rem;
+	left:65rem;
+}
+#back-button{
+	position:absolute;
+	top:4rem;
+	left:4rem;
+}
+
+

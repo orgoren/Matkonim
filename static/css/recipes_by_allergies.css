@@ -1,0 +1,117 @@
+body{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif
+}
+h1{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-weight:700
+}
+h2{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-weight:200
+}
+h3,h4,h5,h6{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-weight:100
+}
+
+
+header.masthead{
+	position:relative;
+	background-color:#343a40;
+	background:url(../img/bg-masthead.jpg) no-repeat center center;
+	background-size:cover;
+	padding-top:8rem;
+	padding-bottom:8rem
+}
+header.masthead .overlay{
+	position:absolute;
+	background-color:#FFFFFF;
+	height:100%;
+	width:100%;
+	top:0;
+	left:0;
+	opacity:.8
+}
+@media (min-width:200px){
+	header.masthead{
+		padding-top:0rem;
+		padding-bottom:27.5rem;
+	}
+	header.masthead h1{
+		font-size:3rem;
+	}
+	header.masthead h2{
+		font-size:1.7rem;
+	}
+	header.masthead h3{
+		font-size:2rem;
+	}
+	
+}
+
+#loafIcon{
+	height:130%;
+	width:50%;
+	position:relative;
+	left:10rem;
+	top:2rem;
+	margin-right:auto;
+}
+header.masthead h1{
+	position:relative;
+	left:45rem;
+	top:3rem;
+}
+header.masthead h2{
+	position:relative;
+	left:18rem;
+	top:6.5rem;
+}
+	
+#food-or-cocktail{
+	position:absolute;
+	top:11rem;
+	right:30rem;
+}
+
+#which-food{
+	position:absolute;
+	top:14rem;
+	display:none;
+}
+#allergans-header{
+	position:relative;
+	top:8rem;
+}
+#allergans-wrapper{
+	position:absolute;
+	top:22rem;
+	margin-left:33%;
+}
+#inlineFormAllergan1{
+	width:100%;
+}
+#inlineFormAllergan2{
+	width:100%;
+}
+#inlineFormAllergan3{
+	width:100%;
+}
+
+#submit-button{
+	position:absolute;
+	top:34rem;
+	left:65rem;
+}
+#new-search-button{
+	position:absolute;
+	top:34rem;
+	left:65rem;
+}
+#back-button{
+	position:absolute;
+	top:4rem;
+	left:4rem;
+}
+
+

@@ -40,17 +40,20 @@ SELECT ar.recipe_name, rnw.nutrition_id
 FROM	ALL_RECIPES as ar,
 		RECIPE_WEIGHTS as rw,
 		FOOD_RECIPES as fr,
+		NUTRITIONS as n,
 		RECIPE_NUTRITIONS_WEIGHTS as rnw
 WHERE
 	ar.recipe_id = rw.recipe_id AND
 	fr.recipe_id = ar.recipe_id AND
 	ar.recipe_id = rnw.recipe_id AND
-	<OTHER QUERIES OF THE FORM OF:
-		rnw.nutrition_id = {} & rnw.weight > 0.3 AND
-		rnw.nutrition_id = {} & rnw.weight < 0.05 AND
-		rnw.nutrition_id = {} & rnw.weight = 0
-	>
+	n.nutrition_id = rnw.nutrition_id
 """
+
+#	<OTHER QUERIES OF THE FORM OF:
+#		n.nutrition_name = {} and rnw.nutrition_id = {} and rnw.weight > 0.3 AND
+#		rnw.nutrition_id = {} & rnw.weight < 0.05 AND
+#		rnw.nutrition_id = {} & rnw.weight = 0
+#	>
 
 # cocktails recipes by nutritional values
 query2 = """

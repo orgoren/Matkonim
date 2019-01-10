@@ -38,15 +38,13 @@ def run():
             picture = row[5].replace("'","''")
             cocktail_details = row[6].replace("'","''")
 
-            if ((cocktail_id, cocktail_details, is_alcoholic) in cocktails) or (cocktail_id == 17233):
+            if ((cocktail_id, cocktail_details, is_alcoholic) in cocktails):
                 continue
             else:
                 # adding new cocktail to set
-                if count_cocktails > 0:
-                    cocktails.add((commonFile.recipe_id, cocktail_id, cocktail_details, is_alcoholic))
-                    add_cocktail_queries += add_cocktail.format(commonFile.recipe_id, cocktail_id, is_alcoholic, str(cocktail_details))
-                    add_recipce_queries += add_recipce.format(commonFile.recipe_id, str(cocktail_name), str(picture))
-                count_cocktails += 1
+                cocktails.add((commonFile.recipe_id, cocktail_id, cocktail_details, is_alcoholic))
+                add_cocktail_queries += add_cocktail.format(commonFile.recipe_id, cocktail_id, is_alcoholic, str(cocktail_details))
+                add_recipce_queries += add_recipce.format(commonFile.recipe_id, str(cocktail_name), str(picture))
 
             num_ingredients = (len(row) - 7)/4
             for ingredient_index in range(0, num_ingredients):
@@ -54,14 +52,15 @@ def run():
                 ingredient_name = str(row[7 + 3*ingredient_index]).replace("'","''")
                 servings = row[8 + 3*ingredient_index]
                 full_ingredient_line = str(row[9 + 3*ingredient_index]).replace("'","''")
-
-                if (commonFile.ingredient_id, servings, full_ingredient_line) not in ingredients:
-                    add_ingredient_queries += add_ingredient.format(commonFile.recipe_id, commonFile.ingredient_id, servings, str(full_ingredient_line))
-                    ingredients.add((commonFile.ingredient_id, servings, full_ingredient_line))
+                if servings is None or full_ingredient_line is None or full_ingredient_line == '':
+                    break
+                if str(ingredient_name) not in commonFile.ingredients_dict:
+                    commonFile.ingredients_dict.update({str(ingredient_name): commonFile.ingredient_id})
                     commonFile.ingredient_id += 1
-            if count_cocktails > 1:
-                commonFile.recipe_id += 1
-
+                add_ingredient_queries += add_ingredient.format(commonFile.recipe_id, commonFile.ingredients_dict[str(ingredient_name)], servings, str(full_ingredient_line))
+                ingredients.add((commonFile.ingredients_dict[str(ingredient_name)], servings, full_ingredient_line))
+            commonFile.recipe_id += 1
+                    
     cocktail_sql = open('insert_to_cocktail_recipes_from_cocktails.sql', 'w')
     cocktail_sql.write(add_cocktail_queries)
 

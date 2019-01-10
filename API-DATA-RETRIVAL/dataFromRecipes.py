@@ -58,9 +58,12 @@ def run():
 	                continue
 	            else:
 	                # adding new ingredient to set
-	                ingredient_set.add((commonFile.recipe_id, ingredient_name, servings, full_ingredient_line))
-	                add_ingredient_queries += add_ingredient.format(commonFile.recipe_id, commonFile.ingredient_id, servings, str(full_ingredient_line))
-	                commonFile.ingredient_id += 1
+					if str(ingredient_name) not in commonFile.ingredients_dict:
+						commonFile.ingredients_dict.update({str(ingredient_name): commonFile.ingredient_id})
+						commonFile.ingredient_id += 1
+					ingredient_set.add((commonFile.recipe_id, ingredient_name, servings, full_ingredient_line))
+					add_ingredient_queries += add_ingredient.format(commonFile.recipe_id, commonFile.ingredients_dict[str(ingredient_name)], servings, str(full_ingredient_line))
+
 	        commonFile.recipe_id += 1
 	    	if commonFile.recipe_id > 10000:
 	    		break

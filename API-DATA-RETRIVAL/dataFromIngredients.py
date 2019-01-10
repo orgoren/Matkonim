@@ -32,20 +32,22 @@ def run():
                 continue
             else:
                 # adding new ingredient to set
+                if str(ingredient_name) not in commonFile.ingredients_dict:
+                    commonFile.ingredients_dict.update({str(ingredient_name): commonFile.ingredient_id})
+                    commonFile.ingredient_id += 1
                 ingredients.add((ingredient_name, serving_quantity, serving_unit, serving_weight_grams))
-                add_ingredient_queries += add_ingredient.format(commonFile.ingredient_id, str(ingredient_name), serving_quantity, str(serving_unit), serving_weight_grams)
+                add_ingredient_queries += add_ingredient.format(commonFile.ingredients_dict[str(ingredient_name)], str(ingredient_name), serving_quantity, str(serving_unit), serving_weight_grams)
 
             offset = 5
             nutrition_id = 1
             for index in range(0, len(row[5:])):
                 weight_mg_from_ingredient = row[offset + index]
-                if (commonFile.ingredient_id, nutrition_id, weight_mg_from_ingredient) in nutrition:
+                if (commonFile.ingredients_dict[str(ingredient_name)], nutrition_id, weight_mg_from_ingredient) in nutrition:
                     continue
                 else:
-                    nutrition.add((commonFile.ingredient_id, nutrition_id, weight_mg_from_ingredient))
-                    add_nutrition_queries += add_nutrition.format(commonFile.ingredient_id, nutrition_id, weight_mg_from_ingredient)
+                    nutrition.add((commonFile.ingredients_dict[str(ingredient_name)], nutrition_id, weight_mg_from_ingredient))
+                    add_nutrition_queries += add_nutrition.format(commonFile.ingredients_dict[str(ingredient_name)], nutrition_id, weight_mg_from_ingredient)
                     nutrition_id += 1
-                    commonFile.ingredient_id += 1
 
     ingredients_sql = open('insert_ingredients_from_ingredients.sql', 'w')
     ingredients_sql.write(add_ingredient_queries)

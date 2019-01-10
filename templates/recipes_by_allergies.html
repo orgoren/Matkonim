@@ -130,6 +130,8 @@ var form3 = document.getElementById('inlineFormAllergan3');
 	}
 	if (!formValid){
 	    alert('Must insert at least one ingredient.');
+	  event.preventDefault();
+          event.stopPropagation();
 	}
 }
 function foodRecipeNotChosen() {

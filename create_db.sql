@@ -111,7 +111,7 @@ FROM 	ALL_RECIPES          as ar,
 		INGREDIENTS          as i, 
 		RECIPE2INGREDIENTS   as r2i,
 		(
-			SELECT (r2i.servings * i.serving_weight_grams) as tot_weight, ar.recipe_id as recipe_id
+			SELECT (r2i.servings * i.weight_mg_from_ingredient) as tot_weight, ar.recipe_id as recipe_id
 			FROM  	ALL_RECIPES          as ar, 
 					INGREDIENTS          as i, 
 					RECIPE2INGREDIENTS   as r2i

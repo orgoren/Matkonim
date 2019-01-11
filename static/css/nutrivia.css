@@ -1,0 +1,95 @@
+body { 
+	background:url(../img/bg-masthead.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+	background-color:#343a40;
+	height:100vh;
+  font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+}
+h1{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-weight:700
+}
+h2{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-weight:200
+}
+h3,h4,h5,h6{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-weight:100
+}
+
+header.masthead .overlay{
+	position:absolute;
+	background-color:#FFFFFF;
+	height:100%;
+	width:100%;
+	top:0;
+	left:0;
+	opacity:.8
+}
+@media (min-width:200px){
+	header.masthead{
+		padding-top:0rem;
+		bottom:0rem;
+	}
+	header.masthead h1{
+		font-size:3rem;
+	}
+	header.masthead h2{
+		font-size:1.7rem;
+	}
+	header.masthead h3{
+		font-size:2rem;
+	}	
+}
+
+#donutIcon{
+	height:130%;
+	width:50%;
+	position:relative;
+	left:10rem;
+	top:2rem;
+	margin-right:auto;
+}
+header.masthead h1{
+	position:relative;
+	left:45rem;
+	top:3rem;
+}
+header.masthead h2{
+	position:relative;
+	left:23rem;
+	top:6.5rem;
+}
+#start-screen{
+	position:absolute;
+}
+#start-button{
+	position:relative;
+	top:6rem;
+}
+#back-button{
+	position:absolute;
+	top:4rem;
+	left:4rem;
+}
+#trivia-screen{
+	position:relative;
+	top:3.5rem;
+}
+
+#answers-btns{
+	position:relative;
+	top:1rem;
+}
+.btn-xl {
+    padding: 14px 30px;
+    font-size: 35px;
+    line-height: normal;
+    -webkit-border-radius: 8px;
+       -moz-border-radius: 8px;
+            border-radius: 8px;
+}

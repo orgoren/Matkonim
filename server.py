@@ -40,6 +40,10 @@ def main():
 		if request.form['submit'] == "rcps-by-alrgs":
 			return redirect('/recipes_by_allergies')
 
+		if request.form['submit'] == "nutrivia":
+			return redirect('/nutrivia')
+
+		
 
 @app.route('/cocktails_by_nutritional', methods=['GET', 'POST'])
 def cocktails_by_nutritional():
@@ -159,6 +163,42 @@ def recipes_by_nutritional_results():
 			return redirect('/recipes_by_nutritional')
 
 
+@app.route('/nutrivia', methods=['GET', 'POST'])
+def nutrivia():
+	if request.method == 'GET':
+		return render_template('nutrivia.html')
+	if request.method == 'POST':
+		if "Back to Main Menu" == request.form['submit']:
+			return redirect('/')
+
+
+NEXT_QUESTION = 1		# TODO: remove after making real questions
+
+
+@app.route('/getQuestion')
+def getQuestion():
+	########### TODO: REMOVE FROM HERE after making real questions ###############
+# format for questions to send to client:
+# {'question': question itself, 'answer_a': ..., 'answer_b': ..., 'answer_c': ..., 'answer_d': ..., 'correct': right answer in format "answer_X"}
+	question_1 = {'question': 'Some question that server came up with!','answer_a': 'answer_a_from_server', 'answer_b': 'answer_b_from_server',
+		      'answer_c': 'answer_c_from_server', 'answer_d': 'answer_d_from_server', 'correct': 'answer_c'}
+	question_2 = {'question': 'ANOTHER question that server came up with!', 'answer_a': 'ANOTHER_answer_a_from_server', 'answer_b': 'ANOTHER_answer_b_from_server',
+		      'answer_c': 'ANOTHER_answer_c_from_server', 'answer_d': 'ANOTHER_answer_d_from_server', 'correct': 'answer_a'}
+	global NEXT_QUESTION
+	if NEXT_QUESTION == 1:
+		question = question_1
+		NEXT_QUESTION = 2
+	else:
+		question = question_2
+		NEXT_QUESTION = 1
+	########### TODO: REMOVE UNTIL HERE after making real questions ###############
+
+	try:
+		return jsonify(question=question)
+	except Exception as e:
+		return str(e)
+
+	
 @app.route('/test', methods=['GET'])
 def connect_to_db(query=""):#username='', password=''):
 	with sshtunnel.SSHTunnelForwarder(

@@ -3,15 +3,6 @@
 
   <head>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-	<script type=text/javascript>
-		$(function() {
-		$(document.getElementById("trivia-screen")).hide();
-		$(document.getElementById("correct-alert")).hide();
-		$(document.getElementById("incorrect-alert")).hide();
-
-		});
-	</script>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
 
@@ -126,6 +117,12 @@ var dict = {
 	"answer_d":"D"
 };
 
+$(document).ready(function(){
+	$("#trivia-screen").hide();
+	$("#correctModal").modal("hide");
+	$("#incorrectModal").modal("hide");
+});		
+
 function StartTrivia() {
 	$("body,html").css({"overflow":"hidden"});	
 	$("#start-screen").hide();
@@ -147,7 +144,6 @@ function GetQuestion() {
 
 function CheckAnswer(){
 	var tmp = localStorage.getItem('correct');
-	$("#correctModal").find(".modal-title").val("WHAT");
 	if (event.target.id === tmp){
 		$("#correctModal").modal("show");
 	} else {

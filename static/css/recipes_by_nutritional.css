@@ -1,5 +1,12 @@
 body{
-	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif
+	background:url(../img/bg-masthead.jpg) no-repeat center center fixed;
+  	-webkit-background-size: cover;
+  	-moz-background-size: cover;
+  	-o-background-size: cover;
+  	background-size: cover;
+	background-color:#343a40;
+	height:100vh;
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
 }
 h1{
 	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
@@ -13,16 +20,6 @@ h3,h4,h5,h6{
 	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
 	font-weight:100
 }
-
-
-header.masthead{
-	position:relative;
-	background-color:#343a40;
-	background:url(../img/bg-masthead.jpg) no-repeat center center;
-	background-size:cover;
-	padding-top:8rem;
-	padding-bottom:8rem
-}
 header.masthead .overlay{
 	position:absolute;
 	background-color:#FFFFFF;
@@ -35,7 +32,7 @@ header.masthead .overlay{
 @media (min-width:200px){
 	header.masthead{
 		padding-top:0rem;
-		padding-bottom:23rem;
+		padding-bottom:0rem;
 	}
 	header.masthead h1{
 		font-size:3rem;

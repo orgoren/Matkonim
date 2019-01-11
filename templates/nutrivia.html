@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type=text/javascript>
+		$(function() {
+		$(document.getElementById("trivia-screen")).hide();
+		$(document.getElementById("correct-alert")).hide();
+		$(document.getElementById("incorrect-alert")).hide();
+
+		});
+	</script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+
+    <title>Nutrivia</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+
+
+    <!-- Custom fonts -->
+    <link href="../static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles -->
+    <link href="../static/css/nutrivia.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+    <!-- Masthead -->
+    <header class="masthead text-black text-center">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-2 mx-auto">
+			<h1 class="mb-auto">Matkonim</h1>
+          </div>
+		<div class="col-2 mx-auto">
+			<h2 class="text-nowrap mb-auto">Nutrivia</h2>
+		</div>
+ <div class="col-3">
+                <div class="donut-icon-item mx-auto mb-5 mb">
+                <img src="../static/img/donut.png" class="img-fluid" id="donutIcon" alt="Responsive image"></img>
+            </div>
+          </div>
+	</div>
+</div>
+
+
+<!-- START PLAYING -->
+<div class="col-12 mx-auto" id="start-screen">
+<div class="start-playing-header">
+<h3 class="col-12 text-center" id="welcome-header">Welcome to Nutrivia</h3>
+<h4 class="col-12 mb-auto text-center" id="start-header">Here you can test your knowledge in nutritional values and become a Nutri-Champion!</h4>
+</div>
+<div class="col-xs-4 center-block">
+	<button class="btn btn-xl btn-success" name="start" id="start-button" onclick="StartTrivia()">Start playing!</button>
+</div>
+</div>
+
+<!-- BACK BUTTON -->
+<form  method="POST">
+  <div class="button" id="back-button">
+    <input type="submit" class="btn btn-lg btn-secondary" name="submit" value="Back to Main Menu">
+  </div>
+</form>
+
+
+<!-- TRIVIA SCREEN -->
+<div class="col-12" id="trivia-screen">
+<h4 id=question></h4>
+<div class="container" id="answers-btns">
+<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_a" id="answer_a" onclick="CheckAnswer()">tmp</button></div>
+<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_b" id="answer_b" onclick="CheckAnswer()">tmp</button></div>
+<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_c" id="answer_c" onclick="CheckAnswer()">tmp</button></div>
+<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_d" id="answer_d" onclick="CheckAnswer()">tmp</button></div>
+</div>
+</div>
+<!-- END OF TRIVIA SCREEN -->
+
+
+<!-- Modal -->
+<div class="modal-container">
+  <div class="modal fade" id="correctModal" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Correct!</h4>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" onclick="GetQuestion()">Next Question</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Modal -->
+  <div class="modal fade" id="incorrectModal" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+           <h4 class="modal-title">Incorrect!</h4>
+        </div>
+        <div class="modal-body" id="modal-body">
+          <p>hello</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" onclick="GetQuestion()">Next Question</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</header>
+
+
+<script>
+var dict = {
+	"answer_a":"A",
+	"answer_b":"B",
+	"answer_c":"C",
+	"answer_d":"D"
+};
+
+function StartTrivia() {
+	$("body,html").css({"overflow":"hidden"});	
+	$("#start-screen").hide();
+	$("#next-question").show();
+	$("#trivia-screen").show();
+	GetQuestion();
+}
+function GetQuestion() {
+	$.getJSON('/getQuestion', {}, function(data) {
+		localStorage.setItem('correct',data.question.correct);
+    	 	$("#question").text(data.question.question);
+    	 	$("#answer_a").html(data.question.answer_a);
+    	 	$("#answer_b").html(data.question.answer_b);
+    	 	$("#answer_c").html(data.question.answer_c);
+    	 	$("#answer_d").html(data.question.answer_d);
+	
+	});
+}
+
+function CheckAnswer(){
+	var tmp = localStorage.getItem('correct');
+	$("#correctModal").find(".modal-title").val("WHAT");
+	if (event.target.id === tmp){
+		$("#correctModal").modal("show");
+	} else {
+		var text = "Correct answer is: " + dict[tmp];
+		$("#incorrectModal").modal("show");
+		$('#modal-body').html(text);
+	}
+}
+</script>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  </body>
+</html>

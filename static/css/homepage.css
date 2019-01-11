@@ -1,28 +1,41 @@
 body{
-	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif
+	background:url(../img/bg-masthead.jpg) no-repeat center center fixed;
+  	-webkit-background-size: cover;
+  	-moz-background-size: cover;
+  	-o-background-size: cover;
+  	background-size: cover;
+	background-color:#343a40;
+	height:100vh;
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
 }
 h1{
 	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
-	font-weight:700
+	font-weight:700;
+    text-shadow: 
+      1px -1px 0 #767676, 
+      -1px 1px 1px #7f7d7d, 
+      -2px 2px 1px #868585, 
+      -3px 3px 1px #949392, 
+      -4px 4px 1px #adabab;
+  }
 }
 h2{
 	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
 	font-weight:400
 }
-h3,h4,h5,h6{
+h3{
+	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-weight:400;
+    text-shadow: 
+      -1px 1px 0.5px #adabab, 
+      -2px 2px 0.5px #c6c4c4;
+
+}
+h4,h5,h6{
 	font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;
 	font-weight:100
 }
 
-
-header.masthead{
-	position:relative;
-	background-color:#343a40;
-	background:url(../img/bg-masthead.jpg) no-repeat center center;
-	background-size:cover;
-	padding-top:8rem;
-	padding-bottom:8rem
-}
 header.masthead .overlay{
 	position:absolute;
 	background-color:#FFFFFF;
@@ -34,57 +47,119 @@ header.masthead .overlay{
 }
 @media (min-width:200px){
 	header.masthead{
-		padding-top:3rem;
-		padding-bottom:31rem;
+		padding-top:0rem;
+		padding-bottom:0rem;
 	}
 	header.masthead h1{
-		font-size:4rem;
+		font-size:4.5 rem;
 	}
 	header.masthead h2{
-		font-size:2rem;
+		font-size:2.3rem;
 	}
 	header.masthead h3{
-		font-size:2rem;
+		font-size:1.5rem;
 	}
 	
 }
 .features-icons{
 	position:absolute;
-	top:14rem;
-	padding-left:10%;
-	padding-right:10%;
+	top:15rem;
+	left:0;
+	right:0;
 }
 #lettuceIcon{
-	height:130%;
-	width:50%;
+	height:140%;
+	width:60%;
+	padding-left:5%;
+	padding-right:5%;
 }
 #lettuceIcon:hover{
-	height:135%;
-	width:55%;
+	height:145%;
+	width:65%;
+	padding-left:5%;
+	padding-right:5%;
 }
 #loafIcon{
-	height:130%;
-	width:50%;
+	height:140%;
+	width:60%;
+	padding-left:5%;
+	padding-right:5%;
 }
 #loafIcon:hover{
-	height:135%;
-	width:55%;
+	height:145%;
+	width:65%;
+	padding-left:5%;
+	padding-right:5%;
 }
 #coveringIcon{
-	height:130%;
-	width:50%;
+	height:140%;
+	width:60%;
+	padding-left:5%;
+	padding-right:5%;
 }
 #coveringIcon:hover{
-	height:135%;
-	width:55%;
+	height:145%;
+	width:65%;
+	padding-left:5%;
+	padding-right:5%;
 }
 #cocktailIcon{
-	height:130%;
-	width:50%;
+	height:140%;
+	width:60%;
+	padding-left:5%;
+	padding-right:5%;
 }
 #cocktailIcon:hover{
-	height:135%;
-	width:55%;
+	height:145%;
+	width:65%;
+	padding-left:5%;
+	padding-right:5%;
+}
+#donutIcon{
+	height:140%;
+	width:60%;
+	padding-left:5%;
+	padding-right:5%;
+}
+#donutIcon:hover{
+	height:145%;
+	width:65%;
+	padding-left:5%;
+	padding-right:5%;
 }
 
+.col-xs-5ths,
+.col-sm-5ths,
+.col-md-5ths,
+.col-lg-5ths {
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
 
+.col-xs-5ths {
+    width: 20%;
+    float: left;
+}
+
+@media (min-width: 768px) {
+    .col-sm-5ths {
+        width: 20%;
+        float: left;
+    }
+}
+
+@media (min-width: 992px) {
+    .col-md-5ths {
+        width: 20%;
+        float: left;
+    }
+}
+
+@media (min-width: 1200px) {
+    .col-lg-5ths {
+        width: 20%;
+        float: left;
+    }
+}

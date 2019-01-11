@@ -11,7 +11,7 @@ import queries
 import re
 
 NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
-				"lactose", "vitaminC", "satfat",  "fiber",  "alcohol", "calories"]
+				"lactose", "vitaminC", "saturated",  "dietary_fiber",  "alcohol", "calories"]
 
 MEAL_OPTIONS = ["Main Dishes", "Side Dishes", "Appetizers", "Lunch", "Breakfast and Brunch", 
 				"Snacks", "Soups", "Salads", "Breads", "Condiments and Sauce", "Desserts"]
@@ -26,11 +26,10 @@ def get_username_and_password():
 
 def get_nutritions_values(form, is_food=True):
 	nutritions_values = {}
-	nutritions = NUTRITIONS
-	if is_food:
-		nutritions.remove("alcohol"
-			)
-	for nutrition in nutritions:
+
+	for nutrition in NUTRITIONS:
+		if is_food and nutrition == "alcohol":
+			continue
 		nutritions_values[nutrition] = str(form.get(nutrition))
 		if nutritions_values[nutrition] == "":
 			nutritions_values[nutrition] = "d"

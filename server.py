@@ -54,7 +54,7 @@ def cocktails_by_nutritional():
 			return redirect('/')
 		if "Find me a cocktail!" == request.form['submit']:
 			nutritions_values = get_nutritions_values(request.form)
-				print nutritions_values
+			print nutritions_values
 			nutritions_values = {}
 	
 			print nutritions_values
@@ -139,14 +139,17 @@ def recipes_by_nutritional():
 
 			print "nutritions_values:"
 			print nutritions_values
-			print "meal_options:"
-			print meal_options
+			print "meal_option:"
+			print meal_option
 
 			q = queries.get_query1(nutritions_values, meal_option)
 			print q
-			#ans = connect_to_db(q)
-			#print "results:::"
-			#print ans
+			ans = connect_to_db(q)
+			if ans is None:
+				print "No query was sent..."
+			else:
+				print "results:::"
+				print ans
 
 			# TODO - get query values
 			return redirect('/recipes_by_nutritional_results')
@@ -217,9 +220,8 @@ def connect_to_db(query=""):#username='', password=''):
 		#query = "Select * from ALL_RECIPES where recipe_id = {}".format(1)
 		#query = "select * from NUTRITIONS"
 		if query == "":
-			res = {}
 			print "ERROR: no query in input"
-			return res
+			return None
 
 		cur.execute(query)
 		ans = cur.fetchall()

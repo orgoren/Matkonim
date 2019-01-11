@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 import re
+from utils import *
+#FOOD_NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
+#					"lactose", "vitaminC", "satfat",  "fiber", "calories"]
 
-FOOD_NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
-					"lactose", "vitaminC", "satfat",  "fiber", "calories"]
-
-VALUES = {"None" : "None", "1" : "None", "d": "dont care", "2" : "less than 5%", "3" : "over 30%"}
+#VALUES = {"None" : "None", "1" : "None", "d": "dont care", "2" : "less than 5%", "3" : "over 30%"}
 
 weights_view= """
 CREATE VIEW RECIPE_WEIGHTS AS
@@ -41,6 +41,14 @@ GROUP BY
 """
 
 
+daily_meals_view = """
+CREATE VIEW DAILY_MEALS AS
+SELECT 	breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
+FROM	( SELECT recipe_id FROM ALL_RECIPES where course="Breakfast and Brunch") as breakfast_r
+		( SELECT recipe_id FROM ALL_RECIPES where course="Lunch") as lunch_r
+		( SELECT recipe_id FROM ALL_RECIPES where course="Main Dishes") as dinner_r
+"""
+
 # food recipes by nutritional values
 query1 = """
 SELECT ar.recipe_name
@@ -74,29 +82,29 @@ WHERE
 	ar.recipe_id = rnw.recipe_id
 """
 
-
+# one recipe by daily values
 query3 = """
 SELECT 	*
 FROM 	RECOMMEND_BY_AGE_GENDER as rbag,
 		FOOD_RECIPES as fr,
 		ALL_RECIPES as ar,
-		RECIPE_NUTRITIONS_WEIGHTS as rnw
+		--RECIPE_NUTRITIONS_WEIGHTS as rnw
 WHERE
 		rbag.gender = <GENDER> AND
 		rbag.age = <AGE> AND
 		fr.recipe_id = ar.recipe_id AND
-		ar.recipe_id = rnw.recipe_id AND
+		--ar.recipe_id = rnw.recipe_id AND
 		fr.course = <MEAL_OPTION>
 """
 
+# all day recipes by daily values
 query4 = """
 SELECT	*
 FROM 	RECOMMEND_BY_AGE_GENDER as rbag,
-		FOOD_RECIPES as fr,
-		ALL_RECIPES as ar,
-		RECIPE_NUTRITIONS_WEIGHTS as rnw	 
+		DAILY_MEALS as dm,
 WHERE	
-
+		rbag.gender = <GENDER> AND
+		rbag.age = <AGE>
 """
 
 query5 = """
@@ -124,7 +132,7 @@ WHERE
 )
 """
 
-inner_query_for_query3 = """
+ineffective_inner_query_for_query3 = """
 AND ar.recipe_id in  (
 	SELECT ar.recipe_id as recipe_id 
 	FROM 	ALL_RECIPES as ar,
@@ -132,7 +140,6 @@ AND ar.recipe_id in  (
 			RECIPE_NUTRITIONS_WEIGHT as rnw,
 			NUTRITIONS as n
 	WHERE
-		ar.recipe_id = rbag.recipe_id AND
 		ar.recipe_id = rnw.recipe_id AND
 		rbag.nutrition_id = rnw.nutrition_id AND
 		n.nutrition_name = <NUT_KEY> AND
@@ -141,11 +148,46 @@ AND ar.recipe_id in  (
 )
 """
 
+inner_query_for_query3 = """
+AND ar.recipe_id in  (
+	SELECT DISTINCT ar.recipe_id as recipe_id 
+	FROM 		ALL_RECIPES ar 
+	INNER JOIN 	RECIPE_NUTRITIONS_WEIGHTS rnw 
+				on ar.recipe_id = rnw.recipe_id
+	INNER JOIN 	RECOMMEND_BY_AGE_GENDER rbag 
+				on rbag.nutrition_id = rnw.nutrition_id
+	JOIN NUTRITIONS n
+	WHERE
+		n.nutrition_name = \"<NUT_KEY>\" AND
+		rnw.weight / rbag.weight <NUT_IF>
+)
+"""
 
-def get_query1(nutritions_values, meal_option):
+
+inner_query_for_query4 = """
+AND dm.breakfast_id, dm.lunch_id, dm.dinner_id IN (
+	SELECT dm2.breakfast_id, dm2.lunch_id, dm2.dinner_id
+	FROM 		DAILY_MEALS as dm2
+		  JOIN 	NUTRITIONS n
+	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_b on rnw_b.recipe_id = dm2.breakfast_id, rnw_b.nutrition_id = n.nutrition_id
+	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_l on rnw_l.recipe_id = dm2.lunch_id, rnw_l.nutrition_id = n.nutrition_id
+	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_d on rnw_d.recipe_id = dm2.dinner_id, rnw_d.nutrition_id = n.nutrition_id
+	INNER JOIN 	RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = n.nutrition_id
+	WHERE
+		rbag.age = <AGE> AND
+		rbag.gender = <GENDER> AND
+		n.nutrition_name = \"<NUT_KEY>\" AND
+		(rnw_b.weight + rnw_l.weight + rnw_d.weight / rbag.weight_mg) <= <NUT_VAL>
+)
+"""
+
+def get_query1(nutritions_values, meal_option, is_food=True):
 	q = re.sub("<MEAL_OPTION>", meal_option, query1, re.MULTILINE)
 
-	for nut in FOOD_NUTRITIONS:
+	for nut in NUTRITIONS:
+		if is_food and nut == "alcohol":
+			continue
+
 		if nutritions_values[nut] != "":
 			nline = inner_query_for_query1
 			nline = re.sub("<NUT_KEY>", nut, nline)

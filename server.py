@@ -3,7 +3,7 @@ import os
 import sys
 import datetime
 import MySQLdb as mdb
-from flask import Flask, render_template, redirect, url_for, request, make_response, session, g, abort, flash
+from flask import Flask, render_template, redirect, url_for, request, make_response, session, g, abort, flash, jsonify
 from gevent.pywsgi import WSGIServer
 import sshtunnel
 import getpass

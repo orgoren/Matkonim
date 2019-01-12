@@ -221,20 +221,22 @@ def connect_to_db(query=""):#username='', password=''):
 		#query = "select * from NUTRITIONS"
 		if query == "":
 			print "ERROR: no query in input"
+			cur.close()
 			return None
 
-		cur.execute(query)
-		ans = cur.fetchall()
+		try:
+			cur.execute(query)
+			ans = cur.fetchall()
+		except Exception as e:
+			print "ERROR: couldn't execute and fetch from db:", e
+			cur.close()
+			return None
 
 		#res = [item['recipe_name'] for item in cur.fetchall()]
 		cur.close()
 		return ans
 		#return ','.join(res)
 
-#def get_username_and_password():
-#	global PASSWORD
-#	USERNAME = raw_input("enter username (for nova): ")
-#	PASSWORD = getpass.getpass("enter password (for nova): ")
 
 if __name__ == '__main__':
 	# app.run(port=8888, host="0.0.0.0", debug=True)

@@ -32,13 +32,23 @@ def main():
 							 port = 3307)        # name of the data base
 		cur = con.cursor(mdb.cursors.DictCursor)
 
-
+		query_lines = []
+		query = ""
 		while True:
-			query = raw_input("Enter a query:")
+			query = raw_input("Enter a query:\n")
+			while query != "end":
+				query_lines.append(query)
+				query = raw_input()
+
+				if query == "break":
+					cur.close()
+					exit(0)
+
+			query = " ".join(query_lines)
+
 			if query == "":
 				print "ERROR: no query in input"
-			elif query == "break":
-				break
+
 			else:
 				try:
 					cur.execute(query)

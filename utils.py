@@ -9,6 +9,7 @@ import sshtunnel
 import getpass
 import queries
 import re
+import random
 
 NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
 				"lactose", "vitaminC", "saturated",  "dietary_fiber",  "alcohol", "calories"]
@@ -48,6 +49,15 @@ def get_meal_option(form):
 	return "ERROR"
 
 
+def get_food_type_or_cocktail(form):
+	if str(form.get("option_rand")) == "on":
+		rand_num = random.randint(0,1)
+		if rand_num == 0:
+			return "Cocktail"
+		else:
+			return random.choice(MEAL_OPTIONS)
 
+	if str(form.get("option_cocktail")) == "on":
+		return "Cocktail"
 
-
+	return get_meal_option(form)

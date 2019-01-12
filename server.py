@@ -123,11 +123,13 @@ def recipes_by_allergies():
 		if "Back to Main Menu" == request.form['submit']:
 			return redirect('/')
 		if "Find me a recipe!" == request.form['submit']:
-			_inlineFormAllergan1 = request.form["inlineFormAllergan1"]
-			_inlineFormAllergan2 = request.form["inlineFormAllergan2"]
-			_inlineFormAllergan3 = request.form["inlineFormAllergan3"]
+			allergans = []
+			allergans.append(request.form["inlineFormAllergan1"])
+			allergans.append(request.form["inlineFormAllergan2"])
+			allergans.append(request.form["inlineFormAllergan3"])
+			meal_or_drink_option = get_food_type_or_cocktail(request.form)
 
-			q = queries.get_query5(_inlineFormAllergan1, _inlineFormAllergan2, _inlineFormAllergan3)
+			q = queries.get_query5(allergans, meal_or_drink_option)
 			print q
 			ans = connect_to_db(q)
 			if ans is None:

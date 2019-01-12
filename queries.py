@@ -58,7 +58,7 @@ FROM	( SELECT recipe_id FROM ALL_RECIPES where course="Breakfast and Brunch") as
 
 # cocktails recipes by nutritional values
 query2 = """
-SELECT ar.recipe_name, rnw.nutrition_id
+SELECT ar.recipe_name
 FROM	ALL_RECIPES as ar,
 		RECIPE_WEIGHTS as rw,
 		COCKTAIL_RECIPES as cr,
@@ -152,14 +152,9 @@ AND dm.breakfast_id, dm.lunch_id, dm.dinner_id IN (
 # food recipes by nutritional values
 query1 = """
 SELECT ar.recipe_name
-FROM	ALL_RECIPES as ar,
-		RECIPE_WEIGHTS as rw,
-		FOOD_RECIPES as fr,
-		RECIPE_NUTRITIONS_WEIGHTS as rnw
+FROM		ALL_RECIPES ar
+INNER JOIN 	FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id
 WHERE
-	ar.recipe_id = rw.recipe_id AND
-	fr.recipe_id = ar.recipe_id AND
-	ar.recipe_id = rnw.recipe_id AND
 	fr.course = \"<MEAL_OPTION>\"
 """
 

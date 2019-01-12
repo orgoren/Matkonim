@@ -49,19 +49,6 @@ FROM	( SELECT recipe_id FROM ALL_RECIPES where course="Breakfast and Brunch") as
 		( SELECT recipe_id FROM ALL_RECIPES where course="Main Dishes") as dinner_r
 """
 
-# food recipes by nutritional values
-query1 = """
-SELECT ar.recipe_name
-FROM	ALL_RECIPES as ar,
-		RECIPE_WEIGHTS as rw,
-		FOOD_RECIPES as fr,
-		RECIPE_NUTRITIONS_WEIGHTS as rnw
-WHERE
-	ar.recipe_id = rw.recipe_id AND
-	fr.recipe_id = ar.recipe_id AND
-	ar.recipe_id = rnw.recipe_id AND
-	fr.course = \"<MEAL_OPTION>\"
-"""
 
 #	<OTHER QUERIES OF THE FORM OF:
 #		n.nutrition_name = {} and rnw.nutrition_id = {} and rnw.weight > 0.3 AND
@@ -107,30 +94,6 @@ WHERE
 		rbag.age = <AGE>
 """
 
-query5 = """
-SELECT 	*
-FROM 	ALL_RECIPES as ar,
-		FOOD_RECIPES as fr,
-		COCKTAIL_RECIPES as cr,
-		RECIPE2INGREDIENTS as r2i
-WHERE
-		ar.recipe_id = r2i.recipe_id
-HAVING () 
-"""
-
-inner_query_for_query1 = """
-AND ar.recipe_id IN (
-SELECT 	rw.recipe_id as recipe_id
-FROM 	RECIPE_NUTRITIONS_WEIGHTS as rnw,
-		RECIPE_WEIGHTS as rw,
-		NUTRITIONS as n
-WHERE
-		rw.recipe_id = rnw.recipe_id AND
-		rnw.nutrition_id = n.nutrition_id AND
-		n.nutrition_name = \"<NUT_KEY>\" AND
-		rnw.weight / rw.weight <NUT_IF>
-)
-"""
 
 ineffective_inner_query_for_query3 = """
 AND ar.recipe_id in  (
@@ -181,6 +144,39 @@ AND dm.breakfast_id, dm.lunch_id, dm.dinner_id IN (
 )
 """
 
+
+################################
+########### QUERY 1 ############
+################################
+
+# food recipes by nutritional values
+query1 = """
+SELECT ar.recipe_name
+FROM	ALL_RECIPES as ar,
+		RECIPE_WEIGHTS as rw,
+		FOOD_RECIPES as fr,
+		RECIPE_NUTRITIONS_WEIGHTS as rnw
+WHERE
+	ar.recipe_id = rw.recipe_id AND
+	fr.recipe_id = ar.recipe_id AND
+	ar.recipe_id = rnw.recipe_id AND
+	fr.course = \"<MEAL_OPTION>\"
+"""
+
+inner_query_for_query1 = """
+AND ar.recipe_id IN (
+SELECT 	rw.recipe_id as recipe_id
+FROM 	RECIPE_NUTRITIONS_WEIGHTS as rnw,
+		RECIPE_WEIGHTS as rw,
+		NUTRITIONS as n
+WHERE
+		rw.recipe_id = rnw.recipe_id AND
+		rnw.nutrition_id = n.nutrition_id AND
+		n.nutrition_name = \"<NUT_KEY>\" AND
+		rnw.weight / rw.weight <NUT_IF>
+)
+"""
+
 def get_query1(nutritions_values, meal_option, is_food=True):
 	q = re.sub("<MEAL_OPTION>", meal_option, query1, re.MULTILINE)
 
@@ -213,8 +209,56 @@ def get_query1(nutritions_values, meal_option, is_food=True):
 
 
 
+################################
+########### QUERY 5 ############
+################################
+
+allergies_query = """
+
+SELECT DISTINCT ar.recipe_id AS recipe_id, ar.recipe_name AS recipe_name
+FROM 
+		ALL_RECIPES AS ar,
+		RECIPE2INGREDIENTS AS r2i,
+WHERE
+		ar.recipe_id = r2i.recipe_id
+		<ALG_QUERY_1>
+		<ALG_QUERY_2>
+		<ALG_QUERY_3>
+GROUP BY
+		recipe_id
+"""
+
+alg_query = """
+AND recipe_id NOT IN (
+	SELECT r2i.recipe_id
+	FROM
+			RECIPE2INGREDIENTS AS r2i,
+			INGREDIENTS AS ing
+	WHERE
+			r2i.ingredient_id = ing.ingredient_id AND
+			ing.ingredient_name LIKE "%<ALG>%"
+)
+"""
 
 
+def get_query5(alg1, alg2, alg3):
+	if alg1 != "":
+		alg_query1 = re.sub("<ALG>", alg1, alg_query, re.MULTILINE)
+	else:
+		alg_query1 = ""
 
+	if alg2 != "":
+		alg_query2 = re.sub("<ALG>", alg2, alg_query, re.MULTILINE)
+	else:
+		alg_query2 = ""
 
+	if alg3 != "":
+		alg_query3 = re.sub("<ALG>", alg3, alg_query, re.MULTILINE)
+	else:
+		alg_query3 = ""
 
+	query = re.sub("<ALG_QUERY_1>", alg_query1, allergies_query, re.MULTILINE)
+	query = re.sub("<ALG_QUERY_2>", alg_query2, query, re.MULTILINE)
+	query = re.sub("<ALG_QUERY_3>", alg_query3, query, re.MULTILINE)
+
+	return query

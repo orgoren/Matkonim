@@ -56,44 +56,6 @@ FROM	( SELECT recipe_id FROM ALL_RECIPES where course="Breakfast and Brunch") as
 #		rnw.nutrition_id = {} & rnw.weight = 0
 #	>
 
-# cocktails recipes by nutritional values
-query2 = """
-SELECT ar.recipe_name
-FROM	ALL_RECIPES as ar,
-		RECIPE_WEIGHTS as rw,
-		COCKTAIL_RECIPES as cr,
-		RECIPE_NUTRITIONS_WEIGHTS as rnw
-WHERE
-	ar.recipe_id = rw.recipe_id AND
-	ar.recipe_id = cr.recipe_id AND
-	ar.recipe_id = rnw.recipe_id
-"""
-
-# one recipe by daily values
-query3 = """
-SELECT 	*
-FROM 	RECOMMEND_BY_AGE_GENDER as rbag,
-		FOOD_RECIPES as fr,
-		ALL_RECIPES as ar,
-		--RECIPE_NUTRITIONS_WEIGHTS as rnw
-WHERE
-		rbag.gender = <GENDER> AND
-		rbag.age = <AGE> AND
-		fr.recipe_id = ar.recipe_id AND
-		--ar.recipe_id = rnw.recipe_id AND
-		fr.course = <MEAL_OPTION>
-"""
-
-# all day recipes by daily values
-query4 = """
-SELECT	*
-FROM 	RECOMMEND_BY_AGE_GENDER as rbag,
-		DAILY_MEALS as dm,
-WHERE	
-		rbag.gender = <GENDER> AND
-		rbag.age = <AGE>
-"""
-
 
 ineffective_inner_query_for_query3 = """
 AND ar.recipe_id in  (
@@ -111,40 +73,6 @@ AND ar.recipe_id in  (
 )
 """
 
-inner_query_for_query3 = """
-AND ar.recipe_id in  (
-	SELECT DISTINCT ar.recipe_id as recipe_id 
-	FROM 		ALL_RECIPES ar 
-	INNER JOIN 	RECIPE_NUTRITIONS_WEIGHTS rnw 
-				on ar.recipe_id = rnw.recipe_id
-	INNER JOIN 	RECOMMEND_BY_AGE_GENDER rbag 
-				on rbag.nutrition_id = rnw.nutrition_id
-	JOIN NUTRITIONS n
-	WHERE
-		n.nutrition_name = \"<NUT_KEY>\" AND
-		rnw.weight / rbag.weight <NUT_IF>
-)
-"""
-
-
-inner_query_for_query4 = """
-AND dm.breakfast_id, dm.lunch_id, dm.dinner_id IN (
-	SELECT dm2.breakfast_id, dm2.lunch_id, dm2.dinner_id
-	FROM 		DAILY_MEALS as dm2
-		  JOIN 	NUTRITIONS n
-	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_b on rnw_b.recipe_id = dm2.breakfast_id, rnw_b.nutrition_id = n.nutrition_id
-	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_l on rnw_l.recipe_id = dm2.lunch_id, rnw_l.nutrition_id = n.nutrition_id
-	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_d on rnw_d.recipe_id = dm2.dinner_id, rnw_d.nutrition_id = n.nutrition_id
-	INNER JOIN 	RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = n.nutrition_id
-	WHERE
-		rbag.age = <AGE> AND
-		rbag.gender = <GENDER> AND
-		n.nutrition_name = \"<NUT_KEY>\" AND
-		(rnw_b.weight + rnw_l.weight + rnw_d.weight / rbag.weight_mg) <= <NUT_VAL>
-)
-"""
-
-
 ################################
 ########### QUERY 1 ############
 ################################
@@ -158,8 +86,8 @@ WHERE
 	fr.course = \"<MEAL_OPTION>\"
 """
 
-inner_query_for_query1 = """
-AND ar.recipe_id IN (
+inner_query_for_query1_2 = """
+<AND> ar.recipe_id IN (
 SELECT 	rw.recipe_id as recipe_id
 FROM 	RECIPE_NUTRITIONS_WEIGHTS as rnw,
 		RECIPE_WEIGHTS as rw,
@@ -172,16 +100,17 @@ WHERE
 )
 """
 
-def get_query1(nutritions_values, meal_option, is_food=True):
+def get_query1(nutritions_values, meal_option):
 	q = re.sub("<MEAL_OPTION>", meal_option, query1, re.MULTILINE)
 
 	for nut in NUTRITIONS:
-		if is_food and nut == "alcohol":
+		if nut == "alcohol":
 			continue
 
 		if nutritions_values[nut] != "":
-			nline = inner_query_for_query1
+			nline = inner_query_for_query1_2
 			nline = re.sub("<NUT_KEY>", nut, nline)
+			nline = re.sub("<AND>", "AND", nline)
 
 			if nut == "calories":
 				if nutritions_values[nut] != "d":
@@ -203,6 +132,187 @@ def get_query1(nutritions_values, meal_option, is_food=True):
 	return q
 
 
+################################
+########### QUERY 2 ############
+################################
+
+# cocktails recipes by nutritional values
+query2 = """
+SELECT ar.recipe_name
+FROM		ALL_RECIPES ar
+INNER JOIN 	COCKTAIL_RECIPES cr on ar.recipe_id = cr.recipe_id
+WHERE
+	<IS_ALCOHOLIC>
+"""
+
+def get_query2(nutritions_values, meal_option):
+
+	first = False
+
+	for nut in NUTRITIONS:
+		if nut == "alcohol":
+			if nutritions_values[nut] == "":
+				q = re.sub("<IS_ALCOHOLIC>", "", q, re.MULTILINE)
+				first = True
+			elif nutritions_values[nut] == "1" or nutritions_values[nut] == "0":
+				q = re.sub("<IS_ALCOHOLIC>", "cr.is_alcoholic = " + nutritions_values[nut], q, re.MULTILINE)
+			else:
+				print "ERROR"
+
+			continue
+
+		if nutritions_values[nut] != "":
+			nline = inner_query_for_query1_2
+			nline = re.sub("<NUT_KEY>", nut, nline)
+
+			if nut == "calories":
+				if nutritions_values[nut] != "d":
+
+					if first:
+						nline = re.sub("<ADD>", "", nline, re.MULTILINE)
+						first = False
+					else:
+						nline = re.sub("<ADD>", "ADD", nline, re.MULTILINE)
+
+					nline = re.sub("<NUT_IF>", "rnw.weight <= " + nutritions_values[nut], nline, re.MULTILINE)
+					q += nline + "\n"
+					print nline
+			else:
+
+				if first:
+					nline = re.sub("<ADD>", "", nline, re.MULTILINE)
+					first = False
+				else:
+					nline = re.sub("<ADD>", "ADD", nline, re.MULTILINE)
+
+				if VALUES[nutritions_values[nut]] == "over 30%":
+					nline = re.sub("<NUT_IF>", ">= 0.3", nline, re.MULTILINE)
+					q += nline + "\n"
+				elif VALUES[nutritions_values[nut]] == "less than 5%":
+					nline = re.sub("<NUT_IF>", "<= 0.05", nline, re.MULTILINE)
+					q += nline + "\n"
+				elif VALUES[nutritions_values[nut]] == "None":
+					nline = re.sub("<NUT_IF>", "= 0", nline, re.MULTILINE)
+					q += nline + "\n"
+				elif  VALUES[nutritions_values[nut]] != "dont care":
+					print "ERROR - invalid value (" + str(nutritions_values[nut]) + ") for (" + nut + ")"
+	return q
+
+################################
+########### QUERY 3 ############
+################################
+
+# one recipe by daily values
+query3 = """
+SELECT 	*
+FROM 	RECOMMEND_BY_AGE_GENDER as rbag,
+		FOOD_RECIPES as fr,
+		ALL_RECIPES as ar,
+		--RECIPE_NUTRITIONS_WEIGHTS as rnw
+WHERE
+		rbag.gender = \"<GENDER>\" AND
+		rbag.age = <AGE> AND
+		fr.recipe_id = ar.recipe_id AND
+		--ar.recipe_id = rnw.recipe_id AND
+		fr.course = \"<MEAL_OPTION>\"
+"""
+
+inner_query_for_query3 = """
+AND ar.recipe_id in  (
+	SELECT DISTINCT ar.recipe_id as recipe_id 
+	FROM 		ALL_RECIPES ar 
+	INNER JOIN 	RECIPE_NUTRITIONS_WEIGHTS rnw 
+				on ar.recipe_id = rnw.recipe_id
+	INNER JOIN 	RECOMMEND_BY_AGE_GENDER rbag 
+				on rbag.nutrition_id = rnw.nutrition_id
+	JOIN NUTRITIONS n
+	WHERE
+		n.nutrition_name = \"<NUT_KEY>\" AND
+		rnw.weight / rbag.weight <= <NUT_VAL>
+)
+"""
+
+def get_query3(nutritions_values, meal_option, age, gender):
+	# If it's FullDay then need to use query #4
+	if meal_option == "FullDay":
+		return get_query4(nutritions_values, age, gender)
+
+	q = re.sub("<MEAL_OPTION>", meal_option, query3, re.MULTILINE)
+	q = re.sub("<GENDER>", gender, q, re.MULTILINE)
+	q = re.sub("<AGE>", age, q, re.MULTILINE)
+
+	for nut in NUTRITIONS:
+
+		if nutritions_values[nut] != "" or nutritions_values[nut] == "Don't Care" or nutritions_values[nut] == "d":
+			nline = inner_query_for_query3
+			nline = re.sub("<NUT_KEY>", nut, nline)
+			try:
+				val = float(nutritions_values[nut]) / float(100)
+			except:
+				val = nutritions_values[nut]
+				print "ERROR: expected int value, but got:", val
+				return ""
+
+			nline = re.sub("<NUT_VAL>", str(val), nline, re.MULTILINE)
+
+			q += nline
+
+	return q
+
+################################
+########### QUERY 4 ############
+################################
+
+# all day recipes by daily values
+query4 = """
+SELECT	*
+FROM 	RECOMMEND_BY_AGE_GENDER as rbag,
+		DAILY_MEALS as dm,
+WHERE	
+		rbag.gender = \"<GENDER>\" AND
+		rbag.age = <AGE>
+"""
+
+inner_query_for_query4 = """
+AND dm.breakfast_id, dm.lunch_id, dm.dinner_id IN (
+	SELECT dm2.breakfast_id, dm2.lunch_id, dm2.dinner_id
+	FROM 		DAILY_MEALS as dm2
+		  JOIN 	NUTRITIONS n
+	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_b on rnw_b.recipe_id = dm2.breakfast_id, rnw_b.nutrition_id = n.nutrition_id
+	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_l on rnw_l.recipe_id = dm2.lunch_id, rnw_l.nutrition_id = n.nutrition_id
+	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_d on rnw_d.recipe_id = dm2.dinner_id, rnw_d.nutrition_id = n.nutrition_id
+	INNER JOIN 	RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = n.nutrition_id
+	WHERE
+		rbag.age = <AGE> AND
+		rbag.gender = <GENDER> AND
+		n.nutrition_name = \"<NUT_KEY>\" AND
+		(rnw_b.weight + rnw_l.weight + rnw_d.weight) / rbag.weight_mg <= <NUT_VAL>
+)
+"""
+
+def get_query4(nutritions_values, age, gender):
+	# If it's FullDay then need to use query #4
+
+	q = re.sub("<GENDER>", gender, query4, re.MULTILINE)
+	q = re.sub("<AGE>", age, q, re.MULTILINE)
+
+	for nut in NUTRITIONS:
+
+		if nutritions_values[nut] != "" or nutritions_values[nut] == "Don't Care" or nutritions_values[nut] == "d":
+			nline = inner_query_for_query4
+			nline = re.sub("<NUT_KEY>", nut, nline)
+			try:
+				val = float(nutritions_values[nut]) / float(100)
+			except:
+				val = nutritions_values[nut]
+				print "ERROR: expected int value, but got:", val
+				return ""
+
+			nline = re.sub("<NUT_IF>", str(val), nline, re.MULTILINE)
+
+			q += nline
+
+	return q
 
 ################################
 ########### QUERY 5 ############
@@ -257,3 +367,4 @@ def get_query5(alg1, alg2, alg3):
 	query = re.sub("<ALG_QUERY_3>", alg_query3, query, re.MULTILINE)
 
 	return query
+

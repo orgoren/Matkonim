@@ -53,13 +53,20 @@ def cocktails_by_nutritional():
 		if "Back to Main Menu" == request.form['submit']:
 			return redirect('/')
 		if "Find me a cocktail!" == request.form['submit']:
-			nutritions_values = get_nutritions_values(request.form)
-			print nutritions_values
-			nutritions_values = {}
-	
+			nutritions_values = get_nutritions_values(request.form, False)
+
+			print "nutritions_values:"
 			print nutritions_values
 
-			# TODO - get query values
+			q = queries.get_query2(nutritions_values)
+			print q
+			ans = connect_to_db(q)
+			if ans is None:
+				print "No query was sent..."
+			else:
+				print "results:::"
+				print ans
+
 			return redirect('/cocktails_results')
 
 
@@ -83,9 +90,17 @@ def daily_meal_plan():
 			return redirect('/')
 		if "Find me a meal plan!" == request.form['submit']:
 			nutritions_values = get_nutritions_values(request.form)
-			print nutritions_values
+			meal_option = get_meal_option(request.form)
 
-			# TODO - get query values
+			q = queries.get_query4(nutritions_values, meal_option)
+			print q
+			ans = connect_to_db(q)
+			if ans is None:
+				print "No query was sent..."
+			else:
+				print "results:::"
+				print ans
+
 			return redirect('/daily_meal_results')
 
 
@@ -111,7 +126,16 @@ def recipes_by_allergies():
 			_inlineFormAllergan1 = request.form["inlineFormAllergan1"]
 			_inlineFormAllergan2 = request.form["inlineFormAllergan2"]
 			_inlineFormAllergan3 = request.form["inlineFormAllergan3"]
-			# TODO - get query values and handle insufficient input case
+
+			q = queries.get_query5(_inlineFormAllergan1, _inlineFormAllergan2, _inlineFormAllergan3)
+			print q
+			ans = connect_to_db(q)
+			if ans is None:
+				print "No query was sent..."
+			else:
+				print "results:::"
+				print ans
+
 			return redirect('/recipes_by_allergies_results')
 
 

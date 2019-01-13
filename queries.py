@@ -59,17 +59,13 @@ FROM	( SELECT recipe_id FROM ALL_RECIPES where course="Breakfast and Brunch") as
 
 ineffective_inner_query_for_query3 = """
 AND ar.recipe_id in  (
-	SELECT ar.recipe_id as recipe_id 
-	FROM 	ALL_RECIPES as ar,
-			RECOMMEND_BY_AGE_GENDER as rbag,
-			RECIPE_NUTRITIONS_WEIGHT as rnw,
-			NUTRITIONS as n
+	SELECT DISTINCT ar.recipe_id as recipe_id 
+	FROM ALL_RECIPES ar join RECIPE_NUTRITIONS_WEIGHTS rnw on ar.recipe_id = rnw.recipe_id
+		join RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = rnw.nutrition_id,
+		NUTRITIONS as n
 	WHERE
-		ar.recipe_id = rnw.recipe_id AND
-		rbag.nutrition_id = rnw.nutrition_id AND
 		n.nutrition_name = <NUT_KEY> AND
-		rnw.weight / rbag.weight <NUT_IF>
-
+		rnw.weight / rbag.weight_mg <NUT_IF>
 )
 """
 

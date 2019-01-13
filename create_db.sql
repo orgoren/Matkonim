@@ -92,34 +92,3 @@ CREATE TABLE DbMysql11.RECOMMEND_BY_AGE_GENDER(
    INDEX (gender, age, nutrition_id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
-
-
-/*CREATE VIEW RECIPE_WEIGHTS AS
-SELECT ar.recipe_id as recipe_id, SUM(st.tot_weight) as weight
-FROM 	ALL_RECIPES          as ar, 
-		INGREDIENTS          as i, 
-		RECIPE2INGREDIENTS   as r2i,
-		(
-			SELECT (r2i.servings * i.serving_weight) as tot_weight, ar.recipe_id as recipe_id
-			FROM  	ALL_RECIPES          as ar, 
-					INGREDIENTS          as i, 
-					RECIPE2INGREDIENTS   as r2i
-			WHERE
-					ar.recipe_id = r2i.recipe_id
-		) as st
-WHERE
-	ar.recipe_id = r2i.recipe_id AND
-	st.recipe_id = r2i.recipe_id
-GROUP BY 
-	ar.recipe_id;
-	
-CREATE VIEW RECIPE_NUTRITIONS_WEIGHTS AS
-SELECT ar.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
-FROM	ALL_RECIPES as ar,
-		RECIPE2INGREDIENTS as r2i,
-		INGREDIENT_NUTRITION as inn
-WHERE
-	ar.recipe_id = r2i.recipe_id AND
-	inn.ingredient_id = r2i.ingredient_id
-GROUP BY
-	ar.recipe_id, inn.nutrition_id*/

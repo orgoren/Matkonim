@@ -36,7 +36,7 @@ FROM	( SELECT recipe_id FROM FOOD_RECIPES where course="Breakfast and Brunch") a
 ################################
 
 # food recipes by nutritional values
-query1 = """
+query1_no_if = """
 SELECT ar.recipe_name
 FROM		ALL_RECIPES ar
 INNER JOIN 	FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id
@@ -44,7 +44,18 @@ WHERE
 	fr.course = \"<MEAL_OPTION>\"
 """
 
-inner_query_for_query1_2 = """
+query1 = """
+SELECT ar.recipe_name
+FROM		ALL_RECIPES ar
+INNER JOIN 	RECIPE_WEIGHTS rw on ar.recipe_id = ar.recipe_id
+INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw on rw.recipe_id = rnw.recipe_id
+INNER JOIN	NUTRITIONS n on rnw.nutrition_id = n.nutrition_id
+INNER JOIN 	FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id
+WHERE
+	fr.course = \"<MEAL_OPTION>\"
+"""
+
+inner_query_for_query1_2_no_if = """
 <AND> ar.recipe_id IN (
 SELECT 	rw.recipe_id as recipe_id
 
@@ -57,6 +68,13 @@ WHERE
 )
 """
 
+inner_query_for_query1_2_take_1 = """
+<AND> (IF ( (n.nutrition_name = \"<NUT_KEY>\"), ( IF (rnw.weight / rw.weight <NUT_IF>), 1, 0), 1)) = 1
+"""
+
+inner_query_for_query1_2 = """
+<AND> 	(n.nutrition_name <> \"<NUT_KEY>\" OR rnw.weight / rw.weight <NUT_IF>)
+"""
 
 def get_query1(nutritions_values, meal_option):
 	q = re.sub("<MEAL_OPTION>", meal_option, query1, re.MULTILINE)

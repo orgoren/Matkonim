@@ -1,31 +1,10 @@
 #!/usr/bin/env python
 import re
 from utils import *
-#FOOD_NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
-#					"lactose", "vitaminC", "satfat",  "fiber", "calories"]
 
-#VALUES = {"None" : "None", "1" : "None", "d": "dont care", "2" : "less than 5%", "3" : "over 30%"}
-
-weights_view_old= """
-CREATE VIEW RECIPE_WEIGHTS AS
-SELECT ar.recipe_id as recipe_id, SUM(st.tot_weight) as weight
-FROM 	ALL_RECIPES          as ar, 
-		INGREDIENTS          as i, 
-		RECIPE2INGREDIENTS   as r2i,
-		(
-			SELECT (r2i.servings * i.serving_weight) as tot_weight, ar.recipe_id as recipe_id
-			FROM  	ALL_RECIPES          as ar, 
-					INGREDIENTS          as i, 
-					RECIPE2INGREDIENTS   as r2i
-			WHERE
-					ar.recipe_id = r2i.recipe_id
-		) as st
-WHERE
-	ar.recipe_id = r2i.recipe_id AND
-	st.recipe_id = r2i.recipe_id
-GROUP BY 
-	ar.recipe_id
-"""
+################################
+############ VIEWS #############
+################################
 
 weights_view = """
 CREATE VIEW RECIPE_WEIGHTS AS
@@ -33,19 +12,6 @@ SELECT SUM(r2i.servings * i.serving_weight_grams) as tot_weight, r2i.recipe_id a
 FROM 		RECIPE2INGREDIENTS r2i
 INNER JOIN 	INGREDIENTS i on i.ingredient_id = r2i.ingredient_id
 GROUP BY r2i.recipe_id
-"""
-
-recipe_nutritions_view_old = """
-CREATE VIEW RECIPE_NUTRITIONS_WEIGHTS AS
-SELECT ar.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg) as weight
-FROM	ALL_RECIPES as ar,
-		RECIPE2INGREDIENTS as r2i,
-		INGREDIENT_NUTRITION as inn
-WHERE
-	ar.recipe_id = r2i.recipe_id AND
-	inn.ingredient_id = r2i.ingredient_id
-GROUP BY
-	ar.recipe_id, inn.nutrition_id
 """
 
 recipe_nutritions_view = """
@@ -56,14 +22,6 @@ INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
 GROUP BY r2i.recipe_id, inn.nutrition_id
 """
 
-daily_meals_view_old = """
-CREATE VIEW DAILY_MEALS AS
-SELECT 	breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
-FROM	( SELECT recipe_id FROM ALL_RECIPES where course="Breakfast and Brunch") as breakfast_r
-		( SELECT recipe_id FROM ALL_RECIPES where course="Lunch") as lunch_r
-		( SELECT recipe_id FROM ALL_RECIPES where course="Main Dishes") as dinner_r
-"""
-
 daily_meals_view = """
 CREATE VIEW DAILY_MEALS AS
 SELECT 	breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
@@ -71,24 +29,7 @@ FROM	( SELECT recipe_id FROM FOOD_RECIPES where course="Breakfast and Brunch") a
 		( SELECT recipe_id FROM FOOD_RECIPES where course="Lunch") as lunch_r,
 		( SELECT recipe_id FROM FOOD_RECIPES where course="Main Dishes") as dinner_r
 """
-#	<OTHER QUERIES OF THE FORM OF:
-#		n.nutrition_name = {} and rnw.nutrition_id = {} and rnw.weight > 0.3 AND
-#		rnw.nutrition_id = {} & rnw.weight < 0.05 AND
-#		rnw.nutrition_id = {} & rnw.weight = 0
-#	>
 
-
-ineffective_inner_query_for_query3 = """
-AND ar.recipe_id in  (
-	SELECT DISTINCT ar.recipe_id as recipe_id 
-	FROM ALL_RECIPES ar inner join RECIPE_NUTRITIONS_WEIGHTS rnw on ar.recipe_id = rnw.recipe_id
-		inner join RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = rnw.nutrition_id,
-		NUTRITIONS as n
-	WHERE
-		n.nutrition_name = <NUT_KEY> AND
-		rnw.weight / rbag.weight_mg <NUT_IF>
-)
-"""
 
 ################################
 ########### QUERY 1 ############
@@ -106,16 +47,16 @@ WHERE
 inner_query_for_query1_2 = """
 <AND> ar.recipe_id IN (
 SELECT 	rw.recipe_id as recipe_id
-FROM 	RECIPE_NUTRITIONS_WEIGHTS as rnw,
-		RECIPE_WEIGHTS as rw,
-		NUTRITIONS as n
+
+FROM 		RECIPE_WEIGHTS rw
+INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw on rw.recipe_id = rnw.recipe_id
+INNER JOIN	NUTRITIONS n on rnw.nutrition_id = n.nutrition_id
 WHERE
-		rw.recipe_id = rnw.recipe_id AND
-		rnw.nutrition_id = n.nutrition_id AND
 		n.nutrition_name = \"<NUT_KEY>\" AND
 		rnw.weight / rw.weight <NUT_IF>
 )
 """
+
 
 def get_query1(nutritions_values, meal_option):
 	q = re.sub("<MEAL_OPTION>", meal_option, query1, re.MULTILINE)
@@ -221,17 +162,6 @@ def get_query2(nutritions_values):
 ########### QUERY 3 ############
 ################################
 
-query3_old = """
-SELECT 	DISTINCT fr.recipe_id
-FROM 	RECOMMEND_BY_AGE_GENDER as rbag,
-		FOOD_RECIPES as fr,
-		ALL_RECIPES as ar
-WHERE
-		rbag.gender = \"<GENDER>\" AND
-		rbag.age = <AGE> AND
-		fr.recipe_id = ar.recipe_id AND
-		fr.course = \"<MEAL_OPTION>\"
-"""
 
 # one recipe by daily values
 query3 = """
@@ -314,12 +244,11 @@ WHERE
 
 inner_query_for_query4 = """
 AND dm.breakfast_id, dm.lunch_id, dm.dinner_id IN (
-	SELECT dm2.breakfast_id, dm2.lunch_id, dm2.dinner_id
-	FROM 		DAILY_MEALS as dm2
-		  JOIN 	NUTRITIONS n
-	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_b on rnw_b.recipe_id = dm2.breakfast_id, rnw_b.nutrition_id = n.nutrition_id
-	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_l on rnw_l.recipe_id = dm2.lunch_id, rnw_l.nutrition_id = n.nutrition_id
-	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_d on rnw_d.recipe_id = dm2.dinner_id, rnw_d.nutrition_id = n.nutrition_id
+	SELECT DISTINCT dm2.breakfast_id, dm2.lunch_id, dm2.dinner_id
+	FROM 			NUTRITIONS n,	DAILY_MEALS dm2 	
+	LEFT JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_b on rnw_b.recipe_id = dm2.breakfast_id and rnw_b.nutrition_id = n.nutrition_id
+	LEFT JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_l on rnw_l.recipe_id = dm2.lunch_id and rnw_l.nutrition_id = n.nutrition_id
+	LEFT JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_d on rnw_d.recipe_id = dm2.dinner_id and rnw_d.nutrition_id = n.nutrition_id
 	INNER JOIN 	RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = n.nutrition_id
 	WHERE
 		rbag.age = <AGE> AND
@@ -365,29 +294,29 @@ def get_query4(nutritions_values, age, gender):
 ########### QUERY 5 ############
 ################################
 
-allergies_query = """SELECT DISTINCT ar.recipe_id AS recipe_id, ar.recipe_name AS recipe_name
-FROM 
-		ALL_RECIPES AS ar,
-		RECIPE2INGREDIENTS AS r2i,
-		<FOOD_DRINK>
+allergies_query = """
+SELECT DISTINCT ar.recipe_id AS recipe_id, ar.recipe_name AS recipe_name
+FROM 		ALL_RECIPES ar 
+INNER JOIN 	RECIPE2INGREDIENTS r2i on ar.recipe_id = r2i.recipe_id,
+			<FOOD_DRINK>
 WHERE
 		<FOOD_DRINK_FIELDS>
-		AND ar.recipe_id = r2i.recipe_id
 		<ALG_QUERY_1>
 		<ALG_QUERY_2>
 		<ALG_QUERY_3>
 GROUP BY
-		ar.recipe_id"""
+		ar.recipe_id
+"""
 
-alg_query = """AND ar.recipe_id NOT IN (
-	SELECT r2i.recipe_id
-	FROM
-			RECIPE2INGREDIENTS AS r2i,
-			INGREDIENTS AS ing
-	WHERE
-			r2i.ingredient_id = ing.ingredient_id AND
-			ing.ingredient_name LIKE \"%<ALG>%\"
-)"""
+alg_query = """
+AND ar.recipe_id NOT IN (
+	SELECT DISTINCT r2i.recipe_id
+	FROM		RECIPE2INGREDIENTS r2i 
+	INNER JOIN 	INGREDIENTS ing on r2i.ingredient_id = ing.ingredient_id
+	WHERE	
+			ing.ingredient_name LIKE \"%<ALG>%\
+	)
+"""
 
 food_fields = """ar.recipe_id = fr.recipe_id
 		AND fr.course = \"<MEAL_OPTION>\""""
@@ -425,3 +354,156 @@ def get_query5(allergans, option):
 
 	return query
 
+
+
+
+
+
+
+###############################################################################################
+###############################################################################################
+###############################################################################################
+###############################################################################################
+################################## Old QUERIES ################################################
+###############################################################################################
+###############################################################################################
+###############################################################################################
+###############################################################################################
+
+
+alg_query_old = """
+AND ar.recipe_id NOT IN (
+	SELECT r2i.recipe_id
+	FROM
+			RECIPE2INGREDIENTS AS r2i,
+			INGREDIENTS AS ing
+	WHERE
+			r2i.ingredient_id = ing.ingredient_id AND
+			ing.ingredient_name LIKE \"%<ALG>%\"
+	)
+"""
+
+
+allergies_query_old = """
+SELECT DISTINCT ar.recipe_id AS recipe_id, ar.recipe_name AS recipe_name
+FROM 
+		ALL_RECIPES AS ar,
+		RECIPE2INGREDIENTS AS r2i,
+		<FOOD_DRINK>
+WHERE
+		<FOOD_DRINK_FIELDS>
+		AND ar.recipe_id = r2i.recipe_id
+		<ALG_QUERY_1>
+		<ALG_QUERY_2>
+		<ALG_QUERY_3>
+GROUP BY
+		ar.recipe_id
+"""
+
+query3_old = """
+SELECT 	DISTINCT fr.recipe_id
+FROM 	RECOMMEND_BY_AGE_GENDER as rbag,
+		FOOD_RECIPES as fr,
+		ALL_RECIPES as ar
+WHERE
+		rbag.gender = \"<GENDER>\" AND
+		rbag.age = <AGE> AND
+		fr.recipe_id = ar.recipe_id AND
+		fr.course = \"<MEAL_OPTION>\"
+"""
+
+
+inner_query_for_query1_2_old = """
+<AND> ar.recipe_id IN (
+SELECT 	rw.recipe_id as recipe_id
+FROM 	RECIPE_NUTRITIONS_WEIGHTS as rnw,
+		RECIPE_WEIGHTS as rw,
+		NUTRITIONS as n
+WHERE
+		rw.recipe_id = rnw.recipe_id AND
+		rnw.nutrition_id = n.nutrition_id AND
+		n.nutrition_name = \"<NUT_KEY>\" AND
+		rnw.weight / rw.weight <NUT_IF>
+)
+"""
+
+weights_view_old= """
+CREATE VIEW RECIPE_WEIGHTS AS
+SELECT ar.recipe_id as recipe_id, SUM(st.tot_weight) as weight
+FROM 	ALL_RECIPES          as ar, 
+		INGREDIENTS          as i, 
+		RECIPE2INGREDIENTS   as r2i,
+		(
+			SELECT (r2i.servings * i.serving_weight) as tot_weight, ar.recipe_id as recipe_id
+			FROM  	ALL_RECIPES          as ar, 
+					INGREDIENTS          as i, 
+					RECIPE2INGREDIENTS   as r2i
+			WHERE
+					ar.recipe_id = r2i.recipe_id
+		) as st
+WHERE
+	ar.recipe_id = r2i.recipe_id AND
+	st.recipe_id = r2i.recipe_id
+GROUP BY 
+	ar.recipe_id
+"""
+
+
+recipe_nutritions_view_old = """
+CREATE VIEW RECIPE_NUTRITIONS_WEIGHTS AS
+SELECT ar.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg) as weight
+FROM	ALL_RECIPES as ar,
+		RECIPE2INGREDIENTS as r2i,
+		INGREDIENT_NUTRITION as inn
+WHERE
+	ar.recipe_id = r2i.recipe_id AND
+	inn.ingredient_id = r2i.ingredient_id
+GROUP BY
+	ar.recipe_id, inn.nutrition_id
+"""
+
+daily_meals_view_old = """
+CREATE VIEW DAILY_MEALS AS
+SELECT 	breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
+FROM	( SELECT recipe_id FROM ALL_RECIPES where course="Breakfast and Brunch") as breakfast_r
+		( SELECT recipe_id FROM ALL_RECIPES where course="Lunch") as lunch_r
+		( SELECT recipe_id FROM ALL_RECIPES where course="Main Dishes") as dinner_r
+"""
+
+
+ineffective_inner_query_for_query3 = """
+AND ar.recipe_id in  (
+	SELECT DISTINCT ar.recipe_id as recipe_id 
+	FROM ALL_RECIPES ar inner join RECIPE_NUTRITIONS_WEIGHTS rnw on ar.recipe_id = rnw.recipe_id
+		inner join RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = rnw.nutrition_id,
+		NUTRITIONS as n
+	WHERE
+		n.nutrition_name = <NUT_KEY> AND
+		rnw.weight / rbag.weight_mg <NUT_IF>
+)
+"""
+
+inner_query_for_query4_old = """
+AND dm.breakfast_id, dm.lunch_id, dm.dinner_id IN (
+	SELECT dm2.breakfast_id, dm2.lunch_id, dm2.dinner_id
+	FROM 		DAILY_MEALS as dm2
+		  JOIN 	NUTRITIONS n
+	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_b on rnw_b.recipe_id = dm2.breakfast_id, rnw_b.nutrition_id = n.nutrition_id
+	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_l on rnw_l.recipe_id = dm2.lunch_id, rnw_l.nutrition_id = n.nutrition_id
+	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_d on rnw_d.recipe_id = dm2.dinner_id, rnw_d.nutrition_id = n.nutrition_id
+	INNER JOIN 	RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = n.nutrition_id
+	WHERE
+		rbag.age = <AGE> AND
+		rbag.gender = <GENDER> AND
+		n.nutrition_name = \"<NUT_KEY>\" AND
+		(
+			n.max_or_min = \"min\" AND
+			(rnw_b.weight + rnw_l.weight + rnw_d.weight) / rbag.weight_mg >= <NUT_VAL>
+		)
+		OR
+		(
+			n.max_or_min = \"max\" AND
+			r(rnw_b.weight + rnw_l.weight + rnw_d.weight) / rbag.weight_mg <= <NUT_VAL>
+		)
+)
+"""

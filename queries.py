@@ -294,7 +294,7 @@ def get_query4(nutritions_values, age, gender):
 ########### QUERY 5 ############
 ################################
 
-allergies_query = """
+allergies_query_old_2 = """
 SELECT DISTINCT ar.recipe_id AS recipe_id, ar.recipe_name AS recipe_name
 FROM 		ALL_RECIPES ar 
 INNER JOIN 	RECIPE2INGREDIENTS r2i on ar.recipe_id = r2i.recipe_id,
@@ -308,51 +308,76 @@ GROUP BY
 		ar.recipe_id
 """
 
+allergies_query = """
+SELECT DISTINCT ar.recipe_id AS recipe_id, ar.recipe_name AS recipe_name
+FROM 		ALL_RECIPES ar 
+INNER JOIN 	RECIPE2INGREDIENTS r2i on ar.recipe_id = r2i.recipe_id
+INNER JOIN  <FOOD_DRINK>
+WHERE
+		<FOOD_DRINK_FIELDS>
+		<ALG_QUERY_1>
+		<ALG_QUERY_2>
+		<ALG_QUERY_3>
+GROUP BY
+		ar.recipe_id
+"""
+
 alg_query = """
-AND ar.recipe_id NOT IN (
+<AND> ar.recipe_id NOT IN (
 	SELECT DISTINCT r2i.recipe_id
 	FROM		RECIPE2INGREDIENTS r2i 
 	INNER JOIN 	INGREDIENTS ing on r2i.ingredient_id = ing.ingredient_id
 	WHERE	
-			ing.ingredient_name LIKE \"%<ALG>%\
+			ing.ingredient_name LIKE \"%<ALG>%\"
 	)
 """
 
-food_fields = """ar.recipe_id = fr.recipe_id
+food_fields_old = """ar.recipe_id = fr.recipe_id
 		AND fr.course = \"<MEAL_OPTION>\""""
+
+food_fields = """
+fr.course = \"<MEAL_OPTIONS>\"
+"""
 
 cocktail_fields = """ar.recipe_id = cr.recipe_id"""
 
-
 def get_query5(allergans, option):
+
+	first = False
+	algqueries = []
+
 	if option == "Cocktail":
-		query = re.sub("<FOOD_DRINK>", "COCKTAIL_RECIPES AS cr", allergies_query, re.MULTILINE)
-		query = re.sub("<FOOD_DRINK_FIELDS>", cocktail_fields, query, re.MULTILINE)
+		query = re.sub("<FOOD_DRINK>", "COCKTAIL_RECIPES cr on r2i.recipe_id = cr.recipe_id", allergies_query, re.MULTILINE)
+		first = True
+		query = re.sub("<FOOD_DRINK_FIELDS>", "", query, re.MULTILINE)
 	else:
-		query = re.sub("<FOOD_DRINK>", "FOOD_RECIPES AS fr", allergies_query, re.MULTILINE)
+		query = re.sub("<FOOD_DRINK>", "FOOD_RECIPES fr on r2i.recipe_id = fr.recipe_id", allergies_query, re.MULTILINE)
 		my_food_fields = re.sub("<MEAL_OPTION>", option, food_fields, re.MULTILINE)
 		query = re.sub("<FOOD_DRINK_FIELDS>", my_food_fields, query, re.MULTILINE)
 
-	if allergans[0] != "":
-		alg_query1 = re.sub("<ALG>", allergans[0], alg_query, re.MULTILINE)
-	else:
-		alg_query1 = ""
+	for allergan in allergans:
+		if allergan != "":
+			if first:
+				alg_query_t = re.sub("<AND>", "", alg_query, re.MULTILINE)
+				first = False
+			else:
+				alg_query_t = re.sub("<AND>", "AND", alg_query, re.MULTILINE)		
 
-	if allergans[1] != "":
-		alg_query2 = re.sub("<ALG>", allergans[1], alg_query, re.MULTILINE)
-	else:
-		alg_query2 = ""
+			algqueries.append(re.sub("<ALG>", allergan, alg_query_t, re.MULTILINE))
+		else:
+			algqueries.append("")
 
-	if allergans[2] != "":
-		alg_query3 = re.sub("<ALG>", allergans[2], alg_query, re.MULTILINE)
-	else:
-		alg_query3 = ""
 
-	query = re.sub("<ALG_QUERY_1>", alg_query1, query, re.MULTILINE)
-	query = re.sub("<ALG_QUERY_2>", alg_query2, query, re.MULTILINE)
-	query = re.sub("<ALG_QUERY_3>", alg_query3, query, re.MULTILINE)
+	print "============================="
+	print algqueries
+	print "-============================"
+
+	query = re.sub("<ALG_QUERY_1>", algqueries[0], query, re.MULTILINE)
+	query = re.sub("<ALG_QUERY_2>", algqueries[1], query, re.MULTILINE)
+	query = re.sub("<ALG_QUERY_3>", algqueries[2], query, re.MULTILINE)
 
 	return query
+
 
 
 
@@ -507,3 +532,34 @@ AND dm.breakfast_id, dm.lunch_id, dm.dinner_id IN (
 		)
 )
 """
+
+
+def get_query5_old(allergans, option):
+	if option == "Cocktail":
+		query = re.sub("<FOOD_DRINK>", "COCKTAIL_RECIPES AS cr", allergies_query, re.MULTILINE)
+		query = re.sub("<FOOD_DRINK_FIELDS>", cocktail_fields, query, re.MULTILINE)
+	else:
+		query = re.sub("<FOOD_DRINK>", "FOOD_RECIPES AS fr", allergies_query, re.MULTILINE)
+		my_food_fields = re.sub("<MEAL_OPTION>", option, food_fields, re.MULTILINE)
+		query = re.sub("<FOOD_DRINK_FIELDS>", my_food_fields, query, re.MULTILINE)
+
+	if allergans[0] != "":
+		alg_query1 = re.sub("<ALG>", allergans[0], alg_query, re.MULTILINE)
+	else:
+		alg_query1 = ""
+
+	if allergans[1] != "":
+		alg_query2 = re.sub("<ALG>", allergans[1], alg_query, re.MULTILINE)
+	else:
+		alg_query2 = ""
+
+	if allergans[2] != "":
+		alg_query3 = re.sub("<ALG>", allergans[2], alg_query, re.MULTILINE)
+	else:
+		alg_query3 = ""
+
+	query = re.sub("<ALG_QUERY_1>", alg_query1, query, re.MULTILINE)
+	query = re.sub("<ALG_QUERY_2>", alg_query2, query, re.MULTILINE)
+	query = re.sub("<ALG_QUERY_3>", alg_query3, query, re.MULTILINE)
+
+	return query

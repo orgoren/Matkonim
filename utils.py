@@ -48,19 +48,20 @@ def get_meal_option(form):
 	for mo in MEAL_OPTIONS:
 		if str(form.get(mo)) == "on":
 			return mo
-	return "ERROR"
+	# looks like it's chosen
+	return "Main Dishes"
 
 def get_gender(form):
 	for gender in GENDERS:
 		if str(form.get(gender)) == "on":
 			return gender
-	return "ERROR"
+	return "female"
 
 def get_age(form):
 	for age in AGE_RANGES:
 		if str(form.get(age)) == "on":
 			return AGE_RANGES[age]
-	return "ERROR"
+	return AGE_RANGES["14_18"]
 
 def get_food_type_or_cocktail(form):
 	if str(form.get("option_rand")) == "on":
@@ -74,3 +75,4 @@ def get_food_type_or_cocktail(form):
 		return "Cocktail"
 
 	return get_meal_option(form)
+

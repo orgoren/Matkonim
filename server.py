@@ -55,9 +55,6 @@ def cocktails_by_nutritional():
 		if "Find me a cocktail!" == request.form['submit']:
 			nutritions_values = get_nutritions_values(request.form, False)
 
-			print "nutritions_values:"
-			print nutritions_values
-
 			q = queries.get_query2(nutritions_values)
 			print q
 			ans = connect_to_db(q)

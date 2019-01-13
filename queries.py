@@ -49,6 +49,7 @@ GROUP BY
 """
 
 recipe_nutritions_view = """
+CREATE VIEW RECIPE_NUTRITIONS_WEIGHTS AS
 SELECT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
 FROM		RECIPE2INGREDIENTS r2i 
 INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
@@ -64,6 +65,7 @@ FROM	( SELECT recipe_id FROM ALL_RECIPES where course="Breakfast and Brunch") as
 """
 
 daily_meals_view = """
+CREATE VIEW DAILY_MEALS AS
 SELECT 	breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
 FROM	( SELECT recipe_id FROM FOOD_RECIPES where course="Breakfast and Brunch") as breakfast_r,
 		( SELECT recipe_id FROM FOOD_RECIPES where course="Lunch") as lunch_r,
@@ -129,7 +131,7 @@ def get_query1(nutritions_values, meal_option):
 
 			if nut == "calories":
 				if nutritions_values[nut] != "d":
-					nline = re.sub("<NUT_IF>", "rnw.weight <= " + nutritions_values[nut], nline, re.MULTILINE)
+					nline = re.sub("rnw.weight / rw.weight <NUT_IF>", "rnw.weight <= " + nutritions_values[nut], nline, re.MULTILINE)
 					q += nline + "\n"
 					print nline
 			else:
@@ -192,9 +194,8 @@ def get_query2(nutritions_values):
 					else:
 						nline = re.sub("<AND>", "AND", nline, re.MULTILINE)
 
-					nline = re.sub("<NUT_IF>", "rnw.weight <= " + nutritions_values[nut], nline, re.MULTILINE)
+					nline = re.sub("rnw.weight / rw.weight <NUT_IF>", "rnw.weight <= " + nutritions_values[nut], nline, re.MULTILINE)
 					q += nline + "\n"
-					print nline
 			else:
 				if VALUES[nutritions_values[nut]] != "dont care":
 					if first:

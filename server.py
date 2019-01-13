@@ -91,8 +91,10 @@ def daily_meal_plan():
 		if "Find me a meal plan!" == request.form['submit']:
 			nutritions_values = get_nutritions_values(request.form)
 			meal_option = get_meal_option(request.form)
-
-			q = queries.get_query4(nutritions_values, meal_option)
+			gender = get_gender(request.form)
+			age = get_age(request.form)
+			print "age=", age, "gender=", gender, "meal_options=", meal_option
+			q = queries.get_query3(nutritions_values, meal_option, age, gender)
 			print q
 			ans = connect_to_db(q)
 			if ans is None:

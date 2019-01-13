@@ -37,7 +37,7 @@ def run():
 	        picture = row[5]
 	        food_details = row[6].replace("'","''")
 
-	        if (food_id, course, prep_time_minutes, food_details) in food_set:
+	        if (food_id, commonFile.recipe_id, course, prep_time_minutes, food_details) in food_set:
 	            continue
 	        else:
 	            # adding new food to set
@@ -54,18 +54,18 @@ def run():
 	            full_ingredient_line = row[9 + 3*ingredient_index].replace("'","''")
 	            if servings is None or full_ingredient_line == '':
 	            	break
-	            if (ingredient_name, servings, full_ingredient_line) in ingredient_set:
+	            if str(ingredient_name) in commonFile.ingredients_dict and (commonFile.recipe_id, commonFile.ingredients_dict[str(ingredient_name)], servings, str(full_ingredient_line)) in ingredient_set:
 	                continue
 	            else:
 	                # adding new ingredient to set
 					if str(ingredient_name) not in commonFile.ingredients_dict:
 						commonFile.ingredients_dict.update({str(ingredient_name): commonFile.ingredient_id})
 						commonFile.ingredient_id += 1
-					ingredient_set.add((commonFile.recipe_id, ingredient_name, servings, full_ingredient_line))
+					ingredient_set.add((commonFile.recipe_id, commonFile.ingredients_dict[str(ingredient_name)], servings, str(full_ingredient_line)))
 					add_ingredient_queries += add_ingredient.format(commonFile.recipe_id, commonFile.ingredients_dict[str(ingredient_name)], servings, str(full_ingredient_line))
 
 	        commonFile.recipe_id += 1
-	    	if commonFile.recipe_id > 10000:
+	    	if commonFile.recipe_id > 20000:
 	    		break
 
 

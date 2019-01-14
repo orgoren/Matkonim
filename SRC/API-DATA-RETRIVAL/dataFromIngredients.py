@@ -49,8 +49,11 @@ def run():
                     add_nutrition_queries += add_nutrition.format(commonFile.ingredients_dict[str(ingredient_name)], nutrition_id, weight_mg_from_ingredient)
                     nutrition_id += 1
 
-    ingredients_sql = open('insert_ingredients_from_ingredients.sql', 'w')
-    ingredients_sql.write(add_ingredient_queries)
+    ingredients_sql_file = open('insert_data_from_ingredients_csv.sql', 'w')
+    ingredients_sql_file.write(add_ingredient_queries + add_nutrition_queries)
 
-    ingredients_nutrition_sql = open('insert_ingredients_nutrition.sql', 'w')
-    ingredients_nutrition_sql.write(add_nutrition_queries)
+    # ingredients_sql = open('insert_ingredients_from_ingredients.sql', 'w')
+    # ingredients_sql.write(add_ingredient_queries)
+
+    # ingredients_nutrition_sql = open('insert_ingredients_nutrition.sql', 'w')
+    # ingredients_nutrition_sql.write(add_nutrition_queries)

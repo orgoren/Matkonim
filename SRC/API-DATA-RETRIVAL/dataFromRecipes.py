@@ -68,12 +68,16 @@ def run():
 	    	if commonFile.recipe_id > 20000:
 	    		break
 
-	commonFile.recipe_id -= 1  # for the cocktails    		
-	recipe_ingredient_sql = open('insert_recipe_ingredient_from_recipes.sql', 'w')
-	recipe_ingredient_sql.write(add_ingredient_queries)
+	commonFile.recipe_id -= 1  # for the cocktails    
 
-	food_recipe_sql = open('insert_food_recipe_from_recipes.sql', 'w')
-	food_recipe_sql.write(add_food_recipe_queries)
+	recipes_sql_file = open('insert_data_from_recipe_csv.sql', 'w')
+	recipes_sql_file.write(add_all_recipes_queries+add_food_recipe_queries+add_ingredient_queries)
 
-	recipes_sql2 = open('insert_all_recipes_from_recipes.sql', 'w')
-	recipes_sql2.write(add_all_recipes_queries)
+	# recipe_ingredient_sql = open('insert_recipe_ingredient_from_recipes.sql', 'w')
+	# recipe_ingredient_sql.write(add_ingredient_queries)
+
+	# food_recipe_sql = open('insert_food_recipe_from_recipes.sql', 'w')
+	# food_recipe_sql.write(add_food_recipe_queries)
+
+	# recipes_sql2 = open('insert_all_recipes_from_recipes.sql', 'w')
+	# recipes_sql2.write(add_all_recipes_queries)

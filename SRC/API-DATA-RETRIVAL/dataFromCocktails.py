@@ -63,12 +63,16 @@ def run():
                 ingredients.add((commonFile.recipe_id, commonFile.ingredients_dict[str(ingredient_name)], servings, full_ingredient_line))
             commonFile.recipe_id += 1
                     
-    cocktail_sql = open('insert_to_cocktail_recipes_from_cocktails.sql', 'w')
-    cocktail_sql.write(add_cocktail_queries)
 
-    recipes_sql = open('insert_all_recipes_from_cocktails.sql', 'w')
-    recipes_sql.write(add_recipce_queries)
+    cocktail_sql_file = open('insert_data_from_cocktail_rcsv.sql', 'w')
+    cocktail_sql_file.write(add_recipce_queries+add_ingredient_queries+add_cocktail_queries)
 
-    ingredients_sql = open('insert_recipe2ingredients_from_cocktails.sql', 'w')
-    ingredients_sql.write(add_ingredient_queries)
+    # cocktail_sql = open('insert_to_cocktail_recipes_from_cocktails.sql', 'w')
+    # cocktail_sql.write(add_cocktail_queries)
+
+    # recipes_sql = open('insert_all_recipes_from_cocktails.sql', 'w')
+    # recipes_sql.write(add_recipce_queries)
+
+    # ingredients_sql = open('insert_recipe2ingredients_from_cocktails.sql', 'w')
+    # ingredients_sql.write(add_ingredient_queries)
 

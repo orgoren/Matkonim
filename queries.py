@@ -8,7 +8,7 @@ from utils import *
 
 weights_view = """
 CREATE VIEW RECIPE_WEIGHTS AS
-SELECT SUM(r2i.servings * i.serving_weight_grams) as tot_weight, r2i.recipe_id as recipe_id
+SELECT DISTINCT SUM(r2i.servings * i.serving_weight_grams) as tot_weight, r2i.recipe_id as recipe_id
 FROM 		RECIPE2INGREDIENTS r2i
 INNER JOIN 	INGREDIENTS i on i.ingredient_id = r2i.ingredient_id
 GROUP BY r2i.recipe_id
@@ -16,7 +16,7 @@ GROUP BY r2i.recipe_id
 
 recipe_nutritions_view = """
 CREATE VIEW RECIPE_NUTRITIONS_WEIGHTS AS
-SELECT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
+SELECT DISTINCT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
 FROM		RECIPE2INGREDIENTS r2i 
 INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
 GROUP BY r2i.recipe_id, inn.nutrition_id
@@ -24,10 +24,10 @@ GROUP BY r2i.recipe_id, inn.nutrition_id
 
 daily_meals_view = """
 CREATE VIEW DAILY_MEALS AS
-SELECT 	breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
-FROM	( SELECT recipe_id FROM FOOD_RECIPES where course="Breakfast and Brunch") as breakfast_r,
-		( SELECT recipe_id FROM FOOD_RECIPES where course="Lunch") as lunch_r,
-		( SELECT recipe_id FROM FOOD_RECIPES where course="Main Dishes") as dinner_r
+SELECT DISTINCT breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
+FROM	( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Breakfast and Brunch") as breakfast_r,
+		( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Lunch") as lunch_r,
+		( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Main Dishes") as dinner_r
 """
 
 
@@ -37,15 +37,16 @@ FROM	( SELECT recipe_id FROM FOOD_RECIPES where course="Breakfast and Brunch") a
 
 # food recipes by nutritional values
 query1_no_if = """
-SELECT ar.recipe_name
+SELECT DISTINCT ar.recipe_name
 FROM		ALL_RECIPES ar
 INNER JOIN 	FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id
 WHERE
 	fr.course = \"<MEAL_OPTION>\"
 """
 
+#### I think this should be a view - there are 2 huge views and in mysql you can't index views #### -GUY
 query1 = """
-SELECT ar.recipe_name
+SELECT DISTINCT ar.recipe_name
 FROM		ALL_RECIPES ar
 INNER JOIN 	RECIPE_WEIGHTS rw on ar.recipe_id = ar.recipe_id
 INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw on rw.recipe_id = rnw.recipe_id
@@ -55,10 +56,10 @@ WHERE
 	fr.course = \"<MEAL_OPTION>\"
 """
 
+#### I think this should be a view - there are 2 huge views and in mysql you can't index views #### -GUY (this one is faster than query1)
 inner_query_for_query1_2_no_if = """
 <AND> ar.recipe_id IN (
-SELECT 	rw.recipe_id as recipe_id
-
+SELECT DISTINCT rw.recipe_id as recipe_id
 FROM 		RECIPE_WEIGHTS rw
 INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw on rw.recipe_id = rnw.recipe_id
 INNER JOIN	NUTRITIONS n on rnw.nutrition_id = n.nutrition_id
@@ -114,7 +115,7 @@ def get_query1(nutritions_values, meal_option):
 
 # cocktails recipes by nutritional values
 query2 = """
-SELECT ar.recipe_name
+SELECT DISTINCT ar.recipe_name
 FROM		ALL_RECIPES ar
 INNER JOIN 	COCKTAIL_RECIPES cr on ar.recipe_id = cr.recipe_id
 WHERE
@@ -252,7 +253,7 @@ def get_query3(nutritions_values, meal_option, age, gender):
 
 # all day recipes by daily values
 query4 = """
-SELECT	*
+SELECT DISTINCT *
 FROM 	RECOMMEND_BY_AGE_GENDER as rbag,
 		DAILY_MEALS as dm,
 WHERE	
@@ -260,6 +261,7 @@ WHERE
 		rbag.age = <AGE>
 """
 
+### Need to check this only after fixing the DAILY_MEALS ### - GUY
 inner_query_for_query4 = """
 AND dm.breakfast_id, dm.lunch_id, dm.dinner_id IN (
 	SELECT DISTINCT dm2.breakfast_id, dm2.lunch_id, dm2.dinner_id
@@ -347,7 +349,7 @@ alg_query = """
 	INNER JOIN 	INGREDIENTS ing on r2i.ingredient_id = ing.ingredient_id
 	WHERE	
 			ing.ingredient_name LIKE \"%<ALG>%\"
-	)
+)
 """
 
 food_fields_old = """ar.recipe_id = fr.recipe_id

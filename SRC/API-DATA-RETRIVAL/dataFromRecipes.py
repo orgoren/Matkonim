@@ -19,9 +19,9 @@ def run():
 	add_all_recipes_queries = ""
 
 	# define sql queries
-	add_food = """INSERT INTO FOOD_RECIPES (recipe_id, food_id, course, prep_time_in_minutes, food_details) VALUES ({},{},'{}',{},'{}');"""
+	add_food = """INSERT INTO FOOD_RECIPES (food_id, course, prep_time_in_minutes, food_details) VALUES ({},'{}',{},'{}');"""
 
-	add_recipce = """INSERT INTO ALL_RECIPES (recipe_id, recipe_name, picture) VALUES ({},'{}','{}');"""
+	add_recipce = """INSERT INTO ALL_RECIPES (recipe_name, picture) VALUES ('{}','{}');"""
 
 	add_ingredient = """INSERT INTO RECIPE2INGREDIENTS (recipe_id, ingredient_id, servings, full_ingredient_line) VALUES ({},{},{},'{}');"""
 
@@ -37,14 +37,14 @@ def run():
 	        picture = row[5]
 	        food_details = row[6].replace("'","''")
 
-	        if (food_id, commonFile.recipe_id, course, prep_time_minutes, food_details) in food_set:
+	        if (food_id, course, prep_time_minutes, food_details) in food_set:
 	            continue
 	        else:
 	            # adding new food to set
-	            food_set.add((food_id, commonFile.recipe_id, course, prep_time_minutes, food_details))
+	            food_set.add((food_id, course, prep_time_minutes, food_details))
 	            recipe_set.add((food_name, picture))
-	            add_food_recipe_queries += add_food.format(commonFile.recipe_id, food_id, course, prep_time_minutes, str(food_details))
-	            add_all_recipes_queries += add_recipce.format(commonFile.recipe_id, food_name, picture)
+	            add_food_recipe_queries += add_food.format(food_id, course, prep_time_minutes, str(food_details))
+	            add_all_recipes_queries += add_recipce.format(food_name, picture)
 	            
 	        num_ingredients = (len(row) - 7)/3
 	        for ingredient_index in range(0, num_ingredients):
@@ -68,7 +68,7 @@ def run():
 	    	if commonFile.recipe_id > 20000:
 	    		break
 
-
+	commonFile.recipe_id -= 1  # for the cocktails    		
 	recipe_ingredient_sql = open('insert_recipe_ingredient_from_recipes.sql', 'w')
 	recipe_ingredient_sql.write(add_ingredient_queries)
 

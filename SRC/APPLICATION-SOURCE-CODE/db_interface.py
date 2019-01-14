@@ -46,6 +46,7 @@ def main():
 					exit(0)
 
 			query = " ".join(query_lines)
+			# query = "Select * from NUTRITIONS"
 
 			if query == "":
 				print "ERROR: no query in input"

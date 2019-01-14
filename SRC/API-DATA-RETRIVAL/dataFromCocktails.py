@@ -21,7 +21,7 @@ def run():
     # define sql queries
     add_cocktail = "INSERT INTO COCKTAIL_RECIPES (recipe_id, cocktail_id, is_alcoholic, cocktail_details) VALUES ({},{},{},'{}');"
 
-    add_recipce = """INSERT INTO ALL_RECIPES (recipe_id, recipe_name, picture) VALUES ({}, '{}','{}');"""
+    add_recipce = """INSERT INTO ALL_RECIPES (recipe_name, picture) VALUES ('{}','{}');"""
 
     add_ingredient = """INSERT INTO RECIPE2INGREDIENTS (recipe_id, ingredient_id, servings, full_ingredient_line) VALUES ({},{},{},'{}');"""
 
@@ -38,13 +38,13 @@ def run():
             picture = row[5].replace("'","''")
             cocktail_details = row[6].replace("'","''")
 
-            if ((cocktail_id, cocktail_details, is_alcoholic) in cocktails):
+            if ((commonFile.recipe_id, cocktail_id, cocktail_details, is_alcoholic) in cocktails):
                 continue
             else:
                 # adding new cocktail to set
                 cocktails.add((commonFile.recipe_id, cocktail_id, cocktail_details, is_alcoholic))
                 add_cocktail_queries += add_cocktail.format(commonFile.recipe_id, cocktail_id, is_alcoholic, str(cocktail_details))
-                add_recipce_queries += add_recipce.format(commonFile.recipe_id, str(cocktail_name), str(picture))
+                add_recipce_queries += add_recipce.format(str(cocktail_name), str(picture))
 
             num_ingredients = (len(row) - 7)/4
             for ingredient_index in range(0, num_ingredients):
@@ -54,11 +54,13 @@ def run():
                 full_ingredient_line = str(row[9 + 3*ingredient_index]).replace("'","''")
                 if servings is None or full_ingredient_line is None or full_ingredient_line == '':
                     break
+                if str(ingredient_name) in commonFile.ingredients_dict and (commonFile.recipe_id, commonFile.ingredients_dict[str(ingredient_name)], servings, str(full_ingredient_line)) in ingredients:
+                    continue
                 if str(ingredient_name) not in commonFile.ingredients_dict:
                     commonFile.ingredients_dict.update({str(ingredient_name): commonFile.ingredient_id})
                     commonFile.ingredient_id += 1
                 add_ingredient_queries += add_ingredient.format(commonFile.recipe_id, commonFile.ingredients_dict[str(ingredient_name)], servings, str(full_ingredient_line))
-                ingredients.add((commonFile.ingredients_dict[str(ingredient_name)], servings, full_ingredient_line))
+                ingredients.add((commonFile.recipe_id, commonFile.ingredients_dict[str(ingredient_name)], servings, full_ingredient_line))
             commonFile.recipe_id += 1
                     
     cocktail_sql = open('insert_to_cocktail_recipes_from_cocktails.sql', 'w')

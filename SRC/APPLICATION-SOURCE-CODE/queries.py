@@ -65,7 +65,7 @@ INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw on rw.recipe_id = rnw.recipe_id
 INNER JOIN	NUTRITIONS n on rnw.nutrition_id = n.nutrition_id
 WHERE
 		n.nutrition_name = \"<NUT_KEY>\" AND
-		rnw.weight / rw.weight <NUT_IF>
+		rnw.weight / rw.tot_weight <NUT_IF>
 )
 """
 

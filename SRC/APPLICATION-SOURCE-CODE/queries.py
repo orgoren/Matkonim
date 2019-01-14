@@ -265,23 +265,23 @@ WHERE
 inner_query_for_query4 = """
 AND dm.breakfast_id, dm.lunch_id, dm.dinner_id IN (
 	SELECT DISTINCT dm2.breakfast_id, dm2.lunch_id, dm2.dinner_id
-	FROM 			NUTRITIONS n,	DAILY_MEALS dm2 	
-	LEFT JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_b on rnw_b.recipe_id = dm2.breakfast_id and rnw_b.nutrition_id = n.nutrition_id
-	LEFT JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_l on rnw_l.recipe_id = dm2.lunch_id and rnw_l.nutrition_id = n.nutrition_id
-	LEFT JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_d on rnw_d.recipe_id = dm2.dinner_id and rnw_d.nutrition_id = n.nutrition_id
-	INNER JOIN 	RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = n.nutrition_id
+	FROM 	DAILY_MEALS dm2 	
+	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_b on rnw_b.recipe_id = dm2.breakfast_id
+	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_l on rnw_l.recipe_id = dm2.lunch_id
+	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_d on rnw_d.recipe_id = dm2.dinner_id,
+	RECOMMEND_BY_AGE_GENDER rbag INNER JOIN NUTRITIONS n on rbag.nutrition_id = n.nutrition_id
 	WHERE
-		rbag.age = <AGE> AND
-		rbag.gender = <GENDER> AND
-		n.nutrition_name = \"<NUT_KEY>\" AND
+		rbag.age = 5 AND
+		rbag.gender = "female" AND
+		n.nutrition_name = "sugar" AND
 		(
-			n.max_or_min = \"min\" AND
-			(rnw_b.weight + rnw_l.weight + rnw_d.weight) / rbag.weight_mg >= <NUT_VAL>
+			n.max_or_min = "min" AND
+			(rnw_b.weight + rnw_l.weight + rnw_d.weight) / rbag.weight_mg >= 2
 		)
 		OR
 		(
-			n.max_or_min = \"max\" AND
-			r(rnw_b.weight + rnw_l.weight + rnw_d.weight) / rbag.weight_mg <= <NUT_VAL>
+			n.max_or_min = "max" AND
+			(rnw_b.weight + rnw_l.weight + rnw_d.weight) / rbag.weight_mg <= 10
 		)
 )
 """

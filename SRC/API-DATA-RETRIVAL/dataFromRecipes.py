@@ -66,9 +66,7 @@ def run():
 
 	        commonFile.recipe_id += 1
 	    	if commonFile.recipe_id > 41185:
-	    		break
-
-	commonFile.recipe_id -= 1  # for the cocktails    
+	    		break 
 
 	recipes_sql_file = open('insert_data_from_recipe_csv.sql', 'w')
-	recipes_sql_file.write(add_ingredient_queries)
+	recipes_sql_file.write(add_all_recipes_queries+add_food_recipe_queries+add_ingredient_queries)

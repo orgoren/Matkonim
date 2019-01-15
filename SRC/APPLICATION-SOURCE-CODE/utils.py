@@ -64,15 +64,16 @@ def get_age(form):
 	return AGE_RANGES["14_18"]
 
 def get_food_type_or_cocktail(form):
-	if str(form.get("option_rand")) == "on":
-		rand_num = random.randint(0,1)
-		if rand_num == 0:
-			return "Cocktail"
-		else:
-			return random.choice(MEAL_OPTIONS)
-
 	if str(form.get("option_cocktail")) == "on":
 		return "Cocktail"
 
-	return get_meal_option(form)
+	if str(form.get("option_food")) == "on":
+		return get_meal_option(form)
+
+	rand_num = random.randint(0,1)
+	if rand_num == 0:
+		return "Cocktail"
+	else:
+		return random.choice(MEAL_OPTIONS)
+
 

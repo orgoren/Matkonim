@@ -16,8 +16,8 @@ VALID_RANDOM_PORT = 40326
 
 def main():
 
-	username,password = get_username_and_password()
-
+	username = raw_input("enter username (for nova): ")
+	password = getpass.getpass("enter password (for nova): ")
 	with sshtunnel.SSHTunnelForwarder(
 			('nova.cs.tau.ac.il', 22),
 			ssh_username=username,

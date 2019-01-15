@@ -20,6 +20,10 @@ VALID_RANDOM_PORT = 40326
 USERNAME = ""
 PASSWORD = ""
 
+BREAKFAST_PRECANTAGE = 0.3
+LUNCH_PRECENTAGE = 0.4
+DINNER_PRECENTAGE = 0.3
+
 NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
 				"lactose", "vitaminC", "saturated",  "dietary_fiber",  "alcohol", "calories"]
 
@@ -34,6 +38,9 @@ PREP_TIMES = {"d" : "dont care", "1" : "30", "2" : "45", "3" : "60", "4" : "90",
 
 GENDERS = ["female", "male"]
 
+FULL_DAY_MEALS = {	"breakfast" : {"meal" : "Breakfast and Brunch", "precentage" : BREAKFAST_PRECANTAGE}, 
+					"lunch"     : {"meal" : "Lunch",                "precentage" : LUNCH_PRECENTAGE}, 
+					"dinner"    : {"meal" : "Main Dishes",          "precentage" : DINNER_PRECENTAGE}}
 
 def connect_to_db(query=""):#username='', password=''):
 	with sshtunnel.SSHTunnelForwarder(

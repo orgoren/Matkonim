@@ -81,13 +81,19 @@ def daily_meal_plan():
 			age = get_age(request.form)
 			print "age=", age, "gender=", gender, "meal_options=", meal_option
 			q = queries.get_query3(nutritions_values, meal_option, age, gender)
-			print q
-			ans = connect_to_db(q)
-			if ans is None:
-				print "No query was sent..."
+
+			# If it called to get_query4 - all day meals
+			if type(q) == dict:
+				for meal in q:
+					query = q[meal]
+					meal_option = FULL_DAY_MEALS[meal]["meal"]
+					print query
+					res = get_query_results(query, meal_option)
+					print(res)
 			else:
-				print "results:::"
-				print ans
+				print q					
+				res = get_query_results(q, meal_option)
+				print(res)
 
 			return redirect('/daily_meal_results')
 

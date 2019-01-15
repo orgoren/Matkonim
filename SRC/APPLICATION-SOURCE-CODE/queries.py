@@ -280,9 +280,9 @@ GROUP by fr.recipe_id
 WHERE RECIPE_COUNTERS.cnt = <NUT_NUM> AND RECIPE_COUNTERS.recipe_id = fr.recipe_id
 """
 
-FILTER_BY_NUTRITIONS_for_query3 = "n.nutrition_name = \"<NUT_KEY>\""
+FILTER_BY_NUTRITIONS_for_query3_4 = "n.nutrition_name = \"<NUT_KEY>\""
 
-NUTRITIONS_CHECK_for_query3 = """
+NUTRITIONS_CHECK_for_query3_4 = """
 AND	(	n.nutrition_name <> \"<NUT_KEY>\" OR 
 		(
 			(
@@ -316,7 +316,7 @@ def get_query3(nutritions_values, meal_option, age, gender):
 			continue
 
 		if nutritions_values[nut] != "" and nutritions_values[nut] != "Don't Care" and nutritions_values[nut] != "d":
-			nline1 = NUTRITIONS_CHECK_for_query3
+			nline1 = NUTRITIONS_CHECK_for_query3_4
 			nline1 = re.sub("<NUT_KEY>", nut, nline1)
 			try:
 				val = float(nutritions_values[nut]) / float(100)
@@ -326,7 +326,7 @@ def get_query3(nutritions_values, meal_option, age, gender):
 				return ""
 
 			nline1 = re.sub("<NUT_VAL>", str(val), nline1, re.MULTILINE)
-			nline2 = re.sub("<NUT_KEY>", nut, FILTER_BY_NUTRITIONS_for_query3)
+			nline2 = re.sub("<NUT_KEY>", nut, FILTER_BY_NUTRITIONS_for_query3_4)
 
 			nuts_filter.append(nline2)
 			nuts_check.append(nline1)
@@ -343,86 +343,90 @@ def get_query3(nutritions_values, meal_option, age, gender):
 	q = re.sub("<FILTER_BY_NUTRITIONS>", nutritions_filter, q, re.MULTILINE)
 	q = re.sub("<NUTRITIONS_CHECK>", nutritions_check, q, re.MULTILINE)
 	q = re.sub("<NUT_NUM>", str(len(nuts_filter)), q, re.MULTILINE)
+	q += "\nORDER BY RAND()\nLIMIT 1"
 	return q
 
 ################################
 ########### QUERY 4 ############
 ################################
 
-# all day recipes by daily values
-query4 = """SELECT DISTINCT *
-FROM VIEW_DAILY_MEALS as vdm
-<WHERE>"""
+query4_no_nutritions = """
+SELECT fr.recipe_id as recipe_id
+FROM FOOD_RECIPES fr
+WHERE fr.course = "<MEAL_OPTION>"
+"""
 
-### Need to check this only after fixing the DAILY_MEALS ### - GUY
-inner_query_for_query4 = """
-<AND> vdm.breakfast_id, vdm.lunch_id, vdm.dinner_id IN (
-	SELECT DISTINCT vdm2.breakfast_id, vdm2.lunch_id, vdm2.dinner_id
-	FROM 		VIEW_DAILY_MEALS vdm2 	
-	INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw_b on vrnw_b.recipe_id = vdm2.breakfast_id
-	INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw_l on vrnw_l.recipe_id = vdm2.lunch_id
-	INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw_d on vrnw_d.recipe_id = vdm2.dinner_id,
-	RECOMMEND_BY_AGE_GENDER rbag 
-	INNER JOIN NUTRITIONS n on rbag.nutrition_id = n.nutrition_id
-	WHERE
-		rbag.age = <AGE> AND
-		rbag.gender = "<GENDER>" AND
-		n.nutrition_name = "<NUT_KEY>" AND
-		(
-			(
-			n.max_or_min = "min" AND
-			(vrnw_b.weight + vrnw_l.weight + vrnw_d.weight) / rbag.weight_mg >= <NUT_IF>
-			)
-			OR
-			(
-			n.max_or_min = "max" AND
-			(vrnw_b.weight + vrnw_l.weight + vrnw_d.weight) / rbag.weight_mg <= <NUT_IF>
-			)
-		)
-)"""
+query4 = """
+SELECT fr.recipe_id as recipe_id
+FROM FOOD_RECIPES fr 
+INNER JOIN VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on fr.recipe_id = vrnw.recipe_id
+INNER JOIN RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = vrnw.nutrition_id
+INNER JOIN NUTRITIONS n on rbag.nutrition_id = n.nutrition_id
+WHERE
+rbag.age = <AGE> AND
+rbag.gender = "<GENDER>" AND
+fr.course = "<MEAL_OPTION>"
+
+<FILTER_BY_NUTRITIONS>
+
+<NUTRITIONS_CHECK>
+
+"""
 
 def get_query4(nutritions_values, age, gender):
-	# If it's FullDay then need to use query #4
-
 	q = query4
 
-	where_to_empty = True
-	first = True
+	q = re.sub("<GENDER>", gender, q, re.MULTILINE)
+	q = re.sub("<AGE>", age, q, re.MULTILINE)
+	
+	nuts_filter = []
+	nuts_check = []
+
 	for nut in NUTRITIONS:
 		if nut == "alcohol":
 			continue
 
 		if nutritions_values[nut] != "" and nutritions_values[nut] != "Don't Care" and nutritions_values[nut] != "d":
-			where_to_empty = False
-			nline = inner_query_for_query4
-
-			q = re.sub("<WHERE>", "WHERE", q)
-
-			nline = re.sub("<GENDER>", gender, nline, re.MULTILINE)
-			nline = re.sub("<AGE>", age, nline, re.MULTILINE)
-
-			if first:
-				nline = re.sub("<AND>", "", nline)
-				first = False
-			else:
-				nline = re.sub("<AND>", "AND", nline)
-
-			nline = re.sub("<NUT_KEY>", nut, nline)
+			nline1 = NUTRITIONS_CHECK_for_query3_4
+			nline1 = re.sub("<NUT_KEY>", nut, nline1)
 			try:
 				val = float(nutritions_values[nut]) / float(100)
 			except:
 				val = nutritions_values[nut]
-				print "ERROR: expected int value, but got:", val
+				print "ERROR: expected int value, but for:", nut, "got:", val
 				return ""
 
-			nline = re.sub("<NUT_IF>", str(val), nline, re.MULTILINE)
+			nline1 = re.sub("<NUT_VAL>", "<PRECENTAGE> * " + str(val), nline1, re.MULTILINE)
+			nline2 = re.sub("<NUT_KEY>", nut, FILTER_BY_NUTRITIONS_for_query3_4)
 
-			q += nline
+			nuts_filter.append(nline2)
+			nuts_check.append(nline1)
 
-	if where_to_empty:
-		q = re.sub("<WHERE>", "", q)
+	if len(nuts_filter) == 0:
+		q = query4_no_nutritions
+	else:
 
-	return q
+		nutritions_filter = " OR ".join(nuts_filter)
+		nutritions_filter = "AND (" + nutritions_filter + ")"
+		nutritions_check = "\n".join(nuts_check)
+
+		q = re.sub("<FILTER_BY_NUTRITIONS>", nutritions_filter, q, re.MULTILINE)
+		q = re.sub("<NUTRITIONS_CHECK>", nutritions_check, q, re.MULTILINE)
+		q = re.sub("<NUT_NUM>", str(len(nuts_filter)), q, re.MULTILINE)
+
+	queries = {}
+
+	for meal in FULL_DAY_MEALS:
+		meal_q = q
+		meal_option = FULL_DAY_MEALS[meal]["meal"]
+		meal_precentage = FULL_DAY_MEALS[meal]["precentage"]
+		meal_q = re.sub("<MEAL_OPTION>", meal_option, meal_q, re.MULTILINE)
+		meal_q = re.sub("<PRECENTAGE>", str(meal_precentage), meal_q, re.MULTILINE)
+		meal_q += "\nORDER BY RAND()\nLIMIT 1"
+		queries[meal] = meal_q
+
+	return queries
+
 
 ################################
 ########### QUERY 5 ############
@@ -832,6 +836,82 @@ AND fr.recipe_id in  (
 		)
 )
 """
+
+# all day recipes by daily values
+query4_old = """SELECT DISTINCT *
+FROM VIEW_DAILY_MEALS as vdm
+<WHERE>"""
+
+### Need to check this only after fixing the DAILY_MEALS ### - GUY
+inner_query_for_query4_old = """
+<AND> vdm.breakfast_id, vdm.lunch_id, vdm.dinner_id IN (
+	SELECT DISTINCT vdm2.breakfast_id, vdm2.lunch_id, vdm2.dinner_id
+	FROM 		VIEW_DAILY_MEALS vdm2 	
+	INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw_b on vrnw_b.recipe_id = vdm2.breakfast_id
+	INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw_l on vrnw_l.recipe_id = vdm2.lunch_id
+	INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw_d on vrnw_d.recipe_id = vdm2.dinner_id,
+	RECOMMEND_BY_AGE_GENDER rbag 
+	INNER JOIN NUTRITIONS n on rbag.nutrition_id = n.nutrition_id
+	WHERE
+		rbag.age = <AGE> AND
+		rbag.gender = "<GENDER>" AND
+		n.nutrition_name = "<NUT_KEY>" AND
+		(
+			(
+			n.max_or_min = "min" AND
+			(vrnw_b.weight + vrnw_l.weight + vrnw_d.weight) / rbag.weight_mg >= <NUT_IF>
+			)
+			OR
+			(
+			n.max_or_min = "max" AND
+			(vrnw_b.weight + vrnw_l.weight + vrnw_d.weight) / rbag.weight_mg <= <NUT_IF>
+			)
+		)
+)"""
+
+def get_query4_old(nutritions_values, age, gender):
+	# If it's FullDay then need to use query #4
+
+	q = query4
+
+	where_to_empty = True
+	first = True
+	for nut in NUTRITIONS:
+		if nut == "alcohol":
+			continue
+
+		if nutritions_values[nut] != "" and nutritions_values[nut] != "Don't Care" and nutritions_values[nut] != "d":
+			where_to_empty = False
+			nline = inner_query_for_query4
+
+			q = re.sub("<WHERE>", "WHERE", q)
+
+			nline = re.sub("<GENDER>", gender, nline, re.MULTILINE)
+			nline = re.sub("<AGE>", age, nline, re.MULTILINE)
+
+			if first:
+				nline = re.sub("<AND>", "", nline)
+				first = False
+			else:
+				nline = re.sub("<AND>", "AND", nline)
+
+			nline = re.sub("<NUT_KEY>", nut, nline)
+			try:
+				val = float(nutritions_values[nut]) / float(100)
+			except:
+				val = nutritions_values[nut]
+				print "ERROR: expected int value, but got:", val
+				return ""
+
+			nline = re.sub("<NUT_IF>", str(val), nline, re.MULTILINE)
+
+			q += nline
+
+	if where_to_empty:
+		q = re.sub("<WHERE>", "", q)
+
+	return q
+
 
 def get_query5_old(allergans, option):
 	if option == "Cocktail":

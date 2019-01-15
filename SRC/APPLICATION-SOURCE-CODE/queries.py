@@ -34,72 +34,111 @@ FROM	( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Breakfast and B
 ########### QUERY 1 ############
 ################################
 
-# food recipes by nutritional values
-query1_no_if = """SELECT DISTINCT ar.recipe_name
-FROM		ALL_RECIPES ar
-INNER JOIN 	FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id
-WHERE
-	fr.course = \"<MEAL_OPTION>\""""
+query1_no_nutritions = """
+SELECT ar.recipe_id
+FROM ALL_RECIPES ar 
+INNER JOIN FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id
+WHERE fr.course = \"<MEAL_OPTION>\"
+<PREP_TIME_LINE>
+"""
 
-#### I think this should be a view - there are 2 huge views and in mysql you can't index views #### -GUY
 query1 = """
-SELECT DISTINCT ar.recipe_name
+SELECT ar.recipe_id
+FROM 		ALL_RECIPES ar
+INNER JOIN 	FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id,
+(SELECT COUNT(ar.recipe_id) as cnt, ar.recipe_id as recipe_id
 FROM		ALL_RECIPES ar
 INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on ar.recipe_id = vrnw.recipe_id
-INNER JOIN	NUTRITIONS n on rnw.nutrition_id = n.nutrition_id
+INNER JOIN	NUTRITIONS n on vrnw.nutrition_id = n.nutrition_id
 INNER JOIN 	FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id
 WHERE
 	fr.course = \"<MEAL_OPTION>\"
+	<PREP_TIME_LINE>
+
+<FILTER_BY_NUTRITIONS>
+
+<NUTRITIONS_CHECK>
+
+GROUP BY ar.recipe_id
+
+) as RECIPE_COUNTERS
+
+WHERE RECIPE_COUNTERS.cnt = <NUT_NUM> AND RECIPE_COUNTERS.recipe_id = ar.recipe_id
 """
 
-#### I think this should be a view - there are 2 huge views and in mysql you can't index views #### -GUY (this one is faster than query1)
-inner_query_for_query1_2_no_if = """<AND> ar.recipe_id IN (
-SELECT DISTINCT rw.recipe_id as recipe_id
-FROM 		RECIPE_WEIGHTS rw
-INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw on rw.recipe_id = rnw.recipe_id
-INNER JOIN	NUTRITIONS n on rnw.nutrition_id = n.nutrition_id
-WHERE
-		n.nutrition_name = \"<NUT_KEY>\" AND
-		rnw.weight / rw.weight <NUT_IF>
-)"""
+FILTER_BY_NUTRITIONS_for_query1_2 = "n.nutrition_name = \"<NUT_KEY>\""
 
-inner_query_for_query1_2_old_views = """
-<AND> 	(n.nutrition_name <> \"<NUT_KEY>\" OR rnw.weight / rw.weight <NUT_IF>)
+NUTRITIONS_CHECK_for_query1_2 = """
+AND	(n.nutrition_name <> \"<NUT_KEY>\" OR vrnw.precentage <NUT_IF>)
 """
 
-inner_query_for_query1_2 = """
-<AND> 	(n.nutrition_name <> \"<NUT_KEY>\" OR vrnw.precentage <NUT_IF>)
-"""
+prep_time_line = "AND fr.prep_time_in_minutes <= <PREP_TIME>"
 
-def get_query1(nutritions_values, meal_option):
+def get_query1(nutritions_values, meal_option, prep_time):
 	q = re.sub("<MEAL_OPTION>", meal_option, query1, re.MULTILINE)
+
+	if prep_time == "dont care":
+		q = re.sub("<PREP_TIME_LINE>", "", q, re.MULTILINE)
+	else:
+		p = re.sub("<PREP_TIME>", prep_time, prep_time_line, re.MULTILINE)
+		q = re.sub("<PREP_TIME_LINE>", p, q, re.MULTILINE)
+
+	filter_by_nutritions = "AND (<NUTS>)"	
+	nuts_filter = []
+	nuts_check = []
 
 	for nut in NUTRITIONS:
 		if nut == "alcohol":
 			continue
 
 		if nutritions_values[nut] != "":
-			nline = inner_query_for_query1_2
-			nline = re.sub("<NUT_KEY>", nut, nline)
-			nline = re.sub("<AND>", "AND", nline)
+			nline1 = FILTER_BY_NUTRITIONS_for_query1_2
+			nline2 = NUTRITIONS_CHECK_for_query1_2
+			nline2 = re.sub("<NUT_KEY>", nut, nline2)
 
 			if nut == "calories":
 				if nutritions_values[nut] != "d":
-					nline = re.sub("vrnw.precentage <NUT_IF>", "rnw.weight <= " + nutritions_values[nut], nline, re.MULTILINE)
-					q += nline + "\n"
-					print nline
+					nline2 = re.sub("vrnw.precentage <NUT_IF>", "rnw.weight <= " + nutritions_values[nut], nline2, re.MULTILINE)
+					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
+					nuts_check.append(nline2)
 			else:
 				if VALUES[nutritions_values[nut]] == "over 30%":
-					nline = re.sub("<NUT_IF>", ">= 0.3", nline, re.MULTILINE)
-					q += nline + "\n"
+					nline2 = re.sub("<NUT_IF>", ">= 0.3", nline2, re.MULTILINE)
+					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
+					nuts_check.append(nline2)
+
 				elif VALUES[nutritions_values[nut]] == "less than 5%":
-					nline = re.sub("<NUT_IF>", "<= 0.05", nline, re.MULTILINE)
-					q += nline + "\n"
+					nline2 = re.sub("<NUT_IF>", "<= 0.05", nline2, re.MULTILINE)					
+					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
+					nuts_check.append(nline2)
+
 				elif VALUES[nutritions_values[nut]] == "None":
-					nline = re.sub("<NUT_IF>", "= 0", nline, re.MULTILINE)
-					q += nline + "\n"
+					nline2 = re.sub("<NUT_IF>", "= 0", nline2, re.MULTILINE)
+					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
+					nuts_check.append(nline2)
+
 				elif  VALUES[nutritions_values[nut]] != "dont care":
 					print "ERROR - invalid value (" + str(nutritions_values[nut]) + ") for (" + nut + ")"
+
+	# no nutritions
+	if len(nuts_filter) == 0:
+		q = query1_no_nutritions
+		q = re.sub("<MEAL_OPTION>", meal_option, q, re.MULTILINE)
+		if prep_time == "dont care":
+			q = re.sub("<PREP_TIME_LINE>", "", q, re.MULTILINE)
+		else:
+			p = re.sub("<PREP_TIME>", prep_time, prep_time_line, re.MULTILINE)
+			q = re.sub("<PREP_TIME_LINE>", p, q, re.MULTILINE)
+		return q
+
+	q = re.sub("<NUT_NUM>", str(len(nuts_filter)), q, re.MULTILINE)
+
+	filter_by_nutritions = re.sub("<NUTS>", " OR ".join(nuts_filter), filter_by_nutritions, re.MULTILINE)
+
+	q = re.sub("<FILTER_BY_NUTRITIONS>", filter_by_nutritions, q, re.MULTILINE)
+
+	q = re.sub("<NUTRITIONS_CHECK>", "\n".join(nuts_check), q, re.MULTILINE)
+
 	return q
 
 
@@ -108,13 +147,106 @@ def get_query1(nutritions_values, meal_option):
 ################################
 
 # cocktails recipes by nutritional values
-query2 = """SELECT DISTINCT ar.recipe_name
+query2_no_nutritions = """
+SELECT DISTINCT ar.recipe_name
 FROM		ALL_RECIPES ar
 INNER JOIN 	COCKTAIL_RECIPES cr on ar.recipe_id = cr.recipe_id
+"""
+
+query2 = """
+SELECT ar.recipe_id
+FROM 		ALL_RECIPES ar
+INNER JOIN 	COCKTAIL_RECIPES cr on ar.recipe_id = cr.recipe_id,
+(SELECT COUNT(ar.recipe_id) as cnt, ar.recipe_id as recipe_id
+FROM		ALL_RECIPES ar
+INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on ar.recipe_id = vrnw.recipe_id
+INNER JOIN	NUTRITIONS n on vrnw.nutrition_id = n.nutrition_id
+INNER JOIN 	COCKTAIL_RECIPES cr on ar.recipe_id = cr.recipe_id
 WHERE
-	<IS_ALCOHOLIC>"""
+<IS_ALCOHOLIC>
+
+<FILTER_BY_NUTRITIONS>
+
+<NUTRITIONS_CHECK>
+
+GROUP BY cr.recipe_id
+
+) as RECIPE_COUNTERS
+
+WHERE RECIPE_COUNTERS.cnt = <NUT_NUM> AND RECIPE_COUNTERS.recipe_id = ar.recipe_id
+"""
+
 
 def get_query2(nutritions_values):
+
+	q = query2
+	is_alcoholic_filter = False
+
+	if "alcohol" in nutritions_values:
+		if nutritions_values["alcohol"] == "d":
+			q = re.sub("<IS_ALCOHOLIC>", "", q, re.MULTILINE)
+		elif nutritions_values["alcohol"] == "1" or nutritions_values["alcohol"] == "0":
+			q = re.sub("<IS_ALCOHOLIC>", "cr.is_alcoholic = " + nutritions_values["alcohol"], q, re.MULTILINE)
+			is_alcoholic_filter = True
+		else:
+			print "ERROR"
+
+	if is_alcoholic_filter:
+		filter_by_nutritions = "AND (<NUTS>)"
+	else:
+		filter_by_nutritions = "(<NUTS>)"
+
+	nuts_filter = []
+	nuts_check = []
+
+	for nut in NUTRITIONS:
+		if nut == "alcohol":
+			continue
+
+		if nutritions_values[nut] != "":
+			nline1 = FILTER_BY_NUTRITIONS_for_query1_2
+			nline2 = NUTRITIONS_CHECK_for_query1_2
+			nline2 = re.sub("<NUT_KEY>", nut, nline2)
+
+			if nut == "calories":
+				if nutritions_values[nut] != "d":
+					nline2 = re.sub("vrnw.precentage <NUT_IF>", "rnw.weight <= " + nutritions_values[nut], nline2, re.MULTILINE)
+					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
+					nuts_check.append(nline2)
+			else:
+				if VALUES[nutritions_values[nut]] == "over 30%":
+					nline2 = re.sub("<NUT_IF>", ">= 0.3", nline2, re.MULTILINE)
+					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
+					nuts_check.append(nline2)
+
+				elif VALUES[nutritions_values[nut]] == "less than 5%":
+					nline2 = re.sub("<NUT_IF>", "<= 0.05", nline2, re.MULTILINE)					
+					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
+					nuts_check.append(nline2)
+
+				elif VALUES[nutritions_values[nut]] == "None":
+					nline2 = re.sub("<NUT_IF>", "= 0", nline2, re.MULTILINE)
+					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
+					nuts_check.append(nline2)
+
+				elif  VALUES[nutritions_values[nut]] != "dont care":
+					print "ERROR - invalid value (" + str(nutritions_values[nut]) + ") for (" + nut + ")"
+
+	# no nutritions
+	if len(nuts_filter) == 0:
+		return query2_no_nutritions
+
+	q = re.sub("<NUT_NUM>", str(len(nuts_filter)), q, re.MULTILINE)
+
+	filter_by_nutritions = re.sub("<NUTS>", " OR ".join(nuts_filter), filter_by_nutritions, re.MULTILINE)
+
+	q = re.sub("<FILTER_BY_NUTRITIONS>", filter_by_nutritions, q, re.MULTILINE)
+
+	q = re.sub("<NUTRITIONS_CHECK>", "\n".join(nuts_check), q, re.MULTILINE)
+
+	return q
+
+def get_query2_old(nutritions_values):
 
 	first = False
 	q = query2
@@ -568,6 +700,38 @@ inner_query_for_query4_old = """AND dm.breakfast_id, dm.lunch_id, dm.dinner_id I
 )"""
 
 
+#### I think this should be a view - there are 2 huge views and in mysql you can't index views #### -GUY (this one is faster than query1)
+inner_query_for_query1_2_no_if = """<AND> ar.recipe_id IN (
+SELECT DISTINCT rw.recipe_id as recipe_id
+FROM 		RECIPE_WEIGHTS rw
+INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw on rw.recipe_id = rnw.recipe_id
+INNER JOIN	NUTRITIONS n on rnw.nutrition_id = n.nutrition_id
+WHERE
+		n.nutrition_name = \"<NUT_KEY>\" AND
+		rnw.weight / rw.weight <NUT_IF>
+)"""
+
+inner_query_for_query1_2_old_views = """
+<AND> 	(n.nutrition_name <> \"<NUT_KEY>\" OR rnw.weight / rw.weight <NUT_IF>)
+"""
+
+# food recipes by nutritional values
+query1_no_if = """SELECT DISTINCT ar.recipe_name
+FROM		ALL_RECIPES ar
+INNER JOIN 	FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id
+WHERE
+	fr.course = \"<MEAL_OPTION>\""""
+
+#### I think this should be a view - there are 2 huge views and in mysql you can't index views #### -GUY
+query1_old3 = """
+SELECT DISTINCT ar.recipe_name
+FROM		ALL_RECIPES ar
+INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on ar.recipe_id = vrnw.recipe_id
+INNER JOIN	NUTRITIONS n on vrnw.nutrition_id = n.nutrition_id
+INNER JOIN 	FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id
+WHERE
+	fr.course = \"<MEAL_OPTION>\"
+"""
 
 
 def get_query5_old(allergans, option):

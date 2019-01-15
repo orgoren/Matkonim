@@ -161,13 +161,13 @@ def recipes_by_nutritional():
 		if "Find me a recipe!" == request.form['submit']:
 			nutritions_values = get_nutritions_values(request.form)
 			meal_option = get_meal_option(request.form)
-
+			prep_time = get_prep_time(request.form)
 			print "nutritions_values:"
 			print nutritions_values
 			print "meal_option:"
 			print meal_option
 
-			q = queries.get_query1(nutritions_values, meal_option)
+			q = queries.get_query1(nutritions_values, meal_option, prep_time)
 			print q
 			ans = connect_to_db(q)
 			if ans is None:

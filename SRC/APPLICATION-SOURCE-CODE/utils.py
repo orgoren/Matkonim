@@ -21,6 +21,8 @@ VALUES = {"None" : "None", "1" : "None", "d": "dont care", "2" : "less than 5%",
 
 AGE_RANGES = {"14_18" : "0", "19_30" : "1", "31_40" : "2", "41_50" : "3", "51_60" : "4", "61_70" : "5", "71" : "6"}
 
+PREP_TIMES = {"d" : "dont care", "1" : "30", "2" : "45", "3" : "60", "4" : "90", "5" : "120", "6" : "180"}
+
 GENDERS = ["female", "male"]
 
 def get_username_and_password():
@@ -56,6 +58,12 @@ def get_gender(form):
 		if str(form.get(gender)) == "on":
 			return gender
 	return "female"
+
+def get_prep_time(form):
+	b = str(form.get("prep"))
+	if b == "":
+		b = "d"
+	return PREP_TIMES[b]
 
 def get_age(form):
 	for age in AGE_RANGES:

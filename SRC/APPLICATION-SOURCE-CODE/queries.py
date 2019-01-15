@@ -98,7 +98,7 @@ def get_query1(nutritions_values, meal_option, prep_time):
 
 			if nut == "calories":
 				if nutritions_values[nut] != "d":
-					nline2 = re.sub("vrnw.precentage <NUT_IF>", "rnw.weight <= " + nutritions_values[nut], nline2, re.MULTILINE)
+					nline2 = re.sub("vrnw.precentage <NUT_IF>", "vrnw.weight <= " + nutritions_values[nut], nline2, re.MULTILINE)
 					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
 					nuts_check.append(nline2)
 			else:
@@ -207,7 +207,7 @@ def get_query2(nutritions_values):
 
 			if nut == "calories":
 				if nutritions_values[nut] != "d":
-					nline2 = re.sub("vrnw.precentage <NUT_IF>", "rnw.weight <= " + nutritions_values[nut], nline2, re.MULTILINE)
+					nline2 = re.sub("vrnw.precentage <NUT_IF>", "vrnw.weight <= " + nutritions_values[nut], nline2, re.MULTILINE)
 					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
 					nuts_check.append(nline2)
 			else:

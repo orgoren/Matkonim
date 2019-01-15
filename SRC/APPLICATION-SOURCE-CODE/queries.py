@@ -6,22 +6,24 @@ from utils import *
 ############ VIEWS #############
 ################################
 
-weights_view = """CREATE VIEW RECIPE_WEIGHTS AS
-SELECT DISTINCT SUM(r2i.servings * i.serving_weight_grams) as tot_weight, r2i.recipe_id as recipe_id
+weights_view = """CREATE VIEW VIEW_RECIPE_WEIGHTS AS
+SELECT DISTINCT SUM(r2i.servings * i.serving_weight_grams) as weight, r2i.recipe_id as recipe_id
 FROM 		RECIPE2INGREDIENTS r2i
 INNER JOIN 	INGREDIENTS i on i.ingredient_id = r2i.ingredient_id
 GROUP BY r2i.recipe_id"""
 
 recipe_nutritions_view = """
-CREATE VIEW RECIPE_NUTRITIONS_WEIGHTS AS
-SELECT DISTINCT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
+CREATE VIEW VIEW_RECIPE_NUTRITIONS_WEIGHTS AS
+SELECT DISTINCT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight,
+				(SUM(r2i.servings * inn.weight_mg_from_ingredient) / (vrw.weight * 1000)) as precentage
 FROM		RECIPE2INGREDIENTS r2i 
 INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
+INNER JOIN 	VIEW_RECIPE_WEIGHTS vrw on vrw.recipe_id = r2i.recipe_id
 GROUP BY r2i.recipe_id, inn.nutrition_id
 """
 
 daily_meals_view = """
-CREATE VIEW DAILY_MEALS AS
+CREATE VIEW VIEW_DAILY_MEALS AS
 SELECT DISTINCT breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
 FROM	( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Breakfast and Brunch") as breakfast_r,
 		( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Lunch") as lunch_r,
@@ -43,16 +45,6 @@ WHERE
 query1 = """
 SELECT DISTINCT ar.recipe_name
 FROM		ALL_RECIPES ar
---INNER JOIN 	RECIPE_WEIGHTS rw on ar.recipe_id = ar.recipe_id
-INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw on rw.recipe_id = rnw.recipe_id
-INNER JOIN	NUTRITIONS n on rnw.nutrition_id = n.nutrition_id
-INNER JOIN 	FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id
-WHERE
-	fr.course = \"<MEAL_OPTION>\""""
-
-query1 = """
-SELECT DISTINCT ar.recipe_name
-FROM		ALL_RECIPES ar
 INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on ar.recipe_id = vrnw.recipe_id
 INNER JOIN	NUTRITIONS n on rnw.nutrition_id = n.nutrition_id
 INNER JOIN 	FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id
@@ -68,7 +60,7 @@ INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw on rw.recipe_id = rnw.recipe_id
 INNER JOIN	NUTRITIONS n on rnw.nutrition_id = n.nutrition_id
 WHERE
 		n.nutrition_name = \"<NUT_KEY>\" AND
-		rnw.weight / rw.tot_weight <NUT_IF>
+		rnw.weight / rw.weight <NUT_IF>
 )"""
 
 inner_query_for_query1_2_old_views = """
@@ -175,6 +167,7 @@ def get_query2(nutritions_values):
 						q += nline + "\n"
 					else:
 						print "ERROR - invalid value (" + str(nutritions_values[nut]) + ") for (" + nut + ")"
+						return ""
 	return q
 
 ################################
@@ -273,47 +266,62 @@ def get_query3(nutritions_values, meal_option, age, gender):
 
 # all day recipes by daily values
 query4 = """SELECT DISTINCT *
-FROM 	RECOMMEND_BY_AGE_GENDER as rbag,
-		DAILY_MEALS as dm,
-WHERE	
-		rbag.gender = \"<GENDER>\" AND
-		rbag.age = <AGE>"""
+FROM VIEW_DAILY_MEALS as vdm
+<WHERE>"""
 
 ### Need to check this only after fixing the DAILY_MEALS ### - GUY
 inner_query_for_query4 = """
-AND dm.breakfast_id, dm.lunch_id, dm.dinner_id IN (
-	SELECT DISTINCT dm2.breakfast_id, dm2.lunch_id, dm2.dinner_id
-	FROM 		VIEW_DAILY_MEALS dm2 	
-	INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw_b on vrnw_b.recipe_id = dm2.breakfast_id
-	INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw_l on vrnw_l.recipe_id = dm2.lunch_id
-	INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw_d on vrnw_d.recipe_id = dm2.dinner_id,
+<AND> vdm.breakfast_id, vdm.lunch_id, vdm.dinner_id IN (
+	SELECT DISTINCT vdm2.breakfast_id, vdm2.lunch_id, vdm2.dinner_id
+	FROM 		VIEW_DAILY_MEALS vdm2 	
+	INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw_b on vrnw_b.recipe_id = vdm2.breakfast_id
+	INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw_l on vrnw_l.recipe_id = vdm2.lunch_id
+	INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw_d on vrnw_d.recipe_id = vdm2.dinner_id,
 	RECOMMEND_BY_AGE_GENDER rbag 
 	INNER JOIN NUTRITIONS n on rbag.nutrition_id = n.nutrition_id
 	WHERE
-		rbag.age = 5 AND
-		rbag.gender = "female" AND
-		n.nutrition_name = "sugar" AND
+		rbag.age = <AGE> AND
+		rbag.gender = "<GENDER>" AND
+		n.nutrition_name = "<NUT_KEY>" AND
 		(
+			(
 			n.max_or_min = "min" AND
-			(vrnw_b.weight + vrnw_l.weight + vrnw_d.weight) / rbag.weight_mg >= 2
-		)
-		OR
-		(
+			(vrnw_b.weight + vrnw_l.weight + vrnw_d.weight) / rbag.weight_mg >= <NUT_IF>
+			)
+			OR
+			(
 			n.max_or_min = "max" AND
-			(vrnw_b.weight + vrnw_l.weight + vrnw_d.weight) / rbag.weight_mg <= 10
+			(vrnw_b.weight + vrnw_l.weight + vrnw_d.weight) / rbag.weight_mg <= <NUT_IF>
+			)
 		)
 )"""
 
 def get_query4(nutritions_values, age, gender):
 	# If it's FullDay then need to use query #4
 
-	q = re.sub("<GENDER>", gender, query4, re.MULTILINE)
-	q = re.sub("<AGE>", age, q, re.MULTILINE)
+	q = query4
 
+	where_to_empty = True
+	first = True
 	for nut in NUTRITIONS:
+		if nut == "alcohol":
+			continue
 
-		if nutritions_values[nut] != "" or nutritions_values[nut] == "Don't Care" or nutritions_values[nut] == "d":
+		if nutritions_values[nut] != "" and nutritions_values[nut] != "Don't Care" and nutritions_values[nut] != "d":
+			where_to_empty = False
 			nline = inner_query_for_query4
+
+			q = re.sub("<WHERE>", "WHERE", q)
+
+			nline = re.sub("<GENDER>", gender, nline, re.MULTILINE)
+			nline = re.sub("<AGE>", age, nline, re.MULTILINE)
+
+			if first:
+				nline = re.sub("<AND>", "", nline)
+				first = False
+			else:
+				nline = re.sub("<AND>", "AND", nline)
+
 			nline = re.sub("<NUT_KEY>", nut, nline)
 			try:
 				val = float(nutritions_values[nut]) / float(100)
@@ -325,6 +333,9 @@ def get_query4(nutritions_values, age, gender):
 			nline = re.sub("<NUT_IF>", str(val), nline, re.MULTILINE)
 
 			q += nline
+
+	if where_to_empty:
+		q = re.sub("<WHERE>", "", q)
 
 	return q
 

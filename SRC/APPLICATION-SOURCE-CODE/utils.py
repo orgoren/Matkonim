@@ -11,6 +11,15 @@ import queries
 import re
 import random
 
+SERVER_NAME = ""
+SERVER_PORT = 3306
+DB_USERNAME = "DbMysql11"
+DB_PASSWORD = "DbMysql11"
+DB_NAME = "DbMysql11"
+VALID_RANDOM_PORT = 40326
+USERNAME = ""
+PASSWORD = ""
+
 NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
 				"lactose", "vitaminC", "saturated",  "dietary_fiber",  "alcohol", "calories"]
 
@@ -25,10 +34,47 @@ PREP_TIMES = {"d" : "dont care", "1" : "30", "2" : "45", "3" : "60", "4" : "90",
 
 GENDERS = ["female", "male"]
 
+
+def connect_to_db(query=""):#username='', password=''):
+	with sshtunnel.SSHTunnelForwarder(
+			('nova.cs.tau.ac.il', 22),
+			ssh_username=USERNAME,
+			ssh_password=PASSWORD,
+			remote_bind_address=("mysqlsrv1.cs.tau.ac.il", 3306),
+			local_bind_address=("127.0.0.1", 3307)
+	) as tunnel:
+		con = mdb.connect(host='127.0.0.1',    # your host, usually localhost
+							 user=DB_USERNAME,         # your username
+							 passwd=DB_PASSWORD,  # your password
+							 db=DB_NAME,
+							 port = 3307)        # name of the data base
+		cur = con.cursor(mdb.cursors.DictCursor)
+		#query = "Select * from ALL_RECIPES where recipe_id = {}".format(1)
+		#query = "select * from NUTRITIONS"
+		if query == "":
+			print "ERROR: no query in input"
+			cur.close()
+			return None
+
+		try:
+			cur.execute(query)
+			ans = cur.fetchall()
+		except Exception as e:
+			print "ERROR: couldn't execute and fetch from db:", e
+			cur.close()
+			return None
+
+		#res = [item['recipe_name'] for item in cur.fetchall()]
+		cur.close()
+		return ans
+		#return ','.join(res)
+
+
 def get_username_and_password():
-	username = raw_input("enter username (for nova): ")
-	password = getpass.getpass("enter password (for nova): ")
-	return username, password
+	global USERNAME
+	global PASSWORD
+	USERNAME = raw_input("enter username (for nova): ")
+	PASSWORD = getpass.getpass("enter password (for nova): ")
 
 
 def get_nutritions_values(form, is_food=True):
@@ -84,4 +130,45 @@ def get_food_type_or_cocktail(form):
 	else:
 		return random.choice(MEAL_OPTIONS)
 
+def get_query_results(query, option):
+	nutritions = {}
+	ingredients = []
+	ans = connect_to_db(query)
+	if ans is None or len(ans) == 0:
+		print("No result from query!")
+		return None
+	recipe_id = ans[0]["recipe_id"]
+	ingredients_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_ingredients_query, re.MULTILINE)
+	nutritions_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_nutritionals_query, re.MULTILINE)
+	ingredients_ans = connect_to_db(ingredients_query)
+	nutritions_ans = connect_to_db(nutritions_query)
+	for line in ingredients_ans:
+		found_ingredient = 0
+		for ing in ingredients:
+			if ing == line["ingredient_name"]:
+				found_ingredient = 1
+				break
+		if found_ingredient == 0:
+			ingredients.append(line["ingredient_name"])
+	for line in nutritions_ans:
+		found_nutrition = 0
+		for nut, val in nutritions.iteritems():
+			if nut == line["nutrition_name"]:
+				found_nutrition = 1;
+				break
+		if found_nutrition == 0:
+			nutritions[line["nutrition_name"]] = line["weight"]
 
+	if option == "Cocktail":
+		details_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_cocktail_details_query, re.MULTILINE)
+		details_ans = connect_to_db(details_query)
+
+		return (details_ans[0]["recipe_name"], details_ans[0]["is_alcoholic"], details_ans[0]["serving_glass"],
+				details_ans[0]["picture"], details_ans[0]["cocktail_details"], ingredients, nutritions)
+
+	else:
+		details_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_food_details_query, re.MULTILINE)
+		details_ans = connect_to_db(details_query)
+
+		return (details_ans[0]["recipe_name"], option, details_ans[0]["prep_time"],
+				details_ans[0]["picture"], details_ans[0]["food_details"], ingredients, nutritions)

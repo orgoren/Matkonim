@@ -47,7 +47,7 @@ WHERE fr.course = \"<MEAL_OPTION>\"
 query1 = """
 SELECT fr.recipe_id
 FROM 	FOOD_RECIPES as fr,
-(SELECT COUNT(ar.recipe_id) as cnt, fr.recipe_id as recipe_id
+(SELECT COUNT(fr.recipe_id) as cnt, fr.recipe_id as recipe_id
 FROM		FOOD_RECIPES fr
 INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on fr.recipe_id = vrnw.recipe_id
 INNER JOIN	NUTRITIONS n on vrnw.nutrition_id = n.nutrition_id
@@ -155,7 +155,7 @@ FROM COCKTAIL_RECIPES as cr
 query2 = """
 SELECT cr.recipe_id
 FROM	COCKTAIL_RECIPES cr,
-(SELECT COUNT(ar.recipe_id) as cnt, cr.recipe_id as recipe_id
+(SELECT COUNT(cr.recipe_id) as cnt, cr.recipe_id as recipe_id
 FROM		COCKTAIL_RECIPES cr
 INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on cr.recipe_id = vrnw.recipe_id
 INNER JOIN	NUTRITIONS n on vrnw.nutrition_id = n.nutrition_id
@@ -441,7 +441,7 @@ GROUP BY
 		ar.recipe_id"""
 
 allergies_query = """SELECT DISTINCT ar.recipe_id AS recipe_id, ar.recipe_name AS recipe_name
-FROM 		ALL_RECIPES ar 
+FROM 		ALL_RECIPES AS ar 
 INNER JOIN 	RECIPE2INGREDIENTS r2i on ar.recipe_id = r2i.recipe_id
 INNER JOIN  <FOOD_DRINK>
 WHERE
@@ -460,6 +460,42 @@ alg_query = """<AND> ar.recipe_id NOT IN (
 			ing.ingredient_name LIKE \"%<ALG>%\"
 )"""
 
+outer_cocktail_query = """SELECT *
+FROM	ALL_RECIPES	 ar
+INNER JOIN		COCKTAIL_RECIPES cr on ar.recipe_id = cr.recipe_id
+INNER JOIN		VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on vrnw.recipe_id = ar.recipe_id
+INNER JOIN		NUTRITIONS n on vrnw.nutrition_id = n.nutrition_id
+INNER JOIN		RECIPE2INGREDIENTS r2i on r2i.recipe_id = ar.recipe_id
+INNER JOIN		INGREDIENTS i on i.ingredient_id = r2i.ingredient_id,
+		(<QUERY>)			AS q
+WHERE
+		q.recipe_id = ar.recipe_id
+"""
+
+get_ingredients_query = """SELECT i.ingredient_name
+FROM		INGREDIENTS AS i
+INNER JOIN	RECIPE2INGREDIENTS r2i on r2i.ingredient_id = i.ingredient_id
+WHERE		r2i.recipe_id = <RECIPE_ID>"""
+
+get_nutritionals_query = """SELECT DISTINCT n.nutrition_name as nutrition_name, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
+FROM		RECIPE2INGREDIENTS r2i
+INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
+INNER JOIN	NUTRITIONS n on n.nutrition_id = inn.nutrition_id
+WHERE r2i.recipe_id = <RECIPE_ID>
+GROUP BY r2i.recipe_id, inn.nutrition_id"""
+
+get_cocktail_details_query = """SELECT ar.recipe_name AS recipe_name, ar.picture AS picture,
+cr.is_alcoholic AS is_alcoholic, cr.cocktail_details AS cocktail_details, cr.serving_glass AS serving_glass
+FROM		ALL_RECIPES AS ar
+INNER JOIN	COCKTAIL_RECIPES cr on cr.recipe_id = ar.recipe_id
+WHERE		ar.recipe_id = <RECIPE_ID>"""
+
+get_food_details_query = """SELECT ar.recipe_name AS recipe_name, ar.picture AS picture,
+fr.food_details AS food_details, fr.prep_time_in_minutes AS prep_time
+FROM		ALL_RECIPES AS ar
+INNER JOIN	FOOD_RECIPES fr on fr.recipe_id = ar.recipe_id
+WHERE		ar.recipe_id = <RECIPE_ID>"""
+
 food_fields_old = """ar.recipe_id = fr.recipe_id
 		AND fr.course = \"<MEAL_OPTION>\""""
 
@@ -468,7 +504,6 @@ food_fields = """fr.course = \"<MEAL_OPTIONS>\""""
 cocktail_fields = """ar.recipe_id = cr.recipe_id"""
 
 def get_query5(allergans, option):
-
 	first = False
 	algqueries = []
 

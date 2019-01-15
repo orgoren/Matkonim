@@ -13,14 +13,6 @@ from utils import *
 
 # Create the application instance
 app = Flask(__name__)
-SERVER_NAME = ""
-SERVER_PORT = 3306
-DB_USERNAME = "DbMysql11"
-DB_PASSWORD = "DbMysql11"
-DB_NAME = "DbMysql11"
-VALID_RANDOM_PORT = 40326
-USERNAME = ""
-PASSWORD = ""
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
@@ -57,12 +49,9 @@ def cocktails_by_nutritional():
 
 			q = queries.get_query2(nutritions_values)
 			print q
-			ans = connect_to_db(q)
-			if ans is None:
-				print "No query was sent..."
-			else:
-				print "results:::"
-				print ans
+			res = get_query_results(q, "Cocktail")
+
+			print(res)
 
 			return redirect('/cocktails_results')
 
@@ -129,14 +118,10 @@ def recipes_by_allergies():
 			meal_or_drink_option = get_food_type_or_cocktail(request.form)
 
 			q = queries.get_query5(allergans, meal_or_drink_option)
-			print q
-			ans = connect_to_db(q)
-			if ans is None:
-				print "No query was sent..."
-			else:
-				print "results:::"
-				print ans
+			print(q)
+			res = get_query_results(q, meal_or_drink_option)
 
+			print(res)
 			return redirect('/recipes_by_allergies_results')
 
 
@@ -169,14 +154,9 @@ def recipes_by_nutritional():
 
 			q = queries.get_query1(nutritions_values, meal_option, prep_time)
 			print q
-			ans = connect_to_db(q)
-			if ans is None:
-				print "No query was sent..."
-			else:
-				print "results:::"
-				print ans
+			res = get_query_results(q, meal_option)
 
-			# TODO - get query values
+			print(res)
 			return redirect('/recipes_by_nutritional_results')
 
 
@@ -226,48 +206,12 @@ def getQuestion():
 	except Exception as e:
 		return str(e)
 
-	
-@app.route('/test', methods=['GET'])
-def connect_to_db(query=""):#username='', password=''):
-	with sshtunnel.SSHTunnelForwarder(
-			('nova.cs.tau.ac.il', 22),
-			ssh_username=USERNAME,
-			ssh_password=PASSWORD,
-			remote_bind_address=("mysqlsrv1.cs.tau.ac.il", 3306),
-			local_bind_address=("127.0.0.1", 3307)
-	) as tunnel:
-		con = mdb.connect(host='127.0.0.1',    # your host, usually localhost
-							 user=DB_USERNAME,         # your username
-							 passwd=DB_PASSWORD,  # your password
-							 db=DB_NAME,
-							 port = 3307)        # name of the data base
-		cur = con.cursor(mdb.cursors.DictCursor)
-		#query = "Select * from ALL_RECIPES where recipe_id = {}".format(1)
-		#query = "select * from NUTRITIONS"
-		if query == "":
-			print "ERROR: no query in input"
-			cur.close()
-			return None
-
-		try:
-			cur.execute(query)
-			ans = cur.fetchall()
-		except Exception as e:
-			print "ERROR: couldn't execute and fetch from db:", e
-			cur.close()
-			return None
-
-		#res = [item['recipe_name'] for item in cur.fetchall()]
-		cur.close()
-		return ans
-		#return ','.join(res)
-
 
 if __name__ == '__main__':
 	# app.run(port=8888, host="0.0.0.0", debug=True)
 	http_server = WSGIServer(('0.0.0.0', VALID_RANDOM_PORT), app)
 	#global USERNAME
 	#global PASSWORD
-	USERNAME, PASSWORD = get_username_and_password()
+	get_username_and_password()
 	print "server started"
 	http_server.serve_forever()

@@ -465,7 +465,7 @@ WHERE
 		q.recipe_id = ar.recipe_id
 """
 
-get_ingredients_query = """SELECT i.ingredient_name
+get_ingredients_query = """SELECT r2i.full_ingredient_line
 FROM		INGREDIENTS AS i
 INNER JOIN	RECIPE2INGREDIENTS r2i on r2i.ingredient_id = i.ingredient_id
 WHERE		r2i.recipe_id = <RECIPE_ID>"""

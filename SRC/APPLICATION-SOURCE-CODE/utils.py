@@ -152,11 +152,11 @@ def get_query_results(query, option):
 	for line in ingredients_ans:
 		found_ingredient = 0
 		for ing in ingredients:
-			if ing == line["ingredient_name"]:
+			if ing == line["full_ingredient_line"]:
 				found_ingredient = 1
 				break
 		if found_ingredient == 0:
-			ingredients.append(line["ingredient_name"])
+			ingredients.append(line["full_ingredient_line"])
 	for line in nutritions_ans:
 		found_nutrition = 0
 		for nut, val in nutritions.iteritems():

@@ -47,8 +47,11 @@ def cocktails_by_nutritional():
 		if "Find me a cocktail!" == request.form['submit']:
 			nutritions_values = get_nutritions_values(request.form, False)
 
+			# Build query from our inputs
 			q = queries.get_query2(nutritions_values)
 			print q
+
+			# Get query results from DB
 			res = get_query_results(q, "Cocktail")
 
 			print(res)
@@ -80,18 +83,25 @@ def daily_meal_plan():
 			gender = get_gender(request.form)
 			age = get_age(request.form)
 			print "age=", age, "gender=", gender, "meal_options=", meal_option
+
+			# Build query from our inputs
 			q = queries.get_query3(nutritions_values, meal_option, age, gender)
 
-			# If it called to get_query4 - all day meals
+			# For daily meal plan, we get a dictionary, otherwise a single query
 			if type(q) == dict:
+				res = {}
 				for meal in q:
 					query = q[meal]
 					meal_option = FULL_DAY_MEALS[meal]["meal"]
 					print query
-					res = get_query_results(query, meal_option)
-					print(res)
+
+					# Get query results from DB
+					res[meal_option] = get_query_results(query, meal_option)
+				print(res)
 			else:
-				print q					
+				print q
+
+				# Get query results from DB
 				res = get_query_results(q, meal_option)
 				print(res)
 
@@ -123,8 +133,11 @@ def recipes_by_allergies():
 			allergans.append(request.form["inlineFormAllergan3"])
 			meal_or_drink_option = get_food_type_or_cocktail(request.form)
 
+			# Build query from our inputs
 			q = queries.get_query5(allergans, meal_or_drink_option)
 			print(q)
+
+			# Get query results from DB
 			res = get_query_results(q, meal_or_drink_option)
 
 			print(res)
@@ -158,8 +171,11 @@ def recipes_by_nutritional():
 			print "meal_option:"
 			print meal_option
 
+			# Build query from our inputs
 			q = queries.get_query1(nutritions_values, meal_option, prep_time)
 			print q
+
+			# Get query results from DB
 			res = get_query_results(q, meal_option)
 
 			print(res)

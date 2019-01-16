@@ -140,10 +140,12 @@ def get_food_type_or_cocktail(form):
 def get_query_results(query, option):
 	nutritions = {}
 	ingredients = []
+	result = {}
 	ans = connect_to_db(query)
 	if ans is None or len(ans) == 0:
 		print("No result from query!")
-		return None
+		return {}
+
 	recipe_id = ans[0]["recipe_id"]
 	ingredients_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_ingredients_query, re.MULTILINE)
 	nutritions_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_nutritionals_query, re.MULTILINE)
@@ -170,12 +172,26 @@ def get_query_results(query, option):
 		details_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_cocktail_details_query, re.MULTILINE)
 		details_ans = connect_to_db(details_query)
 
-		return (details_ans[0]["recipe_name"], details_ans[0]["is_alcoholic"], details_ans[0]["serving_glass"],
-				details_ans[0]["picture"], details_ans[0]["cocktail_details"], ingredients, nutritions)
+		result["recipe_name"] = details_ans[0]["recipe_name"]
+		result["is_alcoholic"] = details_ans[0]["is_alcoholic"]
+		result["serving_glass"] = details_ans[0]["serving_glass"]
+		result["picture"] = details_ans[0]["picture"]
+		result["cocktail_details"] = details_ans[0]["cocktail_details"]
+		result["ingredients"] = ingredients
+		result["nutritions"] = nutritions
+
+		return result
 
 	else:
 		details_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_food_details_query, re.MULTILINE)
 		details_ans = connect_to_db(details_query)
 
-		return (details_ans[0]["recipe_name"], option, details_ans[0]["prep_time"],
-				details_ans[0]["picture"], details_ans[0]["food_details"], ingredients, nutritions)
+		result["recipe_name"] = details_ans[0]["recipe_name"]
+		result["course"] = option
+		result["prep_time"] = details_ans[0]["prep_time"]
+		result["picture"] = details_ans[0]["picture"]
+		result["food_details"] = details_ans[0]["food_details"]
+		result["ingredients"] = ingredients
+		result["nutritions"] = nutritions
+
+		return result

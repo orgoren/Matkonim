@@ -22,17 +22,6 @@ INNER JOIN 	VIEW_RECIPE_WEIGHTS vrw on vrw.recipe_id = r2i.recipe_id
 GROUP BY r2i.recipe_id, inn.nutrition_id
 """
 
-daily_meals_view = """
-CREATE VIEW VIEW_DAILY_MEALS AS
-SELECT DISTINCT breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
-FROM	( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Breakfast and Brunch") as breakfast_r,
-		( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Lunch") as lunch_r,
-		( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Main Dishes") as dinner_r
-ORDER BY RAND()
-limit 30000
-"""
-
-
 ################################
 ########### QUERY 1 ############
 ################################
@@ -912,6 +901,15 @@ def get_query4_old(nutritions_values, age, gender):
 
 	return q
 
+daily_meals_view_old = """
+CREATE VIEW VIEW_DAILY_MEALS AS
+SELECT DISTINCT breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
+FROM	( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Breakfast and Brunch") as breakfast_r,
+		( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Lunch") as lunch_r,
+		( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Main Dishes") as dinner_r
+ORDER BY RAND()
+limit 30000
+"""
 
 def get_query5_old(allergans, option):
 	if option == "Cocktail":

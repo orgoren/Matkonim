@@ -184,18 +184,20 @@
   </div>
  </div>
 <div class="input-group">
-  <div class="input-group-prepend mr-1">
-	<label for="calories-check" class="col-form-label col-10">Max Calories:</label>
-	    <div class="input-group-text mr-2">
-     		 <input type="checkbox" id="calories-check" data-toggle="toggle" onchange="caloriesCheckChange()" aria-label="Checkbox for following text input">
-    	    </div>
-	  </div>
-	  <input type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==4) return false;" min="100" max="9999"	class="form-control col-3" aria-label="Text input with checkbox" id="calories-form" name="calories" disabled>
- <small id="caloriesHelpInline" class="text-muted">
-      (100-9999 cal.)
-    </small>
+      	  </div>
+    <div class="input-group-prepend">
+        <label for="calories-check" class="col-form-label col-5">Max Calories:</label>
+        <div class="input-group-text">
+            <input type="checkbox" id="calories-check" data-toggle="toggle" onchange="caloriesCheckChange()" aria-label="Checkbox for following text input">
+        </div>
+        <input type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==4) return false;" min="100" max="9999"	class="form-control col-4" aria-label="Text input with checkbox" id="calories-form" disabled name="calories">
+        <small id="caloriesHelpInline" class="text-muted col-4 mr-1">
+            (100-9999 cal.)
+        </small>
+
   </div>
  </div>
+</div>
 </div>
  <!-- SUBMIT BUTTON -->
  <div class="button" id="submit-button">

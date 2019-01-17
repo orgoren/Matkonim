@@ -7,7 +7,7 @@ from flask import Flask, render_template, redirect, url_for, request, make_respo
 from gevent.pywsgi import WSGIServer
 #import sshtunnel
 import getpass
-import queries
+import queries_nova
 import re
 import random
 

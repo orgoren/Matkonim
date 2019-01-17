@@ -5,9 +5,9 @@ import datetime
 import MySQLdb as mdb
 from flask import Flask, render_template, redirect, url_for, request, make_response, session, g, abort, flash, jsonify
 from gevent.pywsgi import WSGIServer
-import queries
+import queries_nova
 import re
-from utils import *
+from utils_nova import *
 import json
 
 

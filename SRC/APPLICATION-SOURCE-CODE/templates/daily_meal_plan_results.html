@@ -142,8 +142,17 @@ function show_relevant(curr_recipe_name, curr_course, curr_prep_time, curr_detai
             printable_key = nutritions_convert[printable_key];
         }
         printable_key = printable_key.charAt(0).toUpperCase() + printable_key.slice(1);
+        var printable_value = Math.round(parseFloat(curr_nutritions[nutri_key]));
+        if (printable_key == 'Calories'){
+            printable_value += ' kcal';
+        } else if (printable_value < 1000){
+            printable_value += ' mg';
+        }  else {
+            printable_value = printable_value/1000;
+            printable_value += ' g';
+        }
         $("#nutri-res-table").find('tbody').append('<tr><td style="font-size:80%;padding:2px">' + printable_key + '</td>' +
-        '<td style="font-size:80%;padding:2px">' + Math.round(parseFloat(curr_nutritions[nutri_key])) + ' mg</td></tr>');
+        '<td style="font-size:80%;padding:2px">' +  printable_value + '</td></tr>');
     }
     if (!is_full_meal){
         $("#single-meal-course").show();

@@ -118,7 +118,7 @@
     <script src="../static/vendor/jquery/jquery.min.js"></script>
     <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript">
-var nutritions_convert = {'vitaminC': 'Vitamin C', 'saturated': 'Saturated Fat', 'dietary_fiber': 'Dietary Fibers'};
+var nutritions_convert = {'vitaminC': 'Vitamin C', 'saturated': 'Saturated Fat', 'dietary_fiber': 'Dietary Fibers', 'calories_kcal': 'Calories'};
 var course_to_meal = {'Breakfast and Brunch': 'Breakfast', 'Lunch': 'Lunch', 'Main Dishes': 'Dinner'};
 
 function show_relevant(curr_recipe_name, curr_course, curr_prep_time, curr_details, curr_picture, curr_ingredients, curr_nutritions, is_full_meal){
@@ -148,7 +148,7 @@ function show_relevant(curr_recipe_name, curr_course, curr_prep_time, curr_detai
         } else if (printable_value < 1000){
             printable_value += ' mg';
         }  else {
-            printable_value = printable_value/1000;
+            printable_value = (printable_value/1000).toFixed(2);
             printable_value += ' g';
         }
         $("#nutri-res-table").find('tbody').append('<tr><td style="font-size:80%;padding:2px">' + printable_key + '</td>' +

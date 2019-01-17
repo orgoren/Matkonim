@@ -4,6 +4,6 @@ import dataFromRecipes
 import dataFromIngredients
 
 commonFile.init()
-dataFromRecipes.run()
 dataFromIngredients.run()
+dataFromRecipes.run()
 dataFromCocktails.run()

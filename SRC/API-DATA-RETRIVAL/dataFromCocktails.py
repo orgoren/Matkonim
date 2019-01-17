@@ -19,7 +19,7 @@ def run():
 
     count_cocktails = 0
     # define sql queries
-    add_cocktail = "INSERT INTO COCKTAIL_RECIPES (recipe_id, cocktail_id, is_alcoholic, cocktail_details) VALUES ({},{},{},'{}');"
+    add_cocktail = "INSERT INTO COCKTAIL_RECIPES (recipe_id, cocktail_id, is_alcoholic, cocktail_details, serving_glass) VALUES ({},{},{},'{}','{}');"
 
     add_recipce = """INSERT INTO ALL_RECIPES (recipe_name, picture) VALUES ('{}','{}');"""
 
@@ -34,7 +34,7 @@ def run():
             cocktail_id = row[1]
             cocktail_name = row[2].replace("'","''")
             is_alcoholic = 1 if row[3] == 'Alcoholic' else 0
-            serving_glass = row[4]  # what to do with this
+            serving_glass = row[4]
             picture = row[5].replace("'","''")
             cocktail_details = row[6].replace("'","''")
 
@@ -43,7 +43,7 @@ def run():
             else:
                 # adding new cocktail to set
                 cocktails.add((commonFile.recipe_id, cocktail_id, cocktail_details, is_alcoholic))
-                add_cocktail_queries += add_cocktail.format(commonFile.recipe_id, cocktail_id, is_alcoholic, str(cocktail_details))
+                add_cocktail_queries += add_cocktail.format(commonFile.recipe_id, cocktail_id, is_alcoholic, str(cocktail_details), serving_glass)
                 add_recipce_queries += add_recipce.format(str(cocktail_name), str(picture))
 
             num_ingredients = (len(row) - 7)/4
@@ -64,6 +64,6 @@ def run():
             commonFile.recipe_id += 1
                     
 
-    cocktail_sql_file = open('insert_data_from_cocktail_rcsv.sql', 'w')
+    cocktail_sql_file = open('insert_data_from_cocktail_csv.sql', 'w')
     cocktail_sql_file.write(add_recipce_queries+add_ingredient_queries+add_cocktail_queries)
 

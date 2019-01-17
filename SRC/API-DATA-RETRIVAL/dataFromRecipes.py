@@ -1,7 +1,6 @@
 import os
 import csv
 import requests
-import MySQLdb
 import commonFile
 
 def run():
@@ -19,7 +18,7 @@ def run():
 	add_all_recipes_queries = ""
 
 	# define sql queries
-	add_food = """INSERT INTO FOOD_RECIPES (food_id, course, prep_time_in_minutes, food_details) VALUES ({},'{}',{},'{}');"""
+	add_food = """INSERT INTO FOOD_RECIPES (recipe_id, food_id, course, prep_time_in_minutes, food_details) VALUES ({},{},'{}',{},'{}');"""
 
 	add_recipce = """INSERT INTO ALL_RECIPES (recipe_name, picture) VALUES ('{}','{}');"""
 
@@ -43,7 +42,7 @@ def run():
 	            # adding new food to set
 	            food_set.add((food_id, course, prep_time_minutes, food_details))
 	            recipe_set.add((food_name, picture))
-	            add_food_recipe_queries += add_food.format(food_id, course, prep_time_minutes, str(food_details))
+	            add_food_recipe_queries += add_food.format(commonFile.recipe_id, food_id, course, prep_time_minutes, str(food_details))
 	            add_all_recipes_queries += add_recipce.format(food_name, picture)
 	            
 	        num_ingredients = (len(row) - 7)/3
@@ -59,14 +58,12 @@ def run():
 	            else:
 	                # adding new ingredient to set
 					if str(ingredient_name) not in commonFile.ingredients_dict:
-						commonFile.ingredients_dict.update({str(ingredient_name): commonFile.ingredient_id})
 						commonFile.ingredient_id += 1
+						commonFile.ingredients_dict.update({str(ingredient_name): commonFile.ingredient_id})
 					ingredient_set.add((commonFile.recipe_id, commonFile.ingredients_dict[str(ingredient_name)], servings, str(full_ingredient_line)))
 					add_ingredient_queries += add_ingredient.format(commonFile.recipe_id, commonFile.ingredients_dict[str(ingredient_name)], servings, str(full_ingredient_line))
 
 	        commonFile.recipe_id += 1
-	    	if commonFile.recipe_id > 41185:
-	    		break 
 
 	recipes_sql_file = open('insert_data_from_recipe_csv.sql', 'w')
 	recipes_sql_file.write(add_all_recipes_queries+add_food_recipe_queries+add_ingredient_queries)

@@ -144,13 +144,22 @@
         $("#nutri-res-table tbody tr").remove();
         var curr_nutritions = query_res['nutritions'];
         for (var nutri_key in curr_nutritions){
-            var printable_key = nutri_key;
-            if (printable_key in nutritions_convert){
-                printable_key = nutritions_convert[printable_key];
-            }
-            printable_key = printable_key.charAt(0).toUpperCase() + printable_key.slice(1);
-            $("#nutri-res-table").find('tbody').append('<tr><td style="font-size:80%;padding:2px">' + printable_key + '</td>' +
-            '<td style="font-size:80%;padding:2px">' + Math.round(parseFloat(curr_nutritions[nutri_key])) + ' mg</td></tr>');
+		var printable_key = nutri_key;
+		if (printable_key in nutritions_convert){
+		    printable_key = nutritions_convert[printable_key];
+		}
+		printable_key = printable_key.charAt(0).toUpperCase() + printable_key.slice(1);
+		var printable_value = Math.round(parseFloat(curr_nutritions[nutri_key]));
+		if (printable_key == 'Calories'){
+		    printable_value += ' kcal';
+		} else if (printable_value < 1000){
+		    printable_value += ' mg';
+		}  else {
+		    printable_value = printable_value/1000;
+		    printable_value += ' g';
+		}
+		$("#nutri-res-table").find('tbody').append('<tr><td style="font-size:80%;padding:2px">' + printable_key + '</td>' +
+		'<td style="font-size:80%;padding:2px">' +  printable_value + '</td></tr>');
         }
     }
     </script>

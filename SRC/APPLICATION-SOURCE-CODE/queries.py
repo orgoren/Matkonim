@@ -512,6 +512,89 @@ def get_query5(allergans, option):
 
 	return query
 
+################################
+###########  TRIVIA1 ###########
+################################
+
+trivia_1_get_max_nutrition = """
+SELECT n.nutrition_id, n.nutrition_name
+FROM NUTRITIONS n
+INNER JOIN
+(
+	SELECT precentage, nutrition_id
+	FROM VIEW_RECIPE_NUTRITIONS_WEIGHTS 
+	WHERE recipe_id = <RECIPE_ID>
+) vrnw on n.nutrition_id = vrnw.nutrition_id,
+(
+			SELECT v.recipe_id, MAX(v.precentage) as max
+			FROM VIEW_RECIPE_NUTRITIONS_WEIGHTS v
+			WHERE v.recipe_id = <RECIPE_ID>
+			GROUP BY v.recipe_id 
+) as max_nut_table
+
+WHERE vrnw.precentage = max_nut_table.max 
+"""
+
+trivia_1_get_random_recipe = """
+SELECT recipe_id, recipe_name from ALL_RECIPES order by rand() limit 1
+"""
+
+trivia_1_get_random_nutritions = """
+SELECT nutrition_id, nutrition_name
+FROM NUTRITIONS
+WHERE nutrition_id <> <ANS_NUTRITION_ID>
+order by rand()
+Limit 3
+"""
+
+def get_query_trivia_1(recipe_id):
+	return re.sub("<RECIPE_ID>", str(recipe_id), trivia_1_get_max_nutrition, re.MULTILINE)
+
+def get_query_trivia_1_random_nutritions(nutrition_id):
+	return re.sub("<ANS_NUTRITION_ID>", str(nutrition_id), trivia_1_get_random_nutritions, re.MULTILINE)
+
+################################
+###########  TRIVIA2 ###########
+################################
+trivia_2_get_recipe_of_max_nutrition = """
+SELECT vrnw.recipe_id, vrnw.nutrition_id, vrnw.weight
+FROM VIEW_RECIPE_NUTRITIONS_WEIGHTS as vrnw
+WHERE 
+	vrnw.nutrition_id = <NUTRITION_ID> 
+	AND
+	(
+		vrnw.recipe_id = <RECIPE_1> OR
+		vrnw.recipe_id = <RECIPE_2> OR
+		vrnw.recipe_id = <RECIPE_3> OR
+		vrnw.recipe_id = <RECIPE_4>
+	)
+GROUP BY vrnw.recipe_id, vrnw.nutrition_id
+HAVING sum(vrnw.weight) >= ALL
+(
+	SELECT vrnw2.weight
+	FROM VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw2
+	WHERE
+		vrnw2.nutrition_id = <NUTRITION_ID>
+		AND
+		(
+			vrnw2.recipe_id = <RECIPE_1> OR
+			vrnw2.recipe_id = <RECIPE_2> OR
+			vrnw2.recipe_id = <RECIPE_3> OR
+			vrnw2.recipe_id = <RECIPE_4>
+		)
+)
+"""
+
+trivia_2_get_random_nutrition = """
+SELECT nutrition_id, nutrition_name FROM NUTRITIONS ORDER BY RAND() LIMIT 1
+"""
+
+trivia_2_get_random_recipes = """
+SELECT recipe_id, recipe_name
+FROM ALL_RECIPES
+order by rand()
+Limit 4
+"""
 
 
 ###############################################################################################

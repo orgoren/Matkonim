@@ -9,6 +9,7 @@ import sshtunnel
 import getpass
 import queries
 import re
+import random
 from utils import *
 import json
 
@@ -209,21 +210,23 @@ def getQuestion():
 	########### TODO: REMOVE FROM HERE after making real questions ###############
 	# format for questions to send to client:
 	# {'question': question itself, 'answer_a': ..., 'answer_b': ..., 'answer_c': ..., 'answer_d': ..., 'correct': right answer in format "answer_X"}
-	question_1 = {'question': 'Some question that server came up with!', 'answer_a': 'answer_a_from_server',
-				  'answer_b': 'answer_b_from_server',
-				  'answer_c': 'answer_c_from_server', 'answer_d': 'answer_d_from_server', 'correct': 'answer_c'}
-	question_2 = {'question': 'ANOTHER question that server came up with!', 'answer_a': 'ANOTHER_answer_a_from_server',
-				  'answer_b': 'ANOTHER_answer_b_from_server',
-				  'answer_c': 'ANOTHER_answer_c_from_server', 'answer_d': 'ANOTHER_answer_d_from_server',
-				  'correct': 'answer_a'}
-	global NEXT_QUESTION
-	if NEXT_QUESTION == 1:
-		question = question_1
-		NEXT_QUESTION = 2
-	else:
-		question = question_2
-		NEXT_QUESTION = 1
+	# question_1 = {'question': 'Some question that server came up with!', 'answer_a': 'answer_a_from_server',
+	# 			  'answer_b': 'answer_b_from_server',
+	# 			  'answer_c': 'answer_c_from_server', 'answer_d': 'answer_d_from_server', 'correct': 'answer_c'}
+	# question_2 = {'question': 'ANOTHER question that server came up with!', 'answer_a': 'ANOTHER_answer_a_from_server',
+	# 			  'answer_b': 'ANOTHER_answer_b_from_server',
+	# 			  'answer_c': 'ANOTHER_answer_c_from_server', 'answer_d': 'ANOTHER_answer_d_from_server',
+	# 			  'correct': 'answer_a'}
+	# global NEXT_QUESTION
+	# if NEXT_QUESTION == 1:
+	# 	question = question_1
+	# 	NEXT_QUESTION = 2
+	# else:
+	# 	question = question_2
+	# 	NEXT_QUESTION = 1
 	########### TODO: REMOVE UNTIL HERE after making real questions ###############
+
+	question = get_random_question()
 
 	try:
 		return jsonify(question=question)

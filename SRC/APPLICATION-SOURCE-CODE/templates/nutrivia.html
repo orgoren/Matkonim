@@ -64,12 +64,12 @@
 
 <!-- TRIVIA SCREEN -->
 <div class="col-12" id="trivia-screen">
-<h4 id=question></h4>
+<h4 id=question>loading...</h4>
 <div class="container" id="answers-btns">
-<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_a" id="answer_a" onclick="CheckAnswer()">tmp</button></div>
-<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_b" id="answer_b" onclick="CheckAnswer()">tmp</button></div>
-<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_c" id="answer_c" onclick="CheckAnswer()">tmp</button></div>
-<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_d" id="answer_d" onclick="CheckAnswer()">tmp</button></div>
+<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_a" id="answer_a" onclick="CheckAnswer()">loading...</button></div>
+<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_b" id="answer_b" onclick="CheckAnswer()">loading...</button></div>
+<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_c" id="answer_c" onclick="CheckAnswer()">loading...</button></div>
+<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_d" id="answer_d" onclick="CheckAnswer()">loading...</button></div>
 </div>
 </div>
 <!-- END OF TRIVIA SCREEN -->
@@ -132,6 +132,11 @@ function StartTrivia() {
 	GetQuestion();
 }
 function GetQuestion() {
+  $("#question").text("loading...");
+  $("#answer_a").html("loading...");
+  $("#answer_b").html("loading...");
+  $("#answer_c").html("loading...");
+  $("#answer_d").html("loading...");
 	$.getJSON('/getQuestion', {}, function(data) {
 		localStorage.setItem('correct',data.question.correct);
     	 	$("#question").text(data.question.question);

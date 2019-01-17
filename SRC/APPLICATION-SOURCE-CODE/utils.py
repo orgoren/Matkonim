@@ -199,3 +199,79 @@ def get_query_results(query, option):
 		result["nutritions"] = nutritions
 
 		return result
+
+
+def get_random_question():
+	question_type = random.randint(1,2)
+	question_type = 1
+	answers = ["answer_a", "answer_b", "answer_c", "answer_d"]
+	correct_answer = random.choice(answers)
+	answers.remove(correct_answer)
+	question = {}
+	question["correct"] = correct_answer
+
+	if question_type == 1:
+
+		# get recipe for question
+		recipe_details = connect_to_db(queries.trivia_1_get_random_recipe)
+		recipe_id = recipe_details[0]["recipe_id"]
+		recipe_name = recipe_details[0]["recipe_name"]
+
+		question["question"] = "In this recipe: \"" + recipe_name + "\" which nutrition has the max precentage weight?"
+
+		# get max nutrition for recipe
+		nutrition_details = connect_to_db(queries.get_query_trivia_1(recipe_id))
+		nutrition_id = nutrition_details[0]["nutrition_id"]
+		nutrition_name = nutrition_details[0]["nutrition_name"]
+
+		question[correct_answer] = nutrition_name
+
+		# question_2 = {'question': 'ANOTHER question that server came up with!', 'answer_a': 'ANOTHER_answer_a_from_server',
+		# 			  'answer_b': 'ANOTHER_answer_b_from_server',
+		# 			  'answer_c': 'ANOTHER_answer_c_from_server', 'answer_d': 'ANOTHER_answer_d_from_server',
+		# 			  'correct': 'answer_a'}
+
+		# get other nutritions
+		nutritions_details = connect_to_db(queries.get_query_trivia_1_random_nutritions(nutrition_id))
+		nutritions = []
+		for i in range(3):
+			answer = random.choice(answers)
+			question[answer] = nutritions_details[i]["nutrition_name"]
+			answers.remove(answer)
+
+	return question
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

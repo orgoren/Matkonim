@@ -50,11 +50,11 @@ def connect_to_db(query=""):#username='', password=''):
 	# 		remote_bind_address=("mysqlsrv1.cs.tau.ac.il", 3306),
 	# 		local_bind_address=("127.0.0.1", 3307)
 	# ) as tunnel:
-	con = mdb.connect(host='127.0.0.1',    # your host, usually localhost
+	con = mdb.connect(host='mysqlsrv1.cs.tau.ac.il',    # your host, usually localhost
 						 user=DB_USERNAME,         # your username
 						 passwd=DB_PASSWORD,  # your password
 						 db=DB_NAME,
-						 port = 3307)        # name of the data base
+						 port = 3306)        # name of the data base
 	cur = con.cursor(mdb.cursors.DictCursor)
 	#query = "Select * from ALL_RECIPES where recipe_id = {}".format(1)
 	#query = "select * from NUTRITIONS"

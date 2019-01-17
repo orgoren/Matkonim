@@ -66,10 +66,7 @@
      <p class="recipe-details" style="font-size:180%">{{ query_res.recipe_name }}</p>
         <p class="recipe-details" style="line-height: 70%"><u>Course</u>: {{ query_res.course }}</p>
         <p class="recipe-details" style="line-height: 70%"><u>Prep time</u>: {{ query_res.prep_time }} minutes</p>
-     <p class="recipe_details" style="line-height: 50%"><u>Ingredients</u>:</p>
-        {% for ing_line in query_res.ingredients %}
-            <p style="line-height: 40%">{{ ing_line }}</p>
-        {% endfor %}
+     <p class="recipe_details" id="ingredients-p"></p>
      <a class="recipe-details" href="{{ query_res.food_details }}" style="font-size:110%"><u>Full recipe instructions</u></a>
  </div>
 
@@ -124,9 +121,11 @@ function show_results(){
                 printable_key = nutritions_convert[printable_key];
             }
             printable_key = printable_key.charAt(0).toUpperCase() + printable_key.slice(1);
-            var printable_value = Math.round(parseFloat(curr_nutritions[nutri_key]));
+            var printable_value = (parseFloat(curr_nutritions[nutri_key])).toFixed(2);
             if (printable_key == 'Calories'){
                 printable_value += ' kcal';
+            } else if (Math.round(printable_value) == 0){
+                printable_value = '0 mg';
             } else if (printable_value < 1000){
                 printable_value += ' mg';
             }  else {
@@ -136,6 +135,12 @@ function show_results(){
             $("#nutri-res-table").find('tbody').append('<tr><td style="font-size:80%;padding:2px">' + printable_key + '</td>' +
             '<td style="font-size:80%;padding:2px">' +  printable_value + '</td></tr>');
         }
+        var curr_ingredients = query_res['ingredients'];
+        var ing_str = "<span style='text-decoration: underline;'>Ingredients</span>:<br>";
+        for (var i in curr_ingredients){
+            ing_str += (curr_ingredients[i] + "<br>");
+        }
+        $("#ingredients-p").html(ing_str);
 	}
 }
 </script>

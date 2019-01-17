@@ -63,14 +63,6 @@
          </tr>
      </thead>
      <tbody>
-        {% if 'nutritions' in query_res %}
-        {% for nutri_key, nutri_val in query_res.nutritions.items() %}
-         <tr>
-             <td style="font-size:80%;padding:2px">{{ nutri_key }}</td>
-             <td style="font-size:80%;padding:2px">{{ nutri_val }} mg</td>
-         </tr>
-         {% endfor %}
-         {% endif %}
      </tbody>
      </table>
     </div>
@@ -114,28 +106,54 @@
     <script src="../static/vendor/jquery/jquery.min.js"></script>
     <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
+    var nutritions_convert = {'vitaminC': 'Vitamin C', 'saturated': 'Saturated Fat', 'dietary_fiber': 'Dietary Fibers'};
+
     function show_results(){
+        var query_res = {{ query_res|tojson }};
         $("#food-found-header").hide();
         $("#cocktail-found-header").hide();
         $("#results-container").hide();
         $("#food-recipe-details").hide();
         $("#cocktail-recipe-details").hide();
         $("#not-found-header").hide();
-        if (('{{ query_res.recipe_name }}' !== '') && ('{{ query_res.nutritions }}' !== '') && ('{{ query_res.ingredients }}' !== '')){
-            if (('{{ query_res.food_details }}' !== '') && ('{{ query_res.course }}' !== '') && ('{{ query_res.prep_time }}' !== '')){
+        if ((typeof query_res['recipe_name'] !== 'undefined') && (typeof query_res['nutritions'] !== 'undefined') &&
+        (typeof query_res['ingredients'] !== 'undefined')){
+            if ((typeof query_res['food_details'] !== 'undefined') && (typeof query_res['course'] !== 'undefined') &&
+            (typeof query_res['prep_time'] !== 'undefined')){
                 $("#food-found-header").show();
                 $("#results-container").show();
                 $("#food-recipe-details").show();
-                return;
-            } else if (('{{ query_res.cocktail_details }}' !== '') && ('{{ query_res.serving_glass }}' !== '') && ('{{ query_res.is_alcoholic }}' !== '')){
+                $("#course-or-alcoholic").html("<span style='text-decoration: underline;'>Course</span>: " + query_res['course']);
+                $("#prep-or-glass").html("<span style='text-decoration: underline;'>Prep time</span>: " + query_res['prep_time']);
+            } else if ((typeof query_res['cocktail_details'] !== 'undefined') &&
+            (typeof query_res['serving_glass'] !== 'undefined') && (typeof query_res['is_alcoholic'] !== 'undefined')){
                 $("#cocktail-found-header").show();
                 $("#results-container").show();
                 $("#cocktail-recipe-details").show();
+                $("#course-or-alcoholic").html("<span style='text-decoration: underline;'>Is Alcoholic</span>: " + query_res['is_alcoholic']);
+                $("#prep-or-glass").html("<span style='text-decoration: underline;'>Serving Glass</span>: " + query_res['serving_glass']);
+                $("prep-or-glass").html();
+            } else {
+                $("#not-found-header").show();
                 return;
             }
+        } else {
+            $("#not-found-header").show();
+            return;
         }
-        $("#not-found-header").show();
+        $("#nutri-res-table tbody tr").remove();
+        var curr_nutritions = query_res['nutritions'];
+        for (var nutri_key in curr_nutritions){
+            var printable_key = nutri_key;
+            if (printable_key in nutritions_convert){
+                printable_key = nutritions_convert[printable_key];
+            }
+            printable_key = printable_key.charAt(0).toUpperCase() + printable_key.slice(1);
+            $("#nutri-res-table").find('tbody').append('<tr><td style="font-size:80%;padding:2px">' + printable_key + '</td>' +
+            '<td style="font-size:80%;padding:2px">' + curr_nutritions[nutri_key] + 'mg </td></tr>');
+        }
     }
     </script>
   </body>
 </html>
+

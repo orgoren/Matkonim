@@ -2,15 +2,13 @@
 <html lang="en">
 
   <head>
-
+<link rel="shortcut icon" href="#">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
 
     <title>Recipes by Nutritional Values</title>
     <!-- Bootstrap core CSS -->
     <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-
 
     <!-- Custom fonts -->
     <link href="../static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
@@ -21,7 +19,7 @@
 
   </head>
 
-  <body>
+  <body onload="show_results()">
     <!-- Masthead -->
     <header class="masthead text-black text-center">
       <div class="overlay"></div>
@@ -41,13 +39,43 @@
 	  </div>
 	</div>
 
+<div class="row text-center">
+<div class="col-9" id="not-found-header">
+	<h2>Sorry, we couldn't find any recipe matching your search!<br>Maybe you should try a new search with different parameters...</h2>
+</div>
+</div>
 
- <div class="text-center col-12">
-	<h5 class="mb-auto">Interesting results......</h5>
-	<h5 class="mb-auto">Interesting results......</h5>
-	<h5 class="mb-auto">Interesting results......</h5>
-	<h5 class="mb-auto">Interesting results......</h5>
+        <div class="col-md-12 mx-auto" id="found-header" style="float:left;margin-left:8rem">
+            <h5>We found you the perfect recipe!</h5>
+        </div>
+<div class="container-fluid" id="results-container">
+<div class="row">
+    <div class="col-md-4">
+     <table class="table-responsive table table-striped" cellspacing="0" id="nutri-res-table">
+     <thead>
+         <tr>
+             <th style="font-size:90%;padding:5px"> Nutritional Value </th>
+             <th style="font-size:90%;padding:5px"> Amount in Recipe</th>
+         </tr>
+     </thead>
+     <tbody>
+     </tbody>
+     </table>
+    </div>
+    <div class="col-md-4" id="results">
+     <p class="recipe-details" style="font-size:180%">{{ query_res.recipe_name }}</p>
+        <p class="recipe-details" style="line-height: 70%"><u>Course</u>: {{ query_res.course }}</p>
+        <p class="recipe-details" style="line-height: 70%"><u>Prep time</u>: {{ query_res.prep_time }} minutes</p>
+     <p class="recipe_details" id="ingredients-p"></p>
+     <a class="recipe-details" href="{{ query_res.food_details }}" style="font-size:110%"><u>Full recipe instructions</u></a>
  </div>
+
+    <div class="col-md-4">
+        <img src="{{ query_res.picture }}" id="recipe-picture" class="img-fluid rounded" alt="Responsive image" style="max-width:250px;max-height:250px;">
+        </div>
+</div>
+    </div>
+
 
 <!-- NEW-SEARCH BUTTON -->
 <form  method="POST">
@@ -55,7 +83,6 @@
     <input type="submit" class="btn btn-lg btn-primary" name="submit" value="New search">
   </div>
 </form>
-
 
 
 <!-- BACK BUTTON -->
@@ -67,12 +94,56 @@
 
 
 </header>
- 
     <!-- Bootstrap core JavaScript -->
     <script src="../static/vendor/jquery/jquery.min.js"></script>
     <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+var nutritions_convert = {'vitaminC': 'Vitamin C', 'saturated': 'Saturated Fat', 'dietary_fiber': 'Dietary Fibers', 'calories_kcal': 'Calories'};
 
-
+function show_results(){
+    var query_res = {{ query_res|tojson }};
+    if ((typeof query_res['recipe_name'] === 'undefined') || (typeof query_res['course'] === 'undefined') ||
+        (typeof query_res['prep_time'] === 'undefined') || (typeof query_res['food_details'] === 'undefined') ||
+        (typeof query_res['ingredients'] === 'undefined') || (typeof query_res['nutritions'] === 'undefined')){
+		$("#found-header").hide();
+		$("#results-container").hide();
+		$("#not-found-header").show();
+		return;
+	} else {
+		$("#not-found-header").hide();
+		$("#found-header").show();
+		$("#results-container").show();
+		$("#nutri-res-table tbody tr").remove();
+        var curr_nutritions = query_res['nutritions'];
+        for (var nutri_key in curr_nutritions){
+            var printable_key = nutri_key;
+            if (printable_key in nutritions_convert){
+                printable_key = nutritions_convert[printable_key];
+            }
+            printable_key = printable_key.charAt(0).toUpperCase() + printable_key.slice(1);
+            var printable_value = (parseFloat(curr_nutritions[nutri_key])).toFixed(2);
+            if (printable_key == 'Calories'){
+                printable_value += ' kcal';
+            } else if (Math.round(printable_value) == 0){
+                printable_value = '0 mg';
+            } else if (printable_value < 1000){
+                printable_value += ' mg';
+            }  else {
+                printable_value = (printable_value/1000).toFixed(2);
+                printable_value += ' g';
+            }
+            $("#nutri-res-table").find('tbody').append('<tr><td style="font-size:80%;padding:2px">' + printable_key + '</td>' +
+            '<td style="font-size:80%;padding:2px">' +  printable_value + '</td></tr>');
+        }
+        var curr_ingredients = query_res['ingredients'];
+        var ing_str = "<span style='text-decoration: underline;'>Ingredients</span>:<br>";
+        for (var i in curr_ingredients){
+            ing_str += (curr_ingredients[i] + "<br>");
+        }
+        $("#ingredients-p").html(ing_str);
+	}
+}
+</script>
 
   </body>
 

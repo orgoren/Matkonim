@@ -10,8 +10,6 @@
     <!-- Bootstrap core CSS -->
     <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-
-
     <!-- Custom fonts -->
     <link href="../static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
@@ -21,7 +19,7 @@
 
   </head>
 
-  <body>
+  <body onload="show_results()">
     <!-- Masthead -->
     <header class="masthead text-black text-center">
       <div class="overlay"></div>
@@ -30,21 +28,70 @@
           <div class="col-2 mx-auto">
 			<h1 class="mb-auto">Matkonim</h1>
           </div>
-		<div class="col-2 mx-auto">      
+		<div class="col-2 mx-auto">
 			<h2 class="text-nowrap mb-auto">Recipes by Allergies</h2>
 		</div>
- <div class="col-3">
+ 		<div class="col-3">
                 <div class="loaf-icon-item mx-auto mb-5 mb">
-                <img src="../static/img/loaf.png" class="img-fluid" id="loafIcon" alt="Responsive image">
-            </div>
-          </div>
-	</div>
+               	 <img src="../static/img/loaf.png" class="img-fluid" id="loafIcon" alt="Responsive image">
+         		</div>
+           </div>
+	  </div>
 	</div>
 
+<div class="row text-center">
+<div id="not-found-header">
+	<h2>Sorry, we couldn't find any recipe matching your search!<br>Maybe you should try a new search with different parameters...</h2>
+</div>
+</div>
 
- <div class="text-center col-12">
-	<h5 class="mb-auto">Interesting results......</h5>
- </div>
+        <div class="col-md-12 mx-auto" id="food-found-header" style="float:left;margin-left:8rem">
+            <h5>We found the perfect recipe for your allergies!</h5>
+        </div>
+        <div class="col-md-12 mx-auto" id="cocktail-found-header" style="float:left;margin-left:8rem">
+            <h5>We found the perfect cocktail for your allergies!</h5>
+        </div>
+
+<div class="container-fluid" id="results-container">
+<div class="row">
+    <div class="col-md-4">
+     <table class="table-responsive table table-striped" cellspacing="0" id="nutri-res-table">
+     <thead>
+         <tr>
+             <th style="font-size:90%;padding:5px"> Nutritional Value </th>
+             <th style="font-size:90%;padding:5px"> Amount in Recipe</th>
+         </tr>
+     </thead>
+     <tbody>
+        {% if 'nutritions' in query_res %}
+        {% for nutri_key, nutri_val in query_res.nutritions.items() %}
+         <tr>
+             <td style="font-size:80%;padding:2px">{{ nutri_key }}</td>
+             <td style="font-size:80%;padding:2px">{{ nutri_val }} mg</td>
+         </tr>
+         {% endfor %}
+         {% endif %}
+     </tbody>
+     </table>
+    </div>
+    <div class="col-md-4" id="results">
+        <p class="recipe-details" style="font-size:180%">{{ query_res.recipe_name }}</p>
+        <p class="recipe-details" style="line-height: 70%" id="course-or-alcoholic"></p>
+        <p class="recipe-details" style="line-height: 70%" id="prep-or-glass"></p>
+        <p class="recipe_details" style="line-height: 50%"><u>Ingredients</u>:</p>
+        {% for ing_line in query_res.ingredients %}
+        <p style="line-height: 40%">{{ ing_line }}</p>
+        {% endfor %}
+        <a id="food-recipe-details" href="{{ query_res.food_details }}" style="font-size:110%"><u>Full recipe instructions</u></a>
+        <p id="cocktail-recipe-details" style="line-height: 100%"><u>Full cocktail instructions</u>:
+         <br>{{ query_res.cocktail_details }}</p>
+    </div>
+
+    <div class="col-md-4">
+        <img src="{{ query_res.picture }}" id="recipe-picture" class="img-fluid rounded" alt="Responsive image" style="max-width:250px;max-height:250px;">
+    </div>
+</div>
+</div>
 
 <!-- NEW-SEARCH BUTTON -->
 <form  method="POST">
@@ -54,7 +101,7 @@
 </form>
 
 
-        <!-- BACK BUTTON -->
+<!-- BACK BUTTON -->
 <form  method="POST">
   <div class="button" id="back-button">
     <input type="submit" class="btn btn-lg btn-secondary" name="submit" value="Back to Main Menu">
@@ -63,14 +110,32 @@
 
 
 </header>
-
-  
-<!-- Bootstrap core JavaScript -->
-<script src="../static/vendor/jquery/jquery.min.js"></script>
-<script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-
+    <!-- Bootstrap core JavaScript -->
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+    function show_results(){
+        $("#food-found-header").hide();
+        $("#cocktail-found-header").hide();
+        $("#results-container").hide();
+        $("#food-recipe-details").hide();
+        $("#cocktail-recipe-details").hide();
+        $("#not-found-header").hide();
+        if (('{{ query_res.recipe_name }}' !== '') && ('{{ query_res.nutritions }}' !== '') && ('{{ query_res.ingredients }}' !== '')){
+            if (('{{ query_res.food_details }}' !== '') && ('{{ query_res.course }}' !== '') && ('{{ query_res.prep_time }}' !== '')){
+                $("#food-found-header").show();
+                $("#results-container").show();
+                $("#food-recipe-details").show();
+                return;
+            } else if (('{{ query_res.cocktail_details }}' !== '') && ('{{ query_res.serving_glass }}' !== '') && ('{{ query_res.is_alcoholic }}' !== '')){
+                $("#cocktail-found-header").show();
+                $("#results-container").show();
+                $("#cocktail-recipe-details").show();
+                return;
+            }
+        }
+        $("#not-found-header").show();
+    }
+    </script>
   </body>
-
 </html>
-

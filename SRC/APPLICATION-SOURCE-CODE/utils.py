@@ -99,12 +99,16 @@ def get_nutritions_values(form, is_food=True):
 	return nutritions_values
 
 
-def get_meal_option(form):	
-	for mo in MEAL_OPTIONS:
-		if str(form.get(mo)) == "on":
-			return mo
-	# looks like it's chosen
-	return "Main Dishes"
+def get_meal_option(form, is_meal_plan=False):
+    for mo in MEAL_OPTIONS:
+        if str(form.get(mo)) == "on":
+            return mo
+    if is_meal_plan:
+        # looks like it's chosen
+        return "Breakfast and Brunch"
+    # looks like it's chosen
+    return "Main Dishes"
+
 
 def get_gender(form):
 	for gender in GENDERS:

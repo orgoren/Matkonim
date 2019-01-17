@@ -59,14 +59,6 @@
          </tr>
      </thead>
      <tbody>
-        {% if 'nutritions' in query_res %}
-         {% for nutri_key, nutri_val in query_res.nutritions.items() %}
-         <tr>
-             <td style="font-size:80%;padding:2px">{{ nutri_key }}</td>
-             <td style="font-size:80%;padding:2px">{{ nutri_val }} mg</td>
-         </tr>
-         {% endfor %}
-        {% endif %}
      </tbody>
      </table>
     </div>
@@ -109,17 +101,32 @@
     <script src="../static/vendor/jquery/jquery.min.js"></script>
     <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script>
+var nutritions_convert = {'vitaminC': 'Vitamin C', 'saturated': 'Saturated Fat', 'dietary_fiber': 'Dietary Fibers'};
+
 function show_results(){
-    if (('{{ query_res.recipe_name }}' === '') || ('{{ query_res.course }}' === '') ||
-        ('{{ query_res.prep_time }}' === '') || ('{{ query_res.food_details }}' === '') ||
-        ('{{ query_res.ingredients }}' === '') || ('{{ query_res.nutritions }}' === '')){
+    var query_res = {{ query_res|tojson }};
+    if ((typeof query_res['recipe_name'] === 'undefined') || (typeof query_res['course'] === 'undefined') ||
+        (typeof query_res['prep_time'] === 'undefined') || (typeof query_res['food_details'] === 'undefined') ||
+        (typeof query_res['ingredients'] === 'undefined') || (typeof query_res['nutritions'] === 'undefined')){
 		$("#found-header").hide();
 		$("#results-container").hide();
 		$("#not-found-header").show();
+		return;
 	} else {
 		$("#not-found-header").hide();
 		$("#found-header").show();
 		$("#results-container").show();
+		$("#nutri-res-table tbody tr").remove();
+        var curr_nutritions = query_res['nutritions'];
+        for (var nutri_key in curr_nutritions){
+            var printable_key = nutri_key;
+            if (printable_key in nutritions_convert){
+                printable_key = nutritions_convert[printable_key];
+            }
+            printable_key = printable_key.charAt(0).toUpperCase() + printable_key.slice(1);
+            $("#nutri-res-table").find('tbody').append('<tr><td style="font-size:80%;padding:2px">' + printable_key + '</td>' +
+            '<td style="font-size:80%;padding:2px">' + Math.round(parseFloat(curr_nutritions[nutri_key])) + ' mg</td></tr>');
+        }
 	}
 }
 </script>
@@ -127,3 +134,4 @@ function show_results(){
   </body>
 
 </html>
+

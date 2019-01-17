@@ -21,7 +21,7 @@
 
   </head>
 
-  <body>
+  <body onload="show_results()">
     <!-- Masthead -->
     <header class="masthead text-black text-center">
       <div class="overlay"></div>
@@ -42,10 +42,57 @@
 	</div>
 
 
-<div class="text-center col-12">
-	<h5 class="mb-auto">Interesting results......</h5>
-	<h5 class="mb-auto">Interesting results......</h5>
+<div class="row text-center">
+<div class="col-11" id="not-found-header">
+	<h2>Sorry, we couldn't find any meal plan matching your search!<br>Maybe you should try a new search with different parameters...</h2>
+</div>
+</div>
+
+        <div class="col-md-12 mx-auto" id="found-header" style="float:left;margin-left:8rem">
+            <h5>We found you the perfect meal plan!</h5>
+        </div>
+
+<div class="btn-group btn-group-toggle" data-toggle="buttons" id="results-meal-choice">
+  <label class="btn btn-outline-success active btn-md" id="btn-breakfast" onchange="show_results()">
+    <input type="radio" id="result-btn-breakfast" name="meal-btn" autocomplete="off">Breakfast</label>
+  <label class="btn btn-outline-success btn-md" id="btn-lunch" onchange="show_results()">
+    <input type="radio" id="result-btn-lunch" name="meal-btn" autocomplete="off">Lunch</label>
+  <label class="btn btn-outline-success btn-md" id="btn-dinner" onchange="show_results()">
+    <input type="radio" id="result-btn-dinner" name="meal-btn" autocomplete="off">Dinner</label>
+</div>
+
+<div class="btn-group btn-group-toggle" id="single-meal-course">
+  <a id="course-btn" href="#" class="btn btn-success btn-md disabled" role="button" aria-disabled="true" aria-pressed="true">.</a>
+</div>
+
+
+<div class="container-fluid" id="results-container">
+<div class="row">
+    <div class="col-md-4">
+     <table class="table-responsive table table-striped" cellspacing="0" id="nutri-res-table">
+     <thead>
+         <tr>
+             <th style="font-size:90%;padding:5px"> Nutritional Value </th>
+             <th style="font-size:90%;padding:5px"> Amount in Recipe</th>
+         </tr>
+     </thead>
+     <tbody>
+     </tbody>
+     </table>
+    </div>
+    <div class="col-md-4" id="results">
+     <p id="recipe-name-p" class="recipe-details" style="font-size:180%">.</p>
+        <p id="prep-time-p" class="recipe-details" style="line-height: 70%">.</p>
+     <p id="ingredients-p" class="recipe_details">.</p>
+     <a id="details-p" class="recipe-details" href="placeholder" style="font-size:110%"><u>Full recipe instructions</u></a>
  </div>
+
+    <div class="col-md-4">
+        <img id="recipe-picture" src="" class="img-fluid rounded" alt="Responsive image" style="max-width:250px;max-height:250px;">
+        </div>
+</div>
+    </div>
+
 
 
 <!-- NEW-SEARCH BUTTON -->
@@ -70,10 +117,109 @@
     <!-- Bootstrap core JavaScript -->
     <script src="../static/vendor/jquery/jquery.min.js"></script>
     <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">
+var nutritions_convert = {'vitaminC': 'Vitamin C', 'saturated': 'Saturated Fat', 'dietary_fiber': 'Dietary Fibers'};
+var course_to_meal = {'Breakfast and Brunch': 'Breakfast', 'Lunch': 'Lunch', 'Main Dishes': 'Dinner'};
 
+function show_relevant(curr_recipe_name, curr_course, curr_prep_time, curr_details, curr_picture, curr_ingredients, curr_nutritions, is_full_meal){
+    $("#found-header").show();
+    $("#results-container").show();
+    $("#recipe-name-p").html(curr_recipe_name);
+    $("#prep-time-p").html("<span style='text-decoration: underline;'>Prep time</span>: " + curr_prep_time);
+    var details_elem = document.getElementById("details-p");
+    details_elem.href = curr_details;
+    var picture_elem = document.getElementById("recipe-picture");
+    picture_elem.src = curr_picture;
+    var curr_ing_row = "<span style='text-decoration: underline;'>Ingredients</span>:<br>";
+    for (var i in curr_ingredients){
+        curr_ing_row += (curr_ingredients[i] + "<br>");
+    }
+    $("#ingredients-p").html(curr_ing_row);
+    $("#nutri-res-table tbody tr").remove();
+    for (var nutri_key in curr_nutritions){
+        var printable_key = nutri_key
+        if (printable_key in nutritions_convert){
+            printable_key = nutritions_convert[printable_key];
+        }
+        printable_key = printable_key.charAt(0).toUpperCase() + printable_key.slice(1);
+        $("#nutri-res-table").find('tbody').append('<tr><td style="font-size:80%;padding:2px">' + printable_key + '</td>' +
+        '<td style="font-size:80%;padding:2px">' + curr_nutritions[nutri_key] + '</td></tr>');
+    }
+    if (!is_full_meal){
+        $("#single-meal-course").show();
+        $("#course-btn").html(course_to_meal[curr_course]);
+    }
+}
+
+function is_full_meal_ok(breakfast, lunch, dinner){
+    if ((typeof breakfast['recipe_name'] === 'undefined') || (typeof breakfast['course'] === 'undefined') ||
+    (typeof breakfast['prep_time'] === 'undefined') || (typeof breakfast['food_details'] === 'undefined') ||
+    (typeof breakfast['ingredients'] === 'undefined') || (typeof breakfast['nutritions'] === 'undefined') ||
+    (typeof lunch['recipe_name'] === 'undefined') || (typeof lunch['course'] === 'undefined') ||
+    (typeof lunch['prep_time'] === 'undefined') || (typeof lunch['food_details'] === 'undefined') ||
+    (typeof lunch['ingredients'] === 'undefined') || (typeof lunch['nutritions'] === 'undefined') ||
+    (typeof dinner['recipe_name'] === 'undefined') || (typeof dinner['course'] === 'undefined') ||
+    (typeof dinner['prep_time'] === 'undefined') || (typeof dinner['food_details'] === 'undefined') ||
+    (typeof dinner['ingredients'] === 'undefined') || (typeof dinner['nutritions'] === 'undefined')){
+        return false;
+    }
+    return true;
+}
+
+function is_single_meal_ok(query_res){
+    if ((typeof query_res['recipe_name'] === 'undefined') ||(typeof query_res['course'] === 'undefined') ||
+    (typeof query_res['prep_time'] === 'undefined') || (typeof query_res['food_details'] === 'undefined') ||
+    (typeof query_res['ingredients'] === 'undefined') || (typeof query_res['nutritions'] === 'undefined')){
+        return false;
+    }
+    return true;
+}
+
+function is_result_full_meal(query_res){
+    if ((typeof query_res['breakfast'] !== 'undefined') && (typeof query_res['lunch'] !== 'undefined') &&
+    (typeof query_res['dinner'] !== 'undefined')){
+        return true;
+    }
+    return false;
+}
+
+function show_results(){
+    var query_res = {{ query_res|tojson }};
+    var meal = query_res;
+    var is_full_meal = is_result_full_meal(query_res);
+    $("#results-meal-choice").hide();
+    $("#single-meal-course").hide();
+    $("#found-header").hide();
+    $("#results-container").hide();
+    $("#not-found-header").hide();
+    if (((is_full_meal) && (!is_full_meal_ok(query_res['breakfast'], query_res['lunch'], query_res['dinner']))) ||
+    ((!is_full_meal) && (!is_single_meal_ok(query_res)))){
+        $("#not-found-header").show();
+        return;
+    }
+    if (is_full_meal){
+        $("#results-meal-choice").show();
+	    if ($('#result-btn-lunch').is(':checked')){         // Show lunch
+	        meal = query_res['lunch'];
+	    }
+	    else if ($('#result-btn-dinner').is(':checked')){       // Show dinner
+	        meal = query_res['dinner'];
+	    } else {        // Show breakfast
+	        meal = query_res['breakfast'];
+	    }
+	}
+	var curr_recipe_name = meal['recipe_name'];
+    var curr_course = meal['course'];
+    var curr_prep_time = meal['prep_time'];
+    var curr_details = meal['food_details'];
+    var curr_picture = meal['picture'];
+    var curr_ingredients = meal['ingredients'];
+    var curr_nutritions = meal['nutritions'];
+    show_relevant(curr_recipe_name, curr_course, curr_prep_time, curr_details, curr_picture, curr_ingredients, curr_nutritions, is_full_meal);
+}
+</script>
 
 
   </body>
 
 </html>
-

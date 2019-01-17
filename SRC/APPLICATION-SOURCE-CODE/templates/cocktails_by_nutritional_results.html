@@ -21,7 +21,7 @@
 
   </head>
 
-  <body>
+  <body onload="show_results()">
     <!-- Masthead -->
     <header class="masthead text-black text-center">
       <div class="overlay"></div>
@@ -41,9 +41,54 @@
 	  </div>
 	</div>
 
- <div class="text-center col-12">
-	<h5 class="mb-auto">Interesting results......</h5>
+        <div class="row text-center">
+<div class="col-sm-10 mx-auto"  id="not-found-header">
+	<h2>Sorry, we couldn't find any cocktail matching your search!<br>Maybe you should try a new search with different parameters...</h2>
+</div>
+
+</div>
+        <div class="col-md-12 mx-auto" id="found-header" style="float:left;margin-left:8rem">
+    <h5>We found you the perfect cocktail!</h5>
+</div>
+<div class="container-fluid" id="results-container">
+<div class="row">
+    <div class="col-md-4">
+     <table class="table-responsive table table-striped" cellspacing="0" id="nutri-res-table">
+     <thead>
+         <tr>
+             <th style="font-size:90%;padding:5px"> Nutritional Value </th>
+             <th style="font-size:90%;padding:5px"> Amount in Recipe</th>
+         </tr>
+     </thead>
+     <tbody>
+        {% if 'nutritions' in query_res %}
+         {% for nutri_key, nutri_val in query_res.nutritions.items() %}
+         <tr>
+             <td style="font-size:80%;padding:2px">{{ nutri_key }}</td>
+             <td style="font-size:80%;padding:2px">{{ nutri_val }} mg</td>
+         </tr>
+         {% endfor %}
+        {% endif %}
+     </tbody>
+     </table>
+    </div>
+    <div class="col-md-4" id="results">
+     <p class="recipe-details" style="font-size:180%">{{ query_res.recipe_name }}</p>
+        <p class="recipe-details" style="line-height: 70%"><u>Is it alcoholic</u>: {{ query_res.is_alcoholic }}</p>
+        <p class="recipe-details" style="line-height: 70%"><u>Serving glass</u>: {{ query_res.serving_glass }}</p>
+     <p class="recipe_details" style="line-height: 50%"><u>Ingredients</u>:</p>
+        {% for ing_line in query_res.ingredients %}
+            <p style="line-height: 40%">{{ ing_line }}</p>
+        {% endfor %}
+     <p class="recipe-details" style="line-height: 100%"><u>Full cocktail instructions</u>:
+         <br>{{ query_res.cocktail_details }}</p>
  </div>
+
+    <div class="col-md-4">
+        <img src="{{ query_res.picture }}" id="recipe-picture" class="img-fluid rounded" alt="Responsive image" style="max-width:250px;max-height:250px;">
+        </div>
+</div>
+    </div>
 
 <!-- NEW-SEARCH BUTTON -->
 <form  method="POST">
@@ -65,10 +110,23 @@
     <!-- Bootstrap core JavaScript -->
     <script src="../static/vendor/jquery/jquery.min.js"></script>
     <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
+<script>
+function show_results(){
+    if (('{{ query_res.recipe_name }}' === '') || ('{{ query_res.is_alcoholic }}' === '') ||
+        ('{{ query_res.serving_glass }}' === '') || ('{{ query_res.cocktail_details }}' === '') ||
+        ('{{ query_res.ingredients }}' === '') || ('{{ query_res.nutritions }}' === '')){
+        $("#found-header").hide();
+		$("#results-container").hide();
+		$("#not-found-header").show();
+	} else {
+		$("#not-found-header").hide();
+		$("#found-header").show();
+		$("#results-container").show();
+	}
+}
+</script>
 
 
   </body>
 
 </html>
-

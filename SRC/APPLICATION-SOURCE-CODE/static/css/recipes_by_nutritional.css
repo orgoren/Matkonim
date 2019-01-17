@@ -21,14 +21,17 @@ h3,h4,h5,h6{
 	font-weight:100
 }
 header.masthead .overlay{
-	position:absolute;
+	position:fixed;
 	background-color:#FFFFFF;
-	height:100%;
-	width:100%;
+	width:100vw;
 	top:0;
+	bottom:0;
 	left:0;
-	opacity:.8
+	right:0;
+    height: 100vh;
+	opacity:.8;
 }
+
 @media (min-width:200px){
 	header.masthead{
 		padding-top:0rem;
@@ -96,7 +99,6 @@ header.masthead h2{
 	top:2rem;
 	left:38rem;
 }
-
 #submit-button{
 	position:absolute;
 	top:34rem;
@@ -113,4 +115,26 @@ header.masthead h2{
 	left:4rem;
 }
 
-
+#found-header{
+    position:absolute;
+    margin:0 auto;
+    top:10rem;
+}
+#not-found-header{
+    position:absolute;
+}
+#results{
+    position:relative;
+    margin-top:1rem;
+    float:left;
+}
+#recipe-picture{
+    position:relative;
+    right:15%;
+    margin-top:4rem;
+}
+#nutri-res-table{
+    margin-top:3rem;
+    position:relative;
+    left:35%;
+}

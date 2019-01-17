@@ -70,12 +70,9 @@
         <p class="recipe-details" style="font-size:180%">{{ query_res.recipe_name }}</p>
         <p class="recipe-details" style="line-height: 70%" id="course-or-alcoholic"></p>
         <p class="recipe-details" style="line-height: 70%" id="prep-or-glass"></p>
-        <p class="recipe_details" style="line-height: 50%"><u>Ingredients</u>:</p>
-        {% for ing_line in query_res.ingredients %}
-        <p style="line-height: 40%">{{ ing_line }}</p>
-        {% endfor %}
+        <p class="recipe_details" id="ingredients-p"></p>
         <a id="food-recipe-details" href="{{ query_res.food_details }}" style="font-size:110%"><u>Full recipe instructions</u></a>
-        <p id="cocktail-recipe-details" style="line-height: 100%"><u>Full cocktail instructions</u>:
+        <p id="cocktail-recipe-details"><u>Full cocktail instructions</u>:
          <br>{{ query_res.cocktail_details }}</p>
     </div>
 
@@ -144,23 +141,31 @@
         $("#nutri-res-table tbody tr").remove();
         var curr_nutritions = query_res['nutritions'];
         for (var nutri_key in curr_nutritions){
-		var printable_key = nutri_key;
-		if (printable_key in nutritions_convert){
-		    printable_key = nutritions_convert[printable_key];
-		}
-		printable_key = printable_key.charAt(0).toUpperCase() + printable_key.slice(1);
-		var printable_value = Math.round(parseFloat(curr_nutritions[nutri_key]));
-		if (printable_key == 'Calories'){
-		    printable_value += ' kcal';
-		} else if (printable_value < 1000){
-		    printable_value += ' mg';
-		}  else {
-		    printable_value = (printable_value/1000).toFixed(2);
-		    printable_value += ' g';
-		}
-		$("#nutri-res-table").find('tbody').append('<tr><td style="font-size:80%;padding:2px">' + printable_key + '</td>' +
-		'<td style="font-size:80%;padding:2px">' +  printable_value + '</td></tr>');
+            var printable_key = nutri_key;
+            if (printable_key in nutritions_convert){
+                printable_key = nutritions_convert[printable_key];
+            }
+            printable_key = printable_key.charAt(0).toUpperCase() + printable_key.slice(1);
+            var printable_value = (parseFloat(curr_nutritions[nutri_key])).toFixed(2);
+            if (printable_key == 'Calories'){
+                printable_value += ' kcal';
+            } else if (Math.round(printable_value) == 0){
+                printable_value = '0 mg';
+            } else if (printable_value < 1000){
+                printable_value += ' mg';
+            }  else {
+                printable_value = (printable_value/1000).toFixed(2);
+                printable_value += ' g';
+            }
+            $("#nutri-res-table").find('tbody').append('<tr><td style="font-size:80%;padding:2px">' + printable_key + '</td>' +
+            '<td style="font-size:80%;padding:2px">' +  printable_value + '</td></tr>');
         }
+        var curr_ingredients = query_res['ingredients'];
+        var ing_str = "<span style='text-decoration: underline;'>Ingredients</span>:<br>";
+        for (var i in curr_ingredients){
+            ing_str += (curr_ingredients[i] + "<br>");
+        }
+        $("#ingredients-p").html(ing_str);
     }
     </script>
   </body>

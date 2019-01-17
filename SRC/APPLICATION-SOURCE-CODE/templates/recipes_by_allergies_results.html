@@ -124,7 +124,7 @@
                 $("#results-container").show();
                 $("#food-recipe-details").show();
                 $("#course-or-alcoholic").html("<span style='text-decoration: underline;'>Course</span>: " + query_res['course']);
-                $("#prep-or-glass").html("<span style='text-decoration: underline;'>Prep time</span>: " + query_res['prep_time'] + 'minutes');
+                $("#prep-or-glass").html("<span style='text-decoration: underline;'>Prep time</span>: " + query_res['prep_time'] + ' minutes');
             } else if ((typeof query_res['cocktail_details'] !== 'undefined') &&
             (typeof query_res['serving_glass'] !== 'undefined') && (typeof query_res['is_alcoholic'] !== 'undefined')){
                 $("#cocktail-found-header").show();
@@ -150,7 +150,7 @@
             }
             printable_key = printable_key.charAt(0).toUpperCase() + printable_key.slice(1);
             $("#nutri-res-table").find('tbody').append('<tr><td style="font-size:80%;padding:2px">' + printable_key + '</td>' +
-            '<td style="font-size:80%;padding:2px">' + curr_nutritions[nutri_key] + 'mg </td></tr>');
+            '<td style="font-size:80%;padding:2px">' + Math.round(parseFloat(curr_nutritions[nutri_key])) + ' mg</td></tr>');
         }
     }
     </script>

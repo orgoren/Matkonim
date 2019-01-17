@@ -5,7 +5,6 @@ import datetime
 import MySQLdb as mdb
 from flask import Flask, render_template, redirect, url_for, request, make_response, session, g, abort, flash
 from gevent.pywsgi import WSGIServer
-#import sshtunnel
 import getpass
 import queries_nova
 import re
@@ -151,8 +150,8 @@ def get_query_results(query, option):
 		return {}
 
 	recipe_id = ans[0]["recipe_id"]
-	ingredients_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_ingredients_query, re.MULTILINE)
-	nutritions_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_nutritionals_query, re.MULTILINE)
+	ingredients_query = re.sub("<RECIPE_ID>", str(recipe_id), queries_nova.get_ingredients_query, re.MULTILINE)
+	nutritions_query = re.sub("<RECIPE_ID>", str(recipe_id), queries_nova.get_nutritionals_query, re.MULTILINE)
 	ingredients_ans = connect_to_db(ingredients_query)
 	nutritions_ans = connect_to_db(nutritions_query)
 	for line in ingredients_ans:
@@ -173,7 +172,7 @@ def get_query_results(query, option):
 			nutritions[line["nutrition_name"]] = line["weight"]
 
 	if option == "Cocktail":
-		details_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_cocktail_details_query, re.MULTILINE)
+		details_query = re.sub("<RECIPE_ID>", str(recipe_id), queries_nova.get_cocktail_details_query, re.MULTILINE)
 		details_ans = connect_to_db(details_query)
 
 		result["recipe_name"] = details_ans[0]["recipe_name"]
@@ -187,7 +186,7 @@ def get_query_results(query, option):
 		return result
 
 	else:
-		details_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_food_details_query, re.MULTILINE)
+		details_query = re.sub("<RECIPE_ID>", str(recipe_id), queries_nova.get_food_details_query, re.MULTILINE)
 		details_ans = connect_to_db(details_query)
 
 		result["recipe_name"] = details_ans[0]["recipe_name"]

@@ -48,7 +48,7 @@ def cocktails_by_nutritional():
 			nutritions_values = get_nutritions_values(request.form, False)
 
 			# Build query from our inputs
-			q = queries.get_query2(nutritions_values)
+			q = queries_nova.get_query2(nutritions_values)
 			# print q
 
 			# Get query results from DB
@@ -84,7 +84,7 @@ def daily_meal_plan():
 			print "age=", age, "gender=", gender, "meal_options=", meal_option
 
 			# Build query from our inputs
-			q = queries.get_query3(nutritions_values, meal_option, age, gender)
+			q = queries_nova.get_query3(nutritions_values, meal_option, age, gender)
 
 			# For daily meal plan, we get a dictionary, otherwise a single query
 			if type(q) == dict:
@@ -131,7 +131,7 @@ def recipes_by_allergies():
 			meal_or_drink_option = get_food_type_or_cocktail(request.form)
 
 			# Build query from our inputs
-			q = queries.get_query5(allergans, meal_or_drink_option)
+			q = queries_nova.get_query5(allergans, meal_or_drink_option)
 			print(q)
 
 			# Get query results from DB
@@ -169,7 +169,7 @@ def recipes_by_nutritional():
 			print meal_option
 
 			# Build query from our inputs
-			q = queries.get_query1(nutritions_values, meal_option, prep_time)
+			q = queries_nova.get_query1(nutritions_values, meal_option, prep_time)
 			print q
 
 			# Get query results from DB

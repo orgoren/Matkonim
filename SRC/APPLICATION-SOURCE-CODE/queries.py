@@ -458,8 +458,12 @@ alg_query = """<AND> ar.recipe_id NOT IN (
 	SELECT DISTINCT r2i.recipe_id
 	FROM		RECIPE2INGREDIENTS r2i 
 	INNER JOIN 	INGREDIENTS ing on r2i.ingredient_id = ing.ingredient_id
-	WHERE	
-			ing.ingredient_name LIKE \"%<ALG>%\"
+	WHERE MATCH(
+				ing.ingredient_name
+	)
+	AGAINST(
+				\"<ALG>\"
+	)
 )"""
 
 food_fields_old = """ar.recipe_id = fr.recipe_id

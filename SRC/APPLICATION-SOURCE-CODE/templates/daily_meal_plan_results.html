@@ -142,9 +142,11 @@ function show_relevant(curr_recipe_name, curr_course, curr_prep_time, curr_detai
             printable_key = nutritions_convert[printable_key];
         }
         printable_key = printable_key.charAt(0).toUpperCase() + printable_key.slice(1);
-        var printable_value = Math.round(parseFloat(curr_nutritions[nutri_key]));
+        var printable_value = (parseFloat(curr_nutritions[nutri_key])).toFixed(2);
         if (printable_key == 'Calories'){
             printable_value += ' kcal';
+        } else if (Math.round(printable_value) == 0){
+            printable_value = '0 mg';
         } else if (printable_value < 1000){
             printable_value += ' mg';
         }  else {
@@ -232,3 +234,4 @@ function show_results(){
   </body>
 
 </html>
+

@@ -125,7 +125,7 @@ function show_relevant(curr_recipe_name, curr_course, curr_prep_time, curr_detai
     $("#found-header").show();
     $("#results-container").show();
     $("#recipe-name-p").html(curr_recipe_name);
-    $("#prep-time-p").html("<span style='text-decoration: underline;'>Prep time</span>: " + curr_prep_time);
+    $("#prep-time-p").html("<span style='text-decoration: underline;'>Prep time</span>: " + curr_prep_time + ' minutes');
     var details_elem = document.getElementById("details-p");
     details_elem.href = curr_details;
     var picture_elem = document.getElementById("recipe-picture");
@@ -137,13 +137,13 @@ function show_relevant(curr_recipe_name, curr_course, curr_prep_time, curr_detai
     $("#ingredients-p").html(curr_ing_row);
     $("#nutri-res-table tbody tr").remove();
     for (var nutri_key in curr_nutritions){
-        var printable_key = nutri_key
+        var printable_key = nutri_key;
         if (printable_key in nutritions_convert){
             printable_key = nutritions_convert[printable_key];
         }
         printable_key = printable_key.charAt(0).toUpperCase() + printable_key.slice(1);
         $("#nutri-res-table").find('tbody').append('<tr><td style="font-size:80%;padding:2px">' + printable_key + '</td>' +
-        '<td style="font-size:80%;padding:2px">' + curr_nutritions[nutri_key] + '</td></tr>');
+        '<td style="font-size:80%;padding:2px">' + Math.round(parseFloat(curr_nutritions[nutri_key])) + ' mg</td></tr>');
     }
     if (!is_full_meal){
         $("#single-meal-course").show();

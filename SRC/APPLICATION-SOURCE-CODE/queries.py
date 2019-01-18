@@ -521,18 +521,23 @@ SELECT n.nutrition_id, n.nutrition_name
 FROM NUTRITIONS n
 INNER JOIN
 (
-	SELECT precentage, nutrition_id
-	FROM VIEW_RECIPE_NUTRITIONS_WEIGHTS 
-	WHERE recipe_id = <RECIPE_ID>
+	SELECT DISTINCT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
+	FROM		RECIPE2INGREDIENTS r2i 
+	INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
+	WHERE		r2i.recipe_id = <RECIPE_ID>
+	GROUP BY r2i.recipe_id, inn.nutrition_id
 ) vrnw on n.nutrition_id = vrnw.nutrition_id,
 (
-			SELECT v.recipe_id, MAX(v.precentage) as max
-			FROM VIEW_RECIPE_NUTRITIONS_WEIGHTS v
-			WHERE v.recipe_id = <RECIPE_ID>
+			SELECT v.recipe_id, MAX(v.weight) as max_weight
+			FROM (SELECT DISTINCT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
+				FROM		RECIPE2INGREDIENTS r2i 
+				INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
+				WHERE		r2i.recipe_id = <RECIPE_ID>
+				GROUP BY r2i.recipe_id, inn.nutrition_id) AS v
 			GROUP BY v.recipe_id 
 ) as max_nut_table
 
-WHERE vrnw.precentage = max_nut_table.max 
+WHERE vrnw.weight = max_nut_table.max_weight
 """
 
 trivia_1_get_random_recipe = """
@@ -557,31 +562,30 @@ def get_query_trivia_1_random_nutritions(nutrition_id):
 ###########  TRIVIA2 ###########
 ################################
 trivia_2_get_recipe_of_max_nutrition = """
-SELECT vrnw.recipe_id, vrnw.nutrition_id, vrnw.weight
-FROM VIEW_RECIPE_NUTRITIONS_WEIGHTS as vrnw
-WHERE 
-	vrnw.nutrition_id = <NUTRITION_ID> 
-	AND
-	(
-		vrnw.recipe_id = <RECIPE_1> OR
-		vrnw.recipe_id = <RECIPE_2> OR
-		vrnw.recipe_id = <RECIPE_3> OR
-		vrnw.recipe_id = <RECIPE_4>
-	)
-GROUP BY vrnw.recipe_id, vrnw.nutrition_id
-HAVING sum(vrnw.weight) >= ALL
+SELECT 		DISTINCT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
+FROM		RECIPE2INGREDIENTS r2i 
+INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
+WHERE		inn.nutrition_id = <NUTRITION_ID> AND
+			(
+				r2i.recipe_id = <RECIPE_1> OR
+				r2i.recipe_id = <RECIPE_2> OR
+				r2i.recipe_id = <RECIPE_3> OR
+				r2i.recipe_id = <RECIPE_4>
+			)
+GROUP BY 	r2i.recipe_id, inn.nutrition_id
+HAVING sum(weight) >= ALL
 (
-	SELECT vrnw2.weight
-	FROM VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw2
-	WHERE
-		vrnw2.nutrition_id = <NUTRITION_ID>
-		AND
-		(
-			vrnw2.recipe_id = <RECIPE_1> OR
-			vrnw2.recipe_id = <RECIPE_2> OR
-			vrnw2.recipe_id = <RECIPE_3> OR
-			vrnw2.recipe_id = <RECIPE_4>
-		)
+	SELECT 		DISTINCT SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
+	FROM		RECIPE2INGREDIENTS r2i 
+	INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
+	WHERE		inn.nutrition_id = <NUTRITION_ID> AND
+				(
+					r2i.recipe_id = <RECIPE_1> OR
+					r2i.recipe_id = <RECIPE_2> OR
+					r2i.recipe_id = <RECIPE_3> OR
+					r2i.recipe_id = <RECIPE_4>
+				)
+	GROUP BY r2i.recipe_id, inn.nutrition_id
 )
 """
 
@@ -596,6 +600,12 @@ order by rand()
 Limit 4
 """
 
+def get_query_trivia_2(recipe_id1, recipe_id2, recipe_id3 ,recipe_id4, nutrition_id):
+	query = re.sub("<RECIPE_ID1>", str(recipe_id1), trivia_2_get_recipe_of_max_nutrition, re.MULTILINE)
+	query = re.sub("<RECIPE_ID2>", str(recipe_id2), query, re.MULTILINE)
+	query = re.sub("<RECIPE_ID3>", str(recipe_id3), query, re.MULTILINE)
+	query = re.sub("<RECIPE_ID4>", str(recipe_id4), query, re.MULTILINE)
+	return re.sub("<NUTRITION_ID>", str(nutrition_id), query, re.MULTILINE)
 
 ###############################################################################################
 ###############################################################################################

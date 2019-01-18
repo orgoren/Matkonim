@@ -52,11 +52,9 @@ def cocktails_by_nutritional():
 
 			# Build query from our inputs
 			q = queries.get_query2(nutritions_values)
-			print q
 
 			# Get query results from DB
 			res = get_query_results(q, "Cocktail")
-			print(res)
 			return redirect(url_for('cocktails_by_nutritional_results', query_res=json.dumps(res)))
 
 
@@ -84,7 +82,6 @@ def daily_meal_plan():
 			meal_option = get_meal_option(request.form, is_meal_plan=True)
 			gender = get_gender(request.form)
 			age = get_age(request.form)
-			print "age=", age, "gender=", gender, "meal_options=", meal_option
 
 			# Build query from our inputs
 			q = queries.get_query3(nutritions_values, meal_option, age, gender)
@@ -95,15 +92,11 @@ def daily_meal_plan():
 				for meal in q:
 					query = q[meal]
 					meal_option = FULL_DAY_MEALS[meal]["meal"]
-					print query
 					# Get query results from DB
 					res[meal] = get_query_results(query, meal_option)
-				print(res)
 			else:
-				print q
 				# Get query results from DB
 				res = get_query_results(q, meal_option)
-				print(res)
 			return redirect(url_for('daily_meal_plan_results', query_res=json.dumps(res)))
 
 
@@ -135,11 +128,9 @@ def recipes_by_allergies():
 
 			# Build query from our inputs
 			q = queries.get_query5(allergans, meal_or_drink_option)
-			print(q)
 
 			# Get query results from DB
 			res = get_query_results(q, meal_or_drink_option)
-			print(res)
 			return redirect(url_for('recipes_by_allergies_results', query_res=json.dumps(res)))
 
 
@@ -166,18 +157,12 @@ def recipes_by_nutritional():
 			nutritions_values = get_nutritions_values(request.form)
 			meal_option = get_meal_option(request.form)
 			prep_time = get_prep_time(request.form)
-			print "nutritions_values:"
-			print nutritions_values
-			print "meal_option:"
-			print meal_option
 
 			# Build query from our inputs
 			q = queries.get_query1(nutritions_values, meal_option, prep_time)
-			print q
 
 			# Get query results from DB
 			res = get_query_results(q, meal_option)
-			print(res)
 			return redirect(url_for('recipes_by_nutritional_results', query_res=json.dumps(res)))
 
 
@@ -207,25 +192,6 @@ NEXT_QUESTION = 1  # TODO: remove after making real questions
 
 @app.route('/getQuestion')
 def getQuestion():
-	########### TODO: REMOVE FROM HERE after making real questions ###############
-	# format for questions to send to client:
-	# {'question': question itself, 'answer_a': ..., 'answer_b': ..., 'answer_c': ..., 'answer_d': ..., 'correct': right answer in format "answer_X"}
-	# question_1 = {'question': 'Some question that server came up with!', 'answer_a': 'answer_a_from_server',
-	# 			  'answer_b': 'answer_b_from_server',
-	# 			  'answer_c': 'answer_c_from_server', 'answer_d': 'answer_d_from_server', 'correct': 'answer_c'}
-	# question_2 = {'question': 'ANOTHER question that server came up with!', 'answer_a': 'ANOTHER_answer_a_from_server',
-	# 			  'answer_b': 'ANOTHER_answer_b_from_server',
-	# 			  'answer_c': 'ANOTHER_answer_c_from_server', 'answer_d': 'ANOTHER_answer_d_from_server',
-	# 			  'correct': 'answer_a'}
-	# global NEXT_QUESTION
-	# if NEXT_QUESTION == 1:
-	# 	question = question_1
-	# 	NEXT_QUESTION = 2
-	# else:
-	# 	question = question_2
-	# 	NEXT_QUESTION = 1
-	########### TODO: REMOVE UNTIL HERE after making real questions ###############
-
 	question = get_random_question()
 
 	try:

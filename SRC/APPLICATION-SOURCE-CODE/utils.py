@@ -25,7 +25,7 @@ LUNCH_PRECENTAGE = 0.4
 DINNER_PRECENTAGE = 0.3
 
 NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
-				"lactose", "vitaminC", "saturated",  "dietary_fiber",  "alcohol", "calories"]
+				"lactose", "vitaminC", "saturated",  "dietary_fiber",  "alcohol", "calories_kcal"]
 
 MEAL_OPTIONS = ["Main Dishes", "Side Dishes", "Appetizers", "Lunch", "Breakfast and Brunch", 
 				"Snacks", "Soups", "Salads", "Breads", "Condiments and Sauce", "Desserts", "Full Day"]
@@ -64,6 +64,9 @@ def connect_to_db(query=""):#username='', password=''):
 			return None
 
 		try:
+			print("************* QUERY **************")
+			print(query)
+			print("*********** END QUERY ************")
 			cur.execute(query)
 			ans = cur.fetchall()
 		except Exception as e:
@@ -94,7 +97,7 @@ def get_nutritions_values(form, is_food=True):
 		nutritions_values[nutrition] = str(form.get(nutrition))
 		if nutritions_values[nutrition] == "":
 			nutritions_values[nutrition] = "d"
-		if nutrition == "calories" and nutritions_values[nutrition] == "None":
+		if nutrition == "calories_kcal" and nutritions_values[nutrition] == "None":
 			nutritions_values[nutrition] = "d"
 	return nutritions_values
 
@@ -146,11 +149,17 @@ def get_query_results(query, option):
 	ingredients = []
 	result = {}
 	ans = connect_to_db(query)
+	print("\n####################################################")
+	print("###### Getting details for this query result! ######")
+	print("####################################################\n")
+
 	if ans is None or len(ans) == 0:
 		print("No result from query!")
 		return {}
 
-	recipe_id = ans[0]["recipe_id"]
+	index = random.randint(0, len(ans) - 1)
+
+	recipe_id = ans[index]["recipe_id"]
 	ingredients_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_ingredients_query, re.MULTILINE)
 	nutritions_query = re.sub("<RECIPE_ID>", str(recipe_id), queries.get_nutritionals_query, re.MULTILINE)
 	ingredients_ans = connect_to_db(ingredients_query)
@@ -167,7 +176,7 @@ def get_query_results(query, option):
 		found_nutrition = 0
 		for nut, val in nutritions.iteritems():
 			if nut == line["nutrition_name"]:
-				found_nutrition = 1;
+				found_nutrition = 1
 				break
 		if found_nutrition == 0:
 			nutritions[line["nutrition_name"]] = line["weight"]
@@ -218,7 +227,7 @@ def get_random_question():
 		recipe_name = recipe_details[0]["recipe_name"]
 
 		# set the question
-		question["question"] = "In this recipe: \"" + recipe_name + "\" which nutrition has the max precentage weight?"
+		question["question"] = "In " + recipe_name + ", which of the following is the main nutritional value?"
 
 		# get max nutrition for recipe
 		nutrition_details = connect_to_db(queries.get_query_trivia_1(recipe_id))
@@ -226,11 +235,6 @@ def get_random_question():
 		nutrition_name = nutrition_details[0]["nutrition_name"]
 
 		question[correct_answer] = nutrition_name
-
-		# question_2 = {'question': 'ANOTHER question that server came up with!', 'answer_a': 'ANOTHER_answer_a_from_server',
-		# 			  'answer_b': 'ANOTHER_answer_b_from_server',
-		# 			  'answer_c': 'ANOTHER_answer_c_from_server', 'answer_d': 'ANOTHER_answer_d_from_server',
-		# 			  'correct': 'answer_a'}
 
 		# get other nutritions
 		nutritions_details = connect_to_db(queries.get_query_trivia_1_random_nutritions(nutrition_id))
@@ -242,29 +246,30 @@ def get_random_question():
 	else:
 		# get random nutrition for question
 		nutrition_details = connect_to_db(queries.trivia_2_get_random_nutrition)
-		nutrition_name = nutrition_details[0]["nurtition_name"]
-		nutrition_id = nutrition_details[0]["nurtition_id"]
+		nutrition_name = nutrition_details[0]["nutrition_name"]
+		nutrition_id = nutrition_details[0]["nutrition_id"]
 
 		# set the question
-		question["question"] = "Which of the following recipes contains the most: \"" + nutrition_name + "\""
+		question["question"] = "Which of the following recipes contains the most " + nutrition_name + "?"
 
 		# get random 4 recipes
 		recipes_details = connect_to_db(queries.trivia_2_get_random_recipes)
 		recipes_ids = []
 		recipes_names = []
 		for i in range(4):
-			recipe_ids[i] = recipe_details[i]["recipe_id"]
-			recipes_names[i] = recipes_details[i]["recipe_name"]
+			recipes_ids.append(recipes_details[i]["recipe_id"])
+			recipes_names.append(recipes_details[i]["recipe_name"])
 
 
 		# get the correct answer
-		q = queries.get_query_trivia_2(recipe_ids[0], recipe_ids[1], recipe_ids[2], recipe_ids[3], nutrition_id)
+		q = queries.get_query_trivia_2(recipes_ids[0], recipes_ids[1], recipes_ids[2], recipes_ids[3], nutrition_id)
 		correct_recipe_details = connect_to_db(q)
 		correct_recipe_id = correct_recipe_details[0]["recipe_id"]
-		correct_recipe_name = recipes_names[recipe_ids.index(correct_recipe_id)]
+		correct_recipe_name = recipes_names[recipes_ids.index(correct_recipe_id)]
 		question[correct_answer] = correct_recipe_name
 		recipes_names.remove(correct_recipe_name)
 
+		# Get other options
 		for i in range(3):
 			answer = random.choice(answers)
 			question[answer] = recipes_names[i]

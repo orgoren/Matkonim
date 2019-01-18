@@ -110,7 +110,7 @@ def get_query1(nutritions_values, meal_option, prep_time):
 			nline2 = NUTRITIONS_CHECK_for_query1_2
 			nline2 = re.sub("<NUT_KEY>", nut, nline2)
 
-			if nut == "calories":
+			if nut == "calories_kcal":
 				if nutritions_values[nut] != "d":
 					nline2 = re.sub("vrnw.precentage <NUT_IF>", "vrnw.weight <= " + nutritions_values[nut], nline2, re.MULTILINE)
 					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
@@ -162,7 +162,8 @@ def get_query1(nutritions_values, meal_option, prep_time):
 
 # The query if no nutritional preferences are chosen
 query2_no_nutritions = """SELECT DISTINCT cr.recipe_id
-FROM COCKTAIL_RECIPES as cr"""
+FROM COCKTAIL_RECIPES as cr
+<IS_ALCOHOLIC>"""
 
 # The query for cocktail recipes by given nutritional preferences
 query2 = """SELECT cr.recipe_id
@@ -183,13 +184,16 @@ WHERE RECIPE_COUNTERS.cnt = <NUT_NUM> AND RECIPE_COUNTERS.recipe_id = cr.recipe_
 # for cocktails by nutritional values.
 def get_query2(nutritions_values):
 	q = query2
+	q2 = query2_no_nutritions
 	is_alcoholic_filter = False
 
 	if "alcohol" in nutritions_values:
 		if nutritions_values["alcohol"] == "d":
 			q = re.sub("<IS_ALCOHOLIC>", "", q, re.MULTILINE)
+			q2 = re.sub("<IS_ALCOHOLIC>", "", q2, re.MULTILINE)
 		elif nutritions_values["alcohol"] == "1" or nutritions_values["alcohol"] == "0":
 			q = re.sub("<IS_ALCOHOLIC>", "cr.is_alcoholic = " + nutritions_values["alcohol"], q, re.MULTILINE)
+			q2 = re.sub("<IS_ALCOHOLIC>", "WHERE cr.is_alcoholic = " + nutritions_values["alcohol"], q2, re.MULTILINE)
 			is_alcoholic_filter = True
 		else:
 			print "ERROR"
@@ -211,7 +215,7 @@ def get_query2(nutritions_values):
 			nline2 = NUTRITIONS_CHECK_for_query1_2
 			nline2 = re.sub("<NUT_KEY>", nut, nline2)
 
-			if nut == "calories":
+			if nut == "calories_kcal":
 				if nutritions_values[nut] != "d":
 					nline2 = re.sub("vrnw.precentage <NUT_IF>", "vrnw.weight <= " + nutritions_values[nut], nline2, re.MULTILINE)
 					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
@@ -237,7 +241,7 @@ def get_query2(nutritions_values):
 
 	# no nutritions
 	if len(nuts_filter) == 0:
-		return query2_no_nutritions
+		return q2
 
 	q = re.sub("<NUT_NUM>", str(len(nuts_filter)), q, re.MULTILINE)
 
@@ -342,7 +346,6 @@ def get_query3(nutritions_values, meal_option, age, gender):
 	q = re.sub("<FILTER_BY_NUTRITIONS>", nutritions_filter, q, re.MULTILINE)
 	q = re.sub("<NUTRITIONS_CHECK>", nutritions_check, q, re.MULTILINE)
 	q = re.sub("<NUT_NUM>", str(len(nuts_filter)), q, re.MULTILINE)
-	q += "\nORDER BY RAND()\nLIMIT 1"
 	return q
 
 ################################
@@ -419,7 +422,6 @@ def get_query4(nutritions_values, age, gender):
 		meal_precentage = FULL_DAY_MEALS[meal]["precentage"]
 		meal_q = re.sub("<MEAL_OPTION>", meal_option, meal_q, re.MULTILINE)
 		meal_q = re.sub("<PRECENTAGE>", str(meal_precentage), meal_q, re.MULTILINE)
-		meal_q += "\nORDER BY RAND()\nLIMIT 1"
 		queries[meal] = meal_q
 
 	return queries
@@ -508,7 +510,6 @@ def get_query5(allergans, option):
 	query = re.sub("<ALG_QUERY_1>", algqueries[0], query, re.MULTILINE)
 	query = re.sub("<ALG_QUERY_2>", algqueries[1], query, re.MULTILINE)
 	query = re.sub("<ALG_QUERY_3>", algqueries[2], query, re.MULTILINE)
-	query += "\nORDER BY RAND()\nLIMIT 1"
 
 	return query
 
@@ -567,23 +568,23 @@ FROM		RECIPE2INGREDIENTS r2i
 INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
 WHERE		inn.nutrition_id = <NUTRITION_ID> AND
 			(
-				r2i.recipe_id = <RECIPE_1> OR
-				r2i.recipe_id = <RECIPE_2> OR
-				r2i.recipe_id = <RECIPE_3> OR
-				r2i.recipe_id = <RECIPE_4>
+				r2i.recipe_id = <RECIPE_ID1> OR
+				r2i.recipe_id = <RECIPE_ID2> OR
+				r2i.recipe_id = <RECIPE_ID3> OR
+				r2i.recipe_id = <RECIPE_ID4>
 			)
 GROUP BY 	r2i.recipe_id, inn.nutrition_id
-HAVING sum(weight) >= ALL
+HAVING weight >= ALL
 (
 	SELECT 		DISTINCT SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
 	FROM		RECIPE2INGREDIENTS r2i 
 	INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
 	WHERE		inn.nutrition_id = <NUTRITION_ID> AND
 				(
-					r2i.recipe_id = <RECIPE_1> OR
-					r2i.recipe_id = <RECIPE_2> OR
-					r2i.recipe_id = <RECIPE_3> OR
-					r2i.recipe_id = <RECIPE_4>
+					r2i.recipe_id = <RECIPE_ID1> OR
+					r2i.recipe_id = <RECIPE_ID2> OR
+					r2i.recipe_id = <RECIPE_ID3> OR
+					r2i.recipe_id = <RECIPE_ID4>
 				)
 	GROUP BY r2i.recipe_id, inn.nutrition_id
 )
@@ -824,7 +825,7 @@ def get_query2_old(nutritions_values):
 			nline = inner_query_for_query1_2
 			nline = re.sub("<NUT_KEY>", nut, nline)
 
-			if nut == "calories":
+			if nut == "calories_kcal":
 				if nutritions_values[nut] != "d":
 
 					if first:

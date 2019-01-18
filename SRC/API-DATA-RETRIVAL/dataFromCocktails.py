@@ -33,7 +33,7 @@ def run():
                 continue
             cocktail_id = row[1]
             cocktail_name = row[2].replace("'","''")
-            is_alcoholic = 1 if row[3] == 'Alcoholic' else 0
+            is_alcoholic = 0 if (row[3] == 'Non alcoholic' or row[3] == 'Non Alcoholic') else 1
             serving_glass = row[4]
             picture = row[5].replace("'","''")
             cocktail_details = row[6].replace("'","''")

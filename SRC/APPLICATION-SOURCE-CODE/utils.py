@@ -203,7 +203,7 @@ def get_query_results(query, option):
 
 def get_random_question():
 	question_type = random.randint(1,2)
-	question_type = 1
+
 	answers = ["answer_a", "answer_b", "answer_c", "answer_d"]
 	correct_answer = random.choice(answers)
 	answers.remove(correct_answer)

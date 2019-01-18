@@ -30,7 +30,7 @@ NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholester
 MEAL_OPTIONS = ["Main Dishes", "Side Dishes", "Appetizers", "Lunch", "Breakfast and Brunch", 
 				"Snacks", "Soups", "Salads", "Breads", "Condiments and Sauce", "Desserts", "Full Day"]
 
-VALUES = {"None" : "None", "1" : "None", "d": "dont care", "2" : "less than 5%", "3" : "over 30%"}
+VALUES = {"None" : "None", "1" : "None", "d": "dont care", "2" : "less than 5%", "3" : "over 15%"}
 
 AGE_RANGES = {"14_18" : "0", "19_30" : "1", "31_40" : "2", "41_50" : "3", "51_60" : "4", "61_70" : "5", "71" : "6"}
 

@@ -116,8 +116,8 @@ def get_query1(nutritions_values, meal_option, prep_time):
 					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
 					nuts_check.append(nline2)
 			else:
-				if VALUES[nutritions_values[nut]] == "over 30%":
-					nline2 = re.sub("<NUT_IF>", ">= 0.3", nline2, re.MULTILINE)
+				if VALUES[nutritions_values[nut]] == "over 15%":
+					nline2 = re.sub("<NUT_IF>", ">= 0.15", nline2, re.MULTILINE)
 					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
 					nuts_check.append(nline2)
 
@@ -221,8 +221,8 @@ def get_query2(nutritions_values):
 					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
 					nuts_check.append(nline2)
 			else:
-				if VALUES[nutritions_values[nut]] == "over 30%":
-					nline2 = re.sub("<NUT_IF>", ">= 0.3", nline2, re.MULTILINE)
+				if VALUES[nutritions_values[nut]] == "over 15%":
+					nline2 = re.sub("<NUT_IF>", ">= 0.15", nline2, re.MULTILINE)
 					nuts_filter.append(re.sub("<NUT_KEY>", nut, nline1))
 					nuts_check.append(nline2)
 

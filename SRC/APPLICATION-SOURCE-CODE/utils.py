@@ -217,6 +217,7 @@ def get_random_question():
 		recipe_id = recipe_details[0]["recipe_id"]
 		recipe_name = recipe_details[0]["recipe_name"]
 
+		# set the question
 		question["question"] = "In this recipe: \"" + recipe_name + "\" which nutrition has the max precentage weight?"
 
 		# get max nutrition for recipe
@@ -237,6 +238,36 @@ def get_random_question():
 		for i in range(3):
 			answer = random.choice(answers)
 			question[answer] = nutritions_details[i]["nutrition_name"]
+			answers.remove(answer)
+	else:
+		# get random nutrition for question
+		nutrition_details = connect_to_db(queries.trivia_2_get_random_nutrition)
+		nutrition_name = nutrition_details[0]["nurtition_name"]
+		nutrition_id = nutrition_details[0]["nurtition_id"]
+
+		# set the question
+		question["question"] = "Which of the following recipes contains the most: \"" + nutrition_name + "\""
+
+		# get random 4 recipes
+		recipes_details = connect_to_db(queries.trivia_2_get_random_recipes)
+		recipes_ids = []
+		recipes_names = []
+		for i in range(4):
+			recipe_ids[i] = recipe_details[i]["recipe_id"]
+			recipes_names[i] = recipes_details[i]["recipe_name"]
+
+
+		# get the correct answer
+		q = queries.get_query_trivia_2(recipe_ids[0], recipe_ids[1], recipe_ids[2], recipe_ids[3], nutrition_id)
+		correct_recipe_details = connect_to_db(q)
+		correct_recipe_id = correct_recipe_details[0]["recipe_id"]
+		correct_recipe_name = recipes_names[recipe_ids.index(correct_recipe_id)]
+		question[correct_answer] = correct_recipe_name
+		recipes_names.remove(correct_recipe_name)
+
+		for i in range(3):
+			answer = random.choice(answers)
+			question[answer] = recipes_names[i]
 			answers.remove(answer)
 
 	return question

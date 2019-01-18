@@ -26,7 +26,7 @@ GROUP BY r2i.recipe_id, inn.nutrition_id"""
 ################################
 
 # A query to get the ingredients of a certain recipe
-get_ingredients_query = """SELECT r2i.full_ingredient_line
+get_ingredients_query = """SELECT DISTINCT r2i.full_ingredient_line
 FROM		INGREDIENTS AS i
 INNER JOIN	RECIPE2INGREDIENTS r2i on r2i.ingredient_id = i.ingredient_id
 WHERE		r2i.recipe_id = <RECIPE_ID>"""
@@ -40,14 +40,14 @@ WHERE 		r2i.recipe_id = <RECIPE_ID>
 GROUP BY 	r2i.recipe_id, inn.nutrition_id"""
 
 # A query to get the full details of a certain cocktail recipe
-get_cocktail_details_query = """SELECT ar.recipe_name AS recipe_name, ar.picture AS picture,
+get_cocktail_details_query = """SELECT DISTINCT ar.recipe_name AS recipe_name, ar.picture AS picture,
 cr.is_alcoholic AS is_alcoholic, cr.cocktail_details AS cocktail_details, cr.serving_glass AS serving_glass
 FROM		ALL_RECIPES AS ar
 INNER JOIN	COCKTAIL_RECIPES cr on cr.recipe_id = ar.recipe_id
 WHERE		ar.recipe_id = <RECIPE_ID>"""
 
 # A query to get the full details of a certain food recipe
-get_food_details_query = """SELECT ar.recipe_name AS recipe_name, ar.picture AS picture,
+get_food_details_query = """SELECT DISTINCT ar.recipe_name AS recipe_name, ar.picture AS picture,
 fr.food_details AS food_details, fr.prep_time_in_minutes AS prep_time
 FROM		ALL_RECIPES AS ar
 INNER JOIN	FOOD_RECIPES fr on fr.recipe_id = ar.recipe_id
@@ -59,15 +59,15 @@ WHERE		ar.recipe_id = <RECIPE_ID>"""
 ################################
 
 # The query if no nutritional preferences are chosen
-query1_no_nutritions = """SELECT fr.recipe_id
+query1_no_nutritions = """SELECT DISTINCT fr.recipe_id
 FROM FOOD_RECIPES as fr
 WHERE fr.course = \"<MEAL_OPTION>\"
 <PREP_TIME_LINE>"""
 
 # The query for food recipes by given nutritional preferences
-query1 = """SELECT fr.recipe_id
-FROM 	FOOD_RECIPES as fr,
-(SELECT COUNT(fr.recipe_id) as cnt, fr.recipe_id as recipe_id
+query1 = """SELECT DISTINCT fr.recipe_id
+FROM 	FOOD_RECIPES as fr
+INNER JOIN (SELECT DISTINCT COUNT(fr.recipe_id) as cnt, fr.recipe_id as recipe_id
 FROM		FOOD_RECIPES fr
 INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on fr.recipe_id = vrnw.recipe_id
 INNER JOIN	NUTRITIONS n on vrnw.nutrition_id = n.nutrition_id
@@ -77,8 +77,8 @@ WHERE
 <FILTER_BY_NUTRITIONS>
 <NUTRITIONS_CHECK>
 GROUP BY fr.recipe_id
-) as RECIPE_COUNTERS
-WHERE RECIPE_COUNTERS.cnt = <NUT_NUM> AND RECIPE_COUNTERS.recipe_id = fr.recipe_id"""
+) RECIPE_COUNTERS on RECIPE_COUNTERS.recipe_id = fr.recipe_id
+WHERE RECIPE_COUNTERS.cnt = <NUT_NUM>"""
 
 FILTER_BY_NUTRITIONS_for_query1_2 = "n.nutrition_name = \"<NUT_KEY>\""
 
@@ -166,9 +166,9 @@ FROM COCKTAIL_RECIPES as cr
 <IS_ALCOHOLIC>"""
 
 # The query for cocktail recipes by given nutritional preferences
-query2 = """SELECT cr.recipe_id
-FROM	COCKTAIL_RECIPES cr,
-(SELECT COUNT(cr.recipe_id) as cnt, cr.recipe_id as recipe_id
+query2 = """SELECT DISTINCT cr.recipe_id
+FROM	COCKTAIL_RECIPES cr
+INNER JOIN (SELECT DISTINCT COUNT(cr.recipe_id) as cnt, cr.recipe_id as recipe_id
 FROM		COCKTAIL_RECIPES cr
 INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on cr.recipe_id = vrnw.recipe_id
 INNER JOIN	NUTRITIONS n on vrnw.nutrition_id = n.nutrition_id
@@ -177,8 +177,8 @@ WHERE
 <FILTER_BY_NUTRITIONS>
 <NUTRITIONS_CHECK>
 GROUP BY cr.recipe_id
-) as RECIPE_COUNTERS
-WHERE RECIPE_COUNTERS.cnt = <NUT_NUM> AND RECIPE_COUNTERS.recipe_id = cr.recipe_id"""
+) RECIPE_COUNTERS on RECIPE_COUNTERS.recipe_id = cr.recipe_id
+WHERE RECIPE_COUNTERS.cnt = <NUT_NUM>"""
 
 # A function that receives nutritional values, and returns the query
 # for cocktails by nutritional values.
@@ -269,7 +269,7 @@ WHERE fr.course = \"<MEAL_OPTION>\" """
 query3 = """SELECT DISTINCT fr.recipe_id
 FROM 	FOOD_RECIPES as fr,
 (
-SELECT 		COUNT(fr.recipe_id) as cnt, fr.recipe_id as recipe_id
+SELECT 		DISTINCT COUNT(fr.recipe_id) as cnt, fr.recipe_id as recipe_id
 FROM 		FOOD_RECIPES fr 
 INNER JOIN 	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on fr.recipe_id = vrnw.recipe_id
 INNER JOIN 	RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = vrnw.nutrition_id
@@ -353,13 +353,13 @@ def get_query3(nutritions_values, meal_option, age, gender):
 ################################
 
 # The query for getting food recipe by meal option if no daily values are chosen
-query4_no_nutritions = """SELECT fr.recipe_id as recipe_id
+query4_no_nutritions = """SELECT DISTINCT fr.recipe_id as recipe_id
 FROM FOOD_RECIPES fr
 WHERE fr.course = "<MEAL_OPTION>" """
 
 # The query for getting a food recipe given daily values by specific meal, gender, age
 # and nutritional values requested
-query4 = """SELECT fr.recipe_id as recipe_id
+query4 = """SELECT DISTINCT fr.recipe_id as recipe_id
 FROM FOOD_RECIPES fr 
 INNER JOIN VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on fr.recipe_id = vrnw.recipe_id
 INNER JOIN RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = vrnw.nutrition_id
@@ -518,7 +518,7 @@ def get_query5(allergans, option):
 ################################
 
 trivia_1_get_max_nutrition = """
-SELECT n.nutrition_id, n.nutrition_name
+SELECT DISTINCT n.nutrition_id, n.nutrition_name
 FROM NUTRITIONS n
 INNER JOIN
 (
@@ -529,7 +529,7 @@ INNER JOIN
 	GROUP BY r2i.recipe_id, inn.nutrition_id
 ) vrnw on n.nutrition_id = vrnw.nutrition_id,
 (
-			SELECT v.recipe_id, MAX(v.weight) as max_weight
+			SELECT DISTINCT v.recipe_id, MAX(v.weight) as max_weight
 			FROM (SELECT DISTINCT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
 				FROM		RECIPE2INGREDIENTS r2i 
 				INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
@@ -542,11 +542,11 @@ WHERE vrnw.weight = max_nut_table.max_weight
 """
 
 trivia_1_get_random_recipe = """
-SELECT recipe_id, recipe_name from ALL_RECIPES order by rand() limit 1
+SELECT DISTINCT recipe_id, recipe_name from ALL_RECIPES order by rand() limit 1
 """
 
 trivia_1_get_random_nutritions = """
-SELECT nutrition_id, nutrition_name
+SELECT DISTINCT nutrition_id, nutrition_name
 FROM NUTRITIONS
 WHERE nutrition_id <> <ANS_NUTRITION_ID>
 order by rand()
@@ -591,11 +591,11 @@ HAVING weight >= ALL
 """
 
 trivia_2_get_random_nutrition = """
-SELECT nutrition_id, nutrition_name FROM NUTRITIONS ORDER BY RAND() LIMIT 1
+SELECT DISTINCT nutrition_id, nutrition_name FROM NUTRITIONS ORDER BY RAND() LIMIT 1
 """
 
 trivia_2_get_random_recipes = """
-SELECT recipe_id, recipe_name
+SELECT DISTINCT recipe_id, recipe_name
 FROM ALL_RECIPES
 order by rand()
 Limit 4
@@ -620,7 +620,7 @@ def get_query_trivia_2(recipe_id1, recipe_id2, recipe_id3 ,recipe_id4, nutrition
 
 
 alg_query_old = """AND ar.recipe_id NOT IN (
-	SELECT r2i.recipe_id
+	SELECT DISTINCT r2i.recipe_id
 	FROM
 			RECIPE2INGREDIENTS AS r2i,
 			INGREDIENTS AS ing
@@ -656,7 +656,7 @@ WHERE
 
 
 inner_query_for_query1_2_old = """<AND> ar.recipe_id IN (
-SELECT 	rw.recipe_id as recipe_id
+SELECT 	DISTINCT rw.recipe_id as recipe_id
 FROM 	RECIPE_NUTRITIONS_WEIGHTS as rnw,
 		RECIPE_WEIGHTS as rw,
 		NUTRITIONS as n
@@ -668,12 +668,12 @@ WHERE
 )"""
 
 weights_view_old= """CREATE VIEW RECIPE_WEIGHTS AS
-SELECT ar.recipe_id as recipe_id, SUM(st.tot_weight) as weight
+SELECT DISTINCT ar.recipe_id as recipe_id, SUM(st.tot_weight) as weight
 FROM 	ALL_RECIPES          as ar, 
 		INGREDIENTS          as i, 
 		RECIPE2INGREDIENTS   as r2i,
 		(
-			SELECT (r2i.servings * i.serving_weight) as tot_weight, ar.recipe_id as recipe_id
+			SELECT DISTINCT (r2i.servings * i.serving_weight) as tot_weight, ar.recipe_id as recipe_id
 			FROM  	ALL_RECIPES          as ar, 
 					INGREDIENTS          as i, 
 					RECIPE2INGREDIENTS   as r2i
@@ -699,7 +699,7 @@ INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
 GROUP BY r2i.recipe_id, inn.nutrition_id"""
 
 recipe_nutritions_view_old = """CREATE VIEW RECIPE_NUTRITIONS_WEIGHTS AS
-SELECT ar.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg) as weight
+SELECT DISTINCT ar.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg) as weight
 FROM	ALL_RECIPES as ar,
 		RECIPE2INGREDIENTS as r2i,
 		INGREDIENT_NUTRITION as inn
@@ -710,10 +710,10 @@ GROUP BY
 	ar.recipe_id, inn.nutrition_id"""
 
 daily_meals_view_old = """CREATE VIEW DAILY_MEALS AS
-SELECT 	breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
-FROM	( SELECT recipe_id FROM ALL_RECIPES where course="Breakfast and Brunch") as breakfast_r
-		( SELECT recipe_id FROM ALL_RECIPES where course="Lunch") as lunch_r
-		( SELECT recipe_id FROM ALL_RECIPES where course="Main Dishes") as dinner_r"""
+SELECT 	DISTINCT breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
+FROM	( SELECT DISTINCT recipe_id FROM ALL_RECIPES where course="Breakfast and Brunch") as breakfast_r
+		( SELECT DISTINCT recipe_id FROM ALL_RECIPES where course="Lunch") as lunch_r
+		( SELECT DISTINCT recipe_id FROM ALL_RECIPES where course="Main Dishes") as dinner_r"""
 
 
 ineffective_inner_query_for_query3 = """AND ar.recipe_id in  (
@@ -727,7 +727,7 @@ ineffective_inner_query_for_query3 = """AND ar.recipe_id in  (
 )"""
 
 inner_query_for_query4_old = """AND dm.breakfast_id, dm.lunch_id, dm.dinner_id IN (
-	SELECT dm2.breakfast_id, dm2.lunch_id, dm2.dinner_id
+	SELECT DISTINCT dm2.breakfast_id, dm2.lunch_id, dm2.dinner_id
 	FROM 		DAILY_MEALS as dm2
 		  JOIN 	NUTRITIONS n
 	INNER JOIN	RECIPE_NUTRITIONS_WEIGHTS rnw_b on rnw_b.recipe_id = dm2.breakfast_id, rnw_b.nutrition_id = n.nutrition_id

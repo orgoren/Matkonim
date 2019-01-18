@@ -56,8 +56,6 @@ def connect_to_db(query=""):#username='', password=''):
 							 db=DB_NAME,
 							 port = 3307)        # name of the data base
 		cur = con.cursor(mdb.cursors.DictCursor)
-		#query = "Select * from ALL_RECIPES where recipe_id = {}".format(1)
-		#query = "select * from NUTRITIONS"
 		if query == "":
 			print "ERROR: no query in input"
 			cur.close()
@@ -74,10 +72,8 @@ def connect_to_db(query=""):#username='', password=''):
 			cur.close()
 			return None
 
-		#res = [item['recipe_name'] for item in cur.fetchall()]
 		cur.close()
 		return ans
-		#return ','.join(res)
 
 
 def get_username_and_password():

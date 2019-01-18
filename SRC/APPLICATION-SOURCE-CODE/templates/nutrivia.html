@@ -64,18 +64,24 @@
 
 <!-- TRIVIA SCREEN -->
 <div class="col-12" id="trivia-screen">
-<h4 id=question>loading...</h4>
+<h4 id=question>Question is loading...</h4>
 <div class="container" id="answers-btns">
-<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_a" id="answer_a" onclick="CheckAnswer()">loading...</button></div>
-<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_b" id="answer_b" onclick="CheckAnswer()">loading...</button></div>
-<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_c" id="answer_c" onclick="CheckAnswer()">loading...</button></div>
-<div class="col-6 mx-auto my-2" id="ans-btn"><button type="submit" class="btn btn-lg btn-info" name="answer_d" id="answer_d" onclick="CheckAnswer()">loading...</button></div>
+<div class="col-6 mx-auto my-2"><button type="submit" class="btn btn-lg btn-info" name="answer_a" id="answer_a" onclick="CheckAnswer()">loading...</button></div>
+<div class="col-6 mx-auto my-2"><button type="submit" class="btn btn-lg btn-info" name="answer_b" id="answer_b" onclick="CheckAnswer()">loading...</button></div>
+<div class="col-6 mx-auto my-2"><button type="submit" class="btn btn-lg btn-info" name="answer_c" id="answer_c" onclick="CheckAnswer()">loading...</button></div>
+<div class="col-6 mx-auto my-2"><button type="submit" class="btn btn-lg btn-info" name="answer_d" id="answer_d" onclick="CheckAnswer()">loading...</button></div>
 </div>
 </div>
 <!-- END OF TRIVIA SCREEN -->
 
+        <!-- ERROR HEADER -->
+        <div class="row" id="error-header">
+            <h2>Oops... Some error occurred while trying to get a question from server.</h2>
+        </div>
+        <!-- END OF ERROR HEADER -->
 
-<!-- Modal -->
+
+<!-- CORRECT MODEL -->
 <div class="modal-container">
   <div class="modal fade" id="correctModal" role="dialog">
     <div class="modal-dialog modal-sm">
@@ -90,7 +96,7 @@
     </div>
   </div>
 
-<!-- Modal -->
+<!-- INCORRECT MODAL -->
   <div class="modal fade" id="incorrectModal" role="dialog">
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
@@ -98,10 +104,24 @@
            <h4 class="modal-title">Incorrect!</h4>
         </div>
         <div class="modal-body" id="modal-body">
-          <p>hello</p>
+          <p></p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal" onclick="GetQuestion()">Next Question</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- FUN FACT MODAL -->
+  <div class="modal" id="fun-fact-modal" role="dialog">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+           <h4 class="modal-title">While question is loading, here is a fun fact!</h4>
+        </div>
+        <div class="modal-body" id="fun-fact-modal-body">
+          <p></p>
         </div>
       </div>
     </div>
@@ -111,6 +131,35 @@
 
 
 <script>
+var nutritions_convert = {'sugar': 'Sugar', 'iron': 'Iron', 'calcium': 'Calcium', 'sodium': 'Sodium',
+'protein': 'Protein', 'cholesterol': 'Cholesterol', 'potassium': 'Potassium', 'lactose': 'Lactose',
+'vitaminC': 'Vitamin C', 'saturated': 'Saturated Fat', 'dietary_fiber': 'Dietary Fiber', 'alcohol': 'Alcohol',
+'calories_kcal': 'Calories'};
+
+var curr_fun_fact = 0;
+
+var fun_facts = [
+'Broccoli contains more vitamin C per 100g than oranges.',
+'Calcium supplements are not good for your bones without Vitamin K.',
+'Avocados, peaches, and bananas are healthy for your bones.',
+'The skin of a kiwi is edible and is loaded with fiber and vitamin C.',
+'Parsley contains more vitamin C per 100g than oranges.',
+'Potatoes are packed with Vitamin C, Potassium, Fiber, and Vitamin B6.',
+'Raw spinach has almost as much protein as sirloin steak.',
+'Vitamins are so called because they are "VITal AMINeS" for your body.',
+'Chili peppers contain 400% more vitamin C per 100g than oranges.',
+'Major brain damage from alcohol can be prevented by proper nutrition.',
+'Moringa leaves contain more iron than spinach and more calcium than milk.',
+'Peeling an apple removes 50% of its fiber and 30% of its vitamin C.',
+'Numerous studies find no evidence for Vitamin C reducing/preventing flu.',
+'Brussel sprouts contain more vitamin C per 100g than oranges.',
+'Over 20% of all calories collectively consumed by humanity are from rice.',
+'A pound of spinach contains same amount of calories as 2 Oreos.',
+'It takes half a calorie of energy to digest a stalk of celery.',
+'Red bell peppers contain more vitamin C per 100g than oranges.',
+'People who drink whole milk are less likely to be fat than those who drink low-fat milk.',
+'Milk contains magnesium, calcium and vitamin B, which helps lowering anxiety.'];
+
 var dict = {
 	"answer_a":"A",
 	"answer_b":"B",
@@ -120,34 +169,65 @@ var dict = {
 
 $(document).ready(function(){
 	$("#trivia-screen").hide();
+	$("#error-header").hide();
 	$("#correctModal").modal("hide");
 	$("#incorrectModal").modal("hide");
-});		
+	$("#fun-fact-modal").modal("hide");
+});
 
 function StartTrivia() {
-	$("body,html").css({"overflow":"hidden"});	
+	$("body,html").css({"overflow":"hidden"});
 	$("#start-screen").hide();
 	$("#next-question").show();
 	$("#trivia-screen").show();
+	$("#error-header").hide();
 	GetQuestion();
 }
 function GetQuestion() {
-  $("#question").text("loading...");
+  $("#question").text("Question is loading...");
   $("#answer_a").html("loading...");
+  $("#answer_a").prop("disabled", true);
   $("#answer_b").html("loading...");
+  $("#answer_b").prop("disabled", true);
   $("#answer_c").html("loading...");
+  $("#answer_c").prop("disabled", true);
   $("#answer_d").html("loading...");
+  $("#answer_d").prop("disabled", true);
+  $("#fun-fact-modal").modal("show");
+  $("#fun-fact-modal-body").html(fun_facts[curr_fun_fact]);
+  curr_fun_fact += 1;
 	$.getJSON('/getQuestion', {}, function(data) {
+	    if ((typeof data.question.question === 'undefined') || (typeof data.question.answer_a === 'undefined') ||
+	    (typeof data.question.answer_b === 'undefined') || (typeof data.question.answer_c === 'undefined') ||
+	    (typeof data.question.answer_d === 'undefined') || (typeof data.question.correct === 'undefined')){
+	        $("#trivia-screen").hide();
+	        $("#correctModal").modal("hide");
+	        $("#incorrectModal").modal("hide");
+	        $("#fun-fact-modal").modal("hide");
+	        $("#start-screen").hide();
+	        $("#next-question").hide();
+	        $("#error-header").show();
+	        return;
+	    }
+	    var printables = [data.question.question, data.question.answer_a, data.question.answer_b, data.question.answer_c, data.question.answer_d];
+	    for (var i in printables){
+	        for (var nutri in nutritions_convert){
+	            printables[i] = printables[i].replace(nutri, nutritions_convert[nutri]);
+	        }
+	    }
 		localStorage.setItem('correct',data.question.correct);
-    	 	$("#question").text(data.question.question);
-    	 	$("#answer_a").html(data.question.answer_a);
-    	 	$("#answer_b").html(data.question.answer_b);
-    	 	$("#answer_c").html(data.question.answer_c);
-    	 	$("#answer_d").html(data.question.answer_d);
-	
+    	$("#question").text(printables[0]);
+    	$("#answer_a").html(printables[1]);
+    	$("#answer_a").prop("disabled", false);
+    	$("#answer_b").html(printables[2]);
+    	$("#answer_b").prop("disabled", false);
+    	$("#answer_c").html(printables[3]);
+    	$("#answer_c").prop("disabled", false);
+    	$("#answer_d").html(printables[4]);
+    	$("#answer_d").prop("disabled", false);
+    	$("#fun-fact-modal").modal("hide");
 	});
 }
-
 function CheckAnswer(){
 	var tmp = localStorage.getItem('correct');
 	if (event.target.id === tmp){

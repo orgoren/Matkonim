@@ -24,8 +24,11 @@ BREAKFAST_PRECANTAGE = 0.3
 LUNCH_PRECENTAGE = 0.4
 DINNER_PRECENTAGE = 0.3
 
-NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
-				"lactose", "vitaminC", "saturated",  "dietary_fiber",  "calories_kcal", "alcohol"]
+#NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
+#				"lactose", "vitaminC", "saturated",  "dietary_fiber",  "calories_kcal", "alcohol"]
+
+NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol",
+				"lactose", "saturated",  "calories_kcal", "alcohol"]
 
 #MEAL_OPTIONS = ["Main Dishes", "Desserts", "Side Dishes", "Appetizers", "Salads", "Breakfast and Brunch", "Breads", 
 #				"Soups", "Condiments and Sauce", "Snacks", "Lunch", "Full Day"]

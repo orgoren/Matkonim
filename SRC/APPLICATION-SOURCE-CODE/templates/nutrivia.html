@@ -113,17 +113,20 @@
     </div>
   </div>
 
-    <!-- FUN FACT MODAL -->
-  <div class="modal" id="fun-fact-modal" role="dialog">
+ 
+    <!-- SCORE MODAL -->
+  <div class="modal" id="score-modal" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-md">
       <div class="modal-content">
         <div class="modal-header">
-           <h4 class="modal-title">FUN FACT!</h4>
+           <h4 class="modal-title">Your Current Score:</h4>
         </div>
-        <div class="modal-body" id="fun-fact-modal-body">
+        <div id="score-modal-body" class="modal-body">
           <p></p>
-        </div>
       </div>
+          <div class="modal-footer">
+          <p class="small" style="font-size:60%;float:right;margin-bottom:0;">this pop-up will close automatically</p>
+          </div>
     </div>
   </div>
 </div>
@@ -136,32 +139,7 @@ var nutritions_convert = {'sugar': 'Sugar', 'iron': 'Iron', 'calcium': 'Calcium'
 'vitaminC': 'Vitamin C', 'saturated': 'Saturated Fat', 'dietary_fiber': 'Dietary Fiber', 'alcohol': 'Alcohol',
 'calories_kcal': 'Calories'};
 
-var curr_fun_fact = 0;
-
-var fun_facts = [
-'Broccoli contains more vitamin C per 100g than oranges.',
-'Celery is very high in Potassium.',
-'Parsley is useful as a digestive aid.',
-'Zucchini contains both Potassium and Calcium.',
-'Calcium supplements are not good for your bones without Vitamin K.',
-'Avocados, peaches, and bananas are healthy for your bones.',
-'The skin of a kiwi is edible and is loaded with fiber and vitamin C.',
-'Parsley contains more vitamin C per 100g than oranges.',
-'Potatoes are packed with Vitamin C, Potassium, Fiber, and Vitamin B6.',
-'Raw spinach has almost as much protein as sirloin steak.',
-'Vitamins are so called because they are "VITal AMINeS" for your body.',
-'Chili peppers contain 400% more vitamin C per 100g than oranges.',
-'Major brain damage from alcohol can be prevented by proper nutrition.',
-'Moringa leaves contain more iron than spinach and more calcium than milk.',
-'Peeling an apple removes 50% of its fiber and 30% of its vitamin C.',
-'Numerous studies find no evidence for Vitamin C reducing/preventing flu.',
-'Brussel sprouts contain more vitamin C per 100g than oranges.',
-'Over 20% of all calories collectively consumed by humanity are from rice.',
-'A pound of spinach contains same amount of calories as 2 Oreos.',
-'It takes half a calorie of energy to digest a stalk of celery.',
-'Red bell peppers contain more vitamin C per 100g than oranges.',
-'People who drink whole milk are less likely to be fat than those who drink low-fat milk.',
-'Milk contains magnesium, calcium and vitamin B, which helps lowering anxiety.'];
+var curr_score = 0;
 
 var dict = {
 	"answer_a":"A",
@@ -175,7 +153,7 @@ $(document).ready(function(){
 	$("#error-header").hide();
 	$("#correctModal").modal("hide");
 	$("#incorrectModal").modal("hide");
-	$("#fun-fact-modal").modal("hide");
+	$("#score-modal").modal("hide");
 });
 
 function StartTrivia() {
@@ -196,17 +174,16 @@ function GetQuestion() {
   $("#answer_c").prop("disabled", true);
   $("#answer_d").html("loading...");
   $("#answer_d").prop("disabled", true);
-  $("#fun-fact-modal").modal("show");
-  $("#fun-fact-modal-body").html(fun_facts[curr_fun_fact]);
-  curr_fun_fact += 1;
-	$.getJSON('/getQuestion', {}, function(data) {
+  $("#score-modal").modal("show");
+  $("#score-modal-body").html(curr_score + " correct answers");
+  	$.getJSON('/getQuestion', {}, function(data) {
 	    if ((typeof data.question.question === 'undefined') || (typeof data.question.answer_a === 'undefined') ||
 	    (typeof data.question.answer_b === 'undefined') || (typeof data.question.answer_c === 'undefined') ||
 	    (typeof data.question.answer_d === 'undefined') || (typeof data.question.correct === 'undefined')){
 	        $("#trivia-screen").hide();
 	        $("#correctModal").modal("hide");
 	        $("#incorrectModal").modal("hide");
-	        $("#fun-fact-modal").modal("hide");
+	        $("#score-modal").modal("hide");
 	        $("#start-screen").hide();
 	        $("#next-question").hide();
 	        $("#error-header").show();
@@ -228,13 +205,14 @@ function GetQuestion() {
     	$("#answer_c").prop("disabled", false);
     	$("#answer_d").html(printables[4]);
     	$("#answer_d").prop("disabled", false);
-    	$("#fun-fact-modal").modal("hide");
+    	$("#score-modal").modal("hide");
 	});
 }
 function CheckAnswer(){
 	var tmp = localStorage.getItem('correct');
 	if (event.target.id === tmp){
 		$("#correctModal").modal("show");
+		curr_score += 1;
 	} else {
 		var text = "Correct answer is: " + dict[tmp];
 		$("#incorrectModal").modal("show");

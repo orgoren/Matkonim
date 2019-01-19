@@ -7,14 +7,14 @@ from utils import *
 ################################
 
 weights_view = """CREATE VIEW VIEW_RECIPE_WEIGHTS AS
-SELECT DISTINCT SUM(r2i.servings * i.serving_weight_grams) as weight, r2i.recipe_id as recipe_id
+SELECT DISTINCT ROUND(SUM(r2i.servings * i.serving_weight_grams),2) as weight, r2i.recipe_id as recipe_id
 FROM 		RECIPE2INGREDIENTS r2i
 INNER JOIN 	INGREDIENTS i on i.ingredient_id = r2i.ingredient_id
 GROUP BY r2i.recipe_id"""
 
 recipe_nutritions_view = """CREATE VIEW VIEW_RECIPE_NUTRITIONS_WEIGHTS AS
-SELECT DISTINCT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight,
-				(SUM(r2i.servings * inn.weight_mg_from_ingredient) / (vrw.weight * 1000)) as precentage
+SELECT DISTINCT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, ROUND(SUM(r2i.servings * inn.weight_mg_from_ingredient),2) as weight,
+				ROUND((SUM(r2i.servings * inn.weight_mg_from_ingredient) / (vrw.weight * 1000)),2) as precentage
 FROM		RECIPE2INGREDIENTS r2i 
 INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
 INNER JOIN 	VIEW_RECIPE_WEIGHTS vrw on vrw.recipe_id = r2i.recipe_id
@@ -268,7 +268,7 @@ WHERE fr.course = \"<MEAL_OPTION>\" """
 # and nutritional values requested
 query3 = """SELECT DISTINCT fr.recipe_id
 FROM 	FOOD_RECIPES as fr,
-(
+INNER JOIN (
 SELECT 		DISTINCT COUNT(fr.recipe_id) as cnt, fr.recipe_id as recipe_id
 FROM 		FOOD_RECIPES fr 
 INNER JOIN 	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on fr.recipe_id = vrnw.recipe_id
@@ -281,8 +281,8 @@ fr.course = \"<MEAL_OPTION>\"
 <FILTER_BY_NUTRITIONS>
 <NUTRITIONS_CHECK>
 GROUP by fr.recipe_id
-) as RECIPE_COUNTERS
-WHERE RECIPE_COUNTERS.cnt = <NUT_NUM> AND RECIPE_COUNTERS.recipe_id = fr.recipe_id"""
+) RECIPE_COUNTERS on RECIPE_COUNTERS.recipe_id = fr.recipe_id
+WHERE RECIPE_COUNTERS.cnt = <NUT_NUM>"""
 
 FILTER_BY_NUTRITIONS_for_query3_4 = "n.nutrition_name = \"<NUT_KEY>\" "
 
@@ -527,8 +527,8 @@ INNER JOIN
 	INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
 	WHERE		r2i.recipe_id = <RECIPE_ID>
 	GROUP BY r2i.recipe_id, inn.nutrition_id
-) vrnw on n.nutrition_id = vrnw.nutrition_id,
-(
+) vrnw on n.nutrition_id = vrnw.nutrition_id
+INNER JOIN(
 			SELECT DISTINCT v.recipe_id, MAX(v.weight) as max_weight
 			FROM (SELECT DISTINCT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
 				FROM		RECIPE2INGREDIENTS r2i 
@@ -536,9 +536,7 @@ INNER JOIN
 				WHERE		r2i.recipe_id = <RECIPE_ID>
 				GROUP BY r2i.recipe_id, inn.nutrition_id) AS v
 			GROUP BY v.recipe_id 
-) as max_nut_table
-
-WHERE vrnw.weight = max_nut_table.max_weight
+) max_nut_table on vrnw.weight = max_nut_table.max_weight
 """
 
 trivia_1_get_random_recipe = """

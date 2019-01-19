@@ -44,7 +44,7 @@
 
 <!-- NUTRITIONAL VALUES SELECTION -->
 <div class="mb-auto text-center">
-<h3 class="text-nowrap mb-auto" id="preferences-header">Choose your nutritional preferences:</h3></div>   
+<h3 class="text-nowrap mb-auto" id="preferences-header">Choose your nutritional preferences:</h3></div>
 <form method="POST">
 <div class="col-3">
 <div class="nutri-group" id="nutri1">
@@ -55,7 +55,7 @@
       <option value="">Don't care</option>
       <option value="1">None</option>
       <option value="2">less than 5%</option>
-      <option value="3">over 30%</option>
+      <option value="3">over 15%</option>
     </select>
   </div>
  </div>
@@ -81,7 +81,9 @@
     </select>
  </div>
  </div>
- <div class="form-group row col-10">
+ </div>
+<div class="nutri-group" id="nutri2">
+    <div class="form-group row col-10">
   <label for="sodium-form" class="col-form-label col-3">Sodium:</label>
     <div class="col-8">
     <select class="custom-select col-11" id="sodium-form" name="sodium">
@@ -103,32 +105,8 @@
     </select>
   </div>
  </div>
-</div>
-<div class="nutri-group" id="nutri2">
  <div class="form-group row col-10">
-  <label for="cholesterol-form" class="col-form-label col-4">Cholesterol:</label>
-   <div class="col-8">
-    <select class="custom-select col-11" id="cholesterol-form" name="cholesterol">
-      <option value="">Don't care</option>
-      <option value="1">None</option>
-      <option value="2">less than 5%</option>
-      <option value="3">over 15%</option>
-    </select>
- </div>
- </div>
-<div class="form-group row col-10">
-  <label for="potassium-form" class="col-form-label col-4">Potassium:</label>
-  <div class="col-8">
-    <select class="custom-select col-11" id="potassium-form" name="potassium">
-      <option value="">Don't care</option>
-      <option value="1">None</option>
-      <option value="2">less than 5%</option>
-      <option value="3">over 15%</option>
-    </select>
-  </div>
- </div>
- <div class="form-group row col-10">
-  <label for="lactose-form" class="col-form-label col-4">Lactose:</label>
+  <label for="lactose-form" class="col-form-label col-3">Lactose:</label>
     <div class="col-8">
     <select class="custom-select col-11" id="lactose-form" name="lactose">
       <option value="">Don't care</option>
@@ -138,23 +116,24 @@
     </select>
  </div>
  </div>
-<div class="form-group row mr-2">
-  <label for="vitaminC-form" class="col-form-label col-4">Vitamin C:</label>
-  <div class>
-    <select class="custom-select" id="vitaminC-form" name="vitaminC">
-      <option value="">Don't care</option>
-      <option value="1">None</option>
-      <option value="2">less than 5%</option>
-      <option value="3">over 15%</option>
-    </select>
-  </div>
- </div>
 </div>
 <div class="nutri-group" id="nutri3">
-<div class="form-group row">
-  <label for="satfat-form" class="col-form-label col-5">Saturated Fat:</label>
-  <div class>
-    <select class="custom-select" id="satfat-form" name="saturated">
+ <div class="form-group row col-12">
+  <label for="cholesterol-form" class="col-form-label col-4 text-nowrap">Cholesterol:</label>
+   <div class="col-8">
+    <select class="custom-select col-9" id="cholesterol-form" name="cholesterol">
+      <option value="">Don't care</option>
+      <option value="1">None</option>
+      <option value="2">less than 5%</option>
+      <option value="3">over 15%</option>
+    </select>
+ </div>
+ </div>
+
+<div class="form-group row col-12">
+  <label for="satfat-form" class="col-form-label text-nowrap col-4">Saturated Fat:</label>
+  <div class="col-8">
+    <select class="custom-select col-9" id="satfat-form" name="saturated">
       <option value="">Don't care</option>
       <option value="1">None</option>
       <option value="2">less than 5%</option>
@@ -162,21 +141,10 @@
     </select>
   </div>
  </div>
-<div class="form-group row">
-  <label for="fiber-form" class="col-form-label col-5">Dietary Fiber:</label>
-  <div class>
-    <select class="custom-select" id="fiber-form" name="dietary_fiber">
-      <option value="">Don't care</option>
-      <option value="1">None</option>
-      <option value="2">less than 5%</option>
-      <option value="3">over 15%</option>
-    </select>
-  </div>
- </div>
-<div class="form-group row">
-  <label for="alcohol-form" class="col-form-label col-4">Alcoholic:</label>
-  <div class="col-6">
-    <select class="custom-select col-10" id="alcohol-form" name="alcohol">
+<div class="form-group row col-12">
+  <label for="alcohol-form" class="col-form-label text-nowrap col-4">Alcoholic:</label>
+  <div class="col-8">
+    <select class="custom-select col-9" id="alcohol-form" name="alcohol">
       <option value="">Don't care</option>
       <option value="1">Of course!</option>
       <option value="0">No thanks</option>
@@ -217,28 +185,26 @@
 
 <script>
 function caloriesCheckChange() {
-	if ($('#calories-check').is(':checked')) {  
+	if ($('#calories-check').is(':checked')) {
 		document.getElementById("calories-form").disabled = false;
 	}
-	else {	
+	else {
 		document.getElementById("calories-form").disabled = true;
 		$('#calories-form').val('');
 	}
 }
-
 function prepCheckChange() {
-	if ($('#prep-check').is(':checked')) {  
+	if ($('#prep-check').is(':checked')) {
 		document.getElementById("prep-form").disabled = false;
 	}
-	else {	
+	else {
 		document.getElementById("prep-form").disabled = true;
 		$('#prep-form').val('');
 	}
 }
-
 </script>
 
- 
+
     <!-- Bootstrap core JavaScript -->
     <script src="../static/vendor/jquery/jquery.min.js"></script>
     <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

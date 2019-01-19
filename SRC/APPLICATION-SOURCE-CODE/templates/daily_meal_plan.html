@@ -84,15 +84,13 @@
     <input type="radio" name="Lunch" id="option-lunch" autocomplete="off">Lunch</label>
   <label class="btn btn-outline-info btn-sm">
     <input type="radio" name="Main Dishes" id="option-dinner" autocomplete="off">Dinner</label>
-  <label class="btn btn-outline-info btn-sm">
-    <input type="radio" name="Full Day" id="option-full-day" autocomplete="off">Full-Day Meal Plan (Breakfast+Lunch+Dinner)</label>
 </div>
 
 
 
 <!-- NUTRITIONAL VALUES SELECTION -->
 <div class="mb-auto text-center">
-<h3 class="text-nowrap mb-auto" id="preferences-header">Choose your nutritional preferences:</h3><h5 class="text-nowrap mb-auto" id="preferences-header">(as a percentage of your recommended daily intake)</h5></div>   
+<h3 class="text-nowrap mb-auto" id="preferences-header">Choose your nutritional preferences:</h3><h5 class="text-nowrap mb-auto" id="sub-header">(as a percentage of your recommended daily intake)</h5></div>
 <div class="col-3" id="nutritional-form" method="POST">
 <div class="nutri-group" id="nutri1">
 <div class="form-group row col-10">
@@ -116,6 +114,8 @@
   </div>
 <div class="my-2 mr-3 nutri-percent-sign">%</div>
 </div>
+</div>
+<div class="nutri-group" id="nutri2">
 <div class="form-group row col-10">
 	<label for="sodium-form" class="col-form-label col-3">Sodium:</label>
 	  <div class="col-7">
@@ -123,32 +123,16 @@
   </div>
 <div class="my-2 mr-3 nutri-percent-sign">%</div>
 </div>
-</div>
-<div class="nutri-group" id="nutri2">
-<div class="form-group row col-11">
-	<label for="protein-form" class="col-form-label col-4 nutri2-label">Protein:</label>
-	  <div class="col-6 mr-8">
+    <div class="form-group row col-10">
+	<label for="protein-form" class="col-form-label col-3">Protein:</label>
+	  <div class="col-7">
 	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="protein-form" name="protein" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri-percent-sign">%</div>
 </div>
-<div class="form-group row col-11">
-	<label for="cholesterol-form" class="col-form-label col-4 nutri2-label">Cholesterol:</label>
-	  <div class="col-6 mr-8">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="cholesterol-form" name="cholesterol" placeholder="Don't Care">
-  </div>
-<div class="my-2 mr-3 nutri-percent-sign">%</div>
-</div>
-<div class="form-group row col-11">
-	<label for="potassium-form" class="col-form-label col-4 nutri2-label">Potassium:</label>
-	  <div class="col-6 mr-8">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="potassium-form" name="potassium" placeholder="Don't Care">
-  </div>
-<div class="my-2 mr-3 nutri-percent-sign">%</div>
-</div>
-<div class="form-group row col-11">
-	<label for="lactose-form" class="col-form-label col-4 nutri2-label">Lactose:</label>
-	  <div class="col-6 mr-8">
+<div class="form-group row col-10">
+	<label for="lactose-form" class="col-form-label col-3">Lactose:</label>
+	  <div class="col-7">
 	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control" id="lactose-form" name="lactose" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri-percent-sign">%</div>
@@ -156,23 +140,16 @@
 </div>
 <div class="nutri-group" id="nutri3">
 <div class="form-group row">
-	<label for="vitaminC-form" class="col-form-label col-5 nutri3-label">Vitamin C:</label>
+	<label for="cholesterol-form" class="col-form-label col-5 nutri3-label">Cholesterol:</label>
 	  <div class="col-5 mr-8">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="vitaminC-form" name="vitaminC" placeholder="Don't Care">
+	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="cholesterol-form" name="cholesterol" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri3-percent-sign">%</div>
 </div>
-<div class="form-group row">
+    <div class="form-group row">
 	<label for="satfat-form" class="col-form-label col-5 nutri3-label">Saturated Fat:</label>
 	  <div class="col-5 mr-8">
 	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="satfat-form" name="saturated" placeholder="Don't Care">
-  </div>
-<div class="my-2 mr-3 nutri3-percent-sign">%</div>
-</div>
-<div class="form-group row">
-	<label for="fiber-form" class="col-form-label col-5 nutri3-label">Dietary Fiber:</label>
-	  <div class="col-5 mr-8">
-	  <input type="number" onKeyPress="if(this.value.length==3) return false;" min="0" max="200"	class="form-control col-11" id="fiber-form" name="dietary_fiber" placeholder="Don't Care">
   </div>
 <div class="my-2 mr-3 nutri3-percent-sign">%</div>
 </div>
@@ -193,9 +170,9 @@
 
 
 <!-- EXPLANATION -->
-<div class="card bg-light" style="width: 29rem;" id="explanation-card">
+<div class="card bg-light" style="width: 27rem;" id="explanation-card">
  <h5 class="card-header">Explanation:</h5>
-  <h6 class="card-body px-2 py-2">Based on your age and gender, there are recommended daily intake amounts of each nutritional value. You can choose planning a specific meal or a full-day meal-plan, choosing the percentage of recommended daily intake of each nutritional value. If you know about other health limitations you have (such as diabetes, lactose intolernce, high cholesterol, etc.) you might want a meal plan with different percentage than the recommended daily amounts. If you have no other health limitations, we recommend choosing a full-day meal plan with 100% of each recommended nutritional value.</h6>
+  <h6 class="card-body px-2 py-2">Based on your age and gender, there are recommended daily intake amounts of each nutritional value. You can choose which meal you would like to plan, and the percentage of recommended daily intake of each nutritional value. If you know about other health limitations you have (such as diabetes, lactose intolernce, high cholesterol, etc.) you might want a meal plan with different percentage than the recommended daily amounts.</h6>
 </div>
 
 
@@ -208,7 +185,7 @@
 
 </header>
 
- 
+
     <!-- Bootstrap core JavaScript -->
     <script src="../static/vendor/jquery/jquery.min.js"></script>
     <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

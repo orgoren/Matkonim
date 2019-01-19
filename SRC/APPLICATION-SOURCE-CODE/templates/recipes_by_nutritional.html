@@ -47,27 +47,15 @@
 <h3 class="text-nowrap mb-auto" id="which-food-header">What recipe would you like to find?</h3>
 </div>
 	  <form method="POST">
-<div class="btn-group btn-group-toggle col-10" data-toggle="buttons" id="which-food">
+<div class="btn-group btn-group-toggle" data-toggle="buttons" id="which-food">
   <label class="btn btn-outline-success active">
     <input type="radio" name="Main Dishes" id="option-main" autocomplete="off"><b>Main dish</b></label>
   <label class="btn btn-outline-success">
     <input type="radio" name="Side Dishes" id="option-side" autocomplete="off"><b>Side dish</b></label>
   <label class="btn btn-outline-success">
-    <input type="radio" name="Appetizers" id="option-appetizer" autocomplete="off"><b>Appetizers</b></label>
-  <label class="btn btn-outline-success">
     <input type="radio" name="Lunch" id="option-lunch" autocomplete="off"><b>Lunch</b></label>
 <label class="btn btn-outline-success">
     <input type="radio" name="Breakfast and Brunch" id="option-breakfast" autocomplete="off"><b>Breakfast and Brunch</b></label>
-<label class="btn btn-outline-success">
-    <input type="radio" name="Snacks" id="option-snack" autocomplete="off"><b>Snack</b></label>
-  <label class="btn btn-outline-success">
-    <input type="radio" name="Soups" id="option-soup" autocomplete="off"><b>Soup</b></label>
-  <label class="btn btn-outline-success">
-    <input type="radio" name="Salads" id="option-salad" autocomplete="off"><b>Salad</b></label>
-<label class="btn btn-outline-success">
-    <input type="radio" name="Breads" id="option-bread" autocomplete="off"><b>Bread</b></label>
-  <label class="btn btn-outline-success">
-    <input type="radio" name="Condiments and Sauce" id="option-sauce" autocomplete="off"><b>Condiments and Sauces</b></label>
   <label class="btn btn-outline-success">
     <input type="radio" name="Desserts" id="option-dessert" autocomplete="off"><b>Dessert</b></label> 
 </div>
@@ -252,28 +240,26 @@
 
 <script>
 function caloriesCheckChange() {
-	if ($('#calories-check').is(':checked')) {  
+	if ($('#calories-check').is(':checked')) {
 		document.getElementById("calories-form").disabled = false;
 	}
-	else {	
+	else {
 		document.getElementById("calories-form").disabled = true;
 		$('#calories-form').val('');
 	}
 }
-
 function prepCheckChange() {
-	if ($('#prep-check').is(':checked')) {  
+	if ($('#prep-check').is(':checked')) {
 		document.getElementById("prep-form").disabled = false;
 	}
-	else {	
+	else {
 		document.getElementById("prep-form").disabled = true;
 		$('#prep-form').val('');
 	}
 }
-
 </script>
 
- 
+
     <!-- Bootstrap core JavaScript -->
     <script src="../static/vendor/jquery/jquery.min.js"></script>
     <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

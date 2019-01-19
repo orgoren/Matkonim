@@ -8,15 +8,15 @@ from utils import *
 
 weights_view = """CREATE VIEW VIEW_RECIPE_WEIGHTS AS
 SELECT DISTINCT ROUND(SUM(r2i.servings * i.serving_weight_grams),2) as weight, r2i.recipe_id as recipe_id
-FROM 		RECIPE2INGREDIENTS r2i
-INNER JOIN 	INGREDIENTS i on i.ingredient_id = r2i.ingredient_id
+FROM 		INGREDIENTS i
+INNER JOIN RECIPE2INGREDIENTS r2i on i.ingredient_id = r2i.ingredient_id
 GROUP BY r2i.recipe_id"""
 
 recipe_nutritions_view = """CREATE VIEW VIEW_RECIPE_NUTRITIONS_WEIGHTS AS
 SELECT DISTINCT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, ROUND(SUM(r2i.servings * inn.weight_mg_from_ingredient),2) as weight,
 				ROUND((SUM(r2i.servings * inn.weight_mg_from_ingredient) / (vrw.weight * 1000)),2) as precentage
-FROM		RECIPE2INGREDIENTS r2i 
-INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
+FROM		INGREDIENT_NUTRITION inn 
+INNER JOIN 	RECIPE2INGREDIENTS r2i on inn.ingredient_id = r2i.ingredient_id
 INNER JOIN 	VIEW_RECIPE_WEIGHTS vrw on vrw.recipe_id = r2i.recipe_id
 GROUP BY r2i.recipe_id, inn.nutrition_id"""
 
@@ -33,24 +33,24 @@ WHERE		r2i.recipe_id = <RECIPE_ID>"""
 
 # A query to get the nutritional values of a certain recipe
 get_nutritionals_query = """SELECT DISTINCT n.nutrition_name as nutrition_name, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
-FROM		RECIPE2INGREDIENTS r2i
-INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
-INNER JOIN	NUTRITIONS n on n.nutrition_id = inn.nutrition_id
+FROM		INGREDIENT_NUTRITION inn
+INNER JOIN 	NUTRITIONS n on n.nutrition_id = inn.nutrition_id
+INNER JOIN	RECIPE2INGREDIENTS r2i on inn.ingredient_id = r2i.ingredient_id
 WHERE 		r2i.recipe_id = <RECIPE_ID>
 GROUP BY 	r2i.recipe_id, inn.nutrition_id"""
 
 # A query to get the full details of a certain cocktail recipe
 get_cocktail_details_query = """SELECT DISTINCT ar.recipe_name AS recipe_name, ar.picture AS picture,
 cr.is_alcoholic AS is_alcoholic, cr.cocktail_details AS cocktail_details, cr.serving_glass AS serving_glass
-FROM		ALL_RECIPES AS ar
-INNER JOIN	COCKTAIL_RECIPES cr on cr.recipe_id = ar.recipe_id
+FROM		COCKTAIL_RECIPES cr
+INNER JOIN	ALL_RECIPES ar on cr.recipe_id = ar.recipe_id
 WHERE		ar.recipe_id = <RECIPE_ID>"""
 
 # A query to get the full details of a certain food recipe
 get_food_details_query = """SELECT DISTINCT ar.recipe_name AS recipe_name, ar.picture AS picture,
 fr.food_details AS food_details, fr.prep_time_in_minutes AS prep_time
-FROM		ALL_RECIPES AS ar
-INNER JOIN	FOOD_RECIPES fr on fr.recipe_id = ar.recipe_id
+FROM		FOOD_RECIPES fr
+INNER JOIN	ALL_RECIPES ar on fr.recipe_id = ar.recipe_id
 WHERE		ar.recipe_id = <RECIPE_ID>"""
 
 

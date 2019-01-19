@@ -61,7 +61,7 @@ WHERE		ar.recipe_id = <RECIPE_ID>"""
 # The query if no nutritional preferences are chosen
 query1_no_nutritions = """SELECT DISTINCT fr.recipe_id
 FROM FOOD_RECIPES as fr
-WHERE fr.course = \"<MEAL_OPTION>\"
+WHERE MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\") 
 <PREP_TIME_LINE>"""
 
 # The query for food recipes by given nutritional preferences
@@ -72,7 +72,7 @@ FROM		FOOD_RECIPES fr
 INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on fr.recipe_id = vrnw.recipe_id
 INNER JOIN	NUTRITIONS n on vrnw.nutrition_id = n.nutrition_id
 WHERE
-	fr.course = \"<MEAL_OPTION>\"
+	MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\") 
 	<PREP_TIME_LINE>
 <FILTER_BY_NUTRITIONS>
 <NUTRITIONS_CHECK>
@@ -262,12 +262,12 @@ def get_query2(nutritions_values):
 # The query for getting food recipe by meal option if no daily values are chosen
 query3_no_nutritions = """SELECT DISTINCT fr.recipe_id
 FROM FOOD_RECIPES as fr
-WHERE fr.course = \"<MEAL_OPTION>\" """
+WHERE MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\")  """
 
 # The query for getting a food recipe given daily values by specific meal, gender, age
 # and nutritional values requested
 query3 = """SELECT DISTINCT fr.recipe_id
-FROM 	FOOD_RECIPES as fr,
+FROM 	FOOD_RECIPES as fr
 INNER JOIN (
 SELECT 		DISTINCT COUNT(fr.recipe_id) as cnt, fr.recipe_id as recipe_id
 FROM 		FOOD_RECIPES fr 
@@ -277,7 +277,7 @@ INNER JOIN 	NUTRITIONS n on n.nutrition_id = rbag.nutrition_id
 WHERE
 rbag.gender = \"<GENDER>\" AND
 rbag.age = <AGE> AND
-fr.course = \"<MEAL_OPTION>\"
+MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\") 
 <FILTER_BY_NUTRITIONS>
 <NUTRITIONS_CHECK>
 GROUP by fr.recipe_id
@@ -355,7 +355,7 @@ def get_query3(nutritions_values, meal_option, age, gender):
 # The query for getting food recipe by meal option if no daily values are chosen
 query4_no_nutritions = """SELECT DISTINCT fr.recipe_id as recipe_id
 FROM FOOD_RECIPES fr
-WHERE fr.course = "<MEAL_OPTION>" """
+WHERE MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\")  """
 
 # The query for getting a food recipe given daily values by specific meal, gender, age
 # and nutritional values requested
@@ -367,7 +367,7 @@ INNER JOIN NUTRITIONS n on rbag.nutrition_id = n.nutrition_id
 WHERE
 rbag.age = <AGE> AND
 rbag.gender = "<GENDER>" AND
-fr.course = "<MEAL_OPTION>"
+MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\") 
 <FILTER_BY_NUTRITIONS>
 <NUTRITIONS_CHECK>"""
 
@@ -469,9 +469,9 @@ alg_query = """<AND> ar.recipe_id NOT IN (
 )"""
 
 food_fields_old = """ar.recipe_id = fr.recipe_id
-		AND fr.course = \"<MEAL_OPTION>\" """
+		AND MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\")  """
 
-food_fields = """fr.course = \"<MEAL_OPTIONS>\" """
+food_fields = """MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\")  """
 
 cocktail_fields = """ar.recipe_id = cr.recipe_id"""
 
@@ -730,7 +730,7 @@ WHERE
 		rbag.gender = \"<GENDER>\" AND
 		rbag.age = <AGE> AND
 		fr.recipe_id = ar.recipe_id AND
-		fr.course = \"<MEAL_OPTION>\" """
+		MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\")  """
 
 
 inner_query_for_query1_2_old = """<AND> ar.recipe_id IN (
@@ -789,9 +789,9 @@ GROUP BY
 
 daily_meals_view_old = """CREATE VIEW DAILY_MEALS AS
 SELECT 	DISTINCT breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
-FROM	( SELECT DISTINCT recipe_id FROM ALL_RECIPES where course="Breakfast and Brunch") as breakfast_r
-		( SELECT DISTINCT recipe_id FROM ALL_RECIPES where course="Lunch") as lunch_r
-		( SELECT DISTINCT recipe_id FROM ALL_RECIPES where course="Main Dishes") as dinner_r"""
+FROM	( SELECT DISTINCT recipe_id FROM ALL_RECIPES where MATCH(course) AGAINST("Breakfast and Brunch") as breakfast_r
+		( SELECT DISTINCT recipe_id FROM ALL_RECIPES where MATCH(course) AGAINST("Lunch") as lunch_r
+		( SELECT DISTINCT recipe_id FROM ALL_RECIPES where MATCH(course) AGAINST("Main Dishes") as dinner_r"""
 
 
 ineffective_inner_query_for_query3 = """AND ar.recipe_id in  (
@@ -847,7 +847,7 @@ query1_no_if = """SELECT DISTINCT ar.recipe_name
 FROM		ALL_RECIPES ar
 INNER JOIN 	FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id
 WHERE
-	fr.course = \"<MEAL_OPTION>\" """
+	MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\")  """
 
 #### I think this should be a view - there are 2 huge views and in mysql you can't index views #### -GUY
 query1_old3 = """SELECT DISTINCT ar.recipe_name
@@ -856,7 +856,7 @@ INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on ar.recipe_id = vrnw.recipe_id
 INNER JOIN	NUTRITIONS n on vrnw.nutrition_id = n.nutrition_id
 INNER JOIN 	FOOD_RECIPES fr on ar.recipe_id = fr.recipe_id
 WHERE
-	fr.course = \"<MEAL_OPTION>\" """
+	MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\")  """
 
 inner_query_for_query3_old_views = """AND fr.recipe_id in  (
 	SELECT DISTINCT ar.recipe_id as recipe_id 
@@ -942,7 +942,7 @@ FROM 	RECOMMEND_BY_AGE_GENDER as rbag,
 WHERE
 		rbag.gender = \"<GENDER>\" AND
 		rbag.age = <AGE> AND
-		fr.course = \"<MEAL_OPTION>\" """
+		MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\") """
 
 
 inner_query_for_query3_old = """AND fr.recipe_id in  (
@@ -1042,9 +1042,9 @@ def get_query4_old(nutritions_values, age, gender):
 
 daily_meals_view_old = """CREATE VIEW VIEW_DAILY_MEALS AS
 SELECT DISTINCT breakfast_r.recipe_id AS breakfast_id, lunch_r.recipe_id AS lunch_id, dinner_r.recipe_id AS dinner_id
-FROM	( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Breakfast and Brunch") as breakfast_r,
-		( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Lunch") as lunch_r,
-		( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where course="Main Dishes") as dinner_r
+FROM	( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where MATCH(course) AGAINST("Breakfast and Brunch") as breakfast_r,
+		( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where MATCH(course) AGAINST("Lunch") as lunch_r,
+		( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where MATCH(course) AGAINST("Main Dishes") as dinner_r
 ORDER BY RAND()
 limit 30000"""
 

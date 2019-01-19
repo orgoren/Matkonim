@@ -27,8 +27,10 @@ DINNER_PRECENTAGE = 0.3
 NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
 				"lactose", "vitaminC", "saturated",  "dietary_fiber",  "calories_kcal", "alcohol"]
 
-MEAL_OPTIONS = ["Main Dishes", "Desserts", "Side Dishes", "Appetizers", "Salads", "Breakfast and Brunch", "Breads", 
-				"Soups", "Condiments and Sauce", "Snacks", "Lunch", "Full Day"]
+#MEAL_OPTIONS = ["Main Dishes", "Desserts", "Side Dishes", "Appetizers", "Salads", "Breakfast and Brunch", "Breads", 
+#				"Soups", "Condiments and Sauce", "Snacks", "Lunch", "Full Day"]
+
+MEAL_OPTIONS = ["Breakfast and Brunch", "Desserts", "Lunch", "Main Dishes", "Side Dishes"]
 
 VALUES = {"None" : "None", "1" : "None", "d": "dont care", "2" : "less than 5%", "3" : "over 15%"}
 

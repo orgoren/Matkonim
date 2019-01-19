@@ -66,7 +66,7 @@
     </div>
     <div class="col-md-4" id="results">
      <p class="recipe-details" style="font-size:180%">{{ query_res.recipe_name }}</p>
-        <p class="recipe-details" style="line-height: 70%"><u>Is it alcoholic</u>: {{ query_res.is_alcoholic }}</p>
+        <p class="recipe-details" style="line-height: 70%" id="is-alcohol"></p>
         <p class="recipe-details" style="line-height: 70%"><u>Serving glass</u>: {{ query_res.serving_glass }}</p>
      <p class="recipe_details" id="ingredients-p"></p>
      <p class="recipe-details"><u>Full cocktail instructions</u>:
@@ -110,11 +110,17 @@ function show_results(){
         $("#found-header").hide();
 		$("#results-container").hide();
 		$("#not-found-header").show();
+		return;
 	} else {
 		$("#not-found-header").hide();
 		$("#found-header").show();
 		$("#results-container").show();
 	}
+	var is_alcohol_str = "of course!";
+	if ((query_res['is_alcoholic'] === '0') || (query_res['is_alcoholic'] === 0)){
+	    is_alcohol_str = "nope";
+	}
+	$("#is-alcohol").html("<span style='text-decoration: underline;'>Is it alcoholic</span>: " + is_alcohol_str);
 	$("#nutri-res-table tbody tr").remove();
     var curr_nutritions = query_res['nutritions'];
     for (var nutri_key in curr_nutritions){

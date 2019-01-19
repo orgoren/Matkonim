@@ -66,26 +66,27 @@ header.masthead h2{
 	left:18rem;
 	top:6.5rem;
 }
-	
-#food-or-cocktail{
-	position:absolute;
-	top:11rem;
-	right:30rem;
+#which-recipe-header{
+	position:relative;
+	top:-3rem;
 }
-
+#food-or-cocktail{
+	position:relative;
+	top:-2.8rem;
+}
 #which-food{
-	position:absolute;
-	top:14rem;
+	position:relative;
+	top:-2.2rem;
 	display:none;
 }
 #allergans-header{
-	position:relative;
-	top:8rem;
+	position:absolute;
+	top:19.5rem;
 }
 #allergans-wrapper{
 	position:absolute;
 	top:22rem;
-	margin-left:33%;
+	padding-left:32%;
 }
 #inlineFormAllergan1{
 	width:500px;

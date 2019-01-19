@@ -43,7 +43,10 @@
 
 
 <!-- FOOD OR COCKTAIL SELECTION -->
-<form id="whole-form" method="POST">
+<div class="mb-auto text-center">
+<h3 class="col-12 mb-auto text-center" id="which-recipe-header">What would you like to find?</h3>
+</div>
+        <form id="whole-form" method="POST">
 <div class="btn-group btn-group-toggle" data-toggle="buttons" id="food-or-cocktail">
   <label class="btn btn-outline-dark" onclick="foodRecipeChosen()">
     <input type="radio" name="option_food" id="option1" autocomplete="off"><b>I'm hungry!</b>
@@ -58,27 +61,15 @@
 
 
 <!-- WHICH FOOD COURSE SELECTION -->
-<div class="btn-group btn-group-toggle col-12" data-toggle="buttons" id="which-food">
+<div class="btn-group btn-group-toggle col-12 mb-auto" data-toggle="buttons" id="which-food">
   <label class="btn btn-outline-success active">
     <input type="radio" name="Main Dishes" id="option-main" autocomplete="off"><b>Main dish</b></label>
   <label class="btn btn-outline-success">
     <input type="radio" name="Side Dishes" id="option-side" autocomplete="off"><b>Side dish</b></label>
   <label class="btn btn-outline-success">
-    <input type="radio" name="Appetizers" id="option-appetizer" autocomplete="off"><b>Appetizers</b></label>
-  <label class="btn btn-outline-success">
     <input type="radio" name="Lunch" id="option-lunch" autocomplete="off"><b>Lunch</b></label>
 <label class="btn btn-outline-success">
     <input type="radio" name="Breakfast and Brunch" id="option-breakfast" autocomplete="off"><b>Breakfast and Brunch</b></label>
-<label class="btn btn-outline-success">
-    <input type="radio" name="Snacks" id="option-snack" autocomplete="off"><b>Snack</b></label>
-  <label class="btn btn-outline-success">
-    <input type="radio" name="Soups" id="option-soup" autocomplete="off"><b>Soup</b></label>
-  <label class="btn btn-outline-success">
-    <input type="radio" name="Salads" id="option-salad" autocomplete="off"><b>Salad</b></label>
-<label class="btn btn-outline-success">
-    <input type="radio" name="Breads" id="option-bread" autocomplete="off"><b>Bread</b></label>
-  <label class="btn btn-outline-success">
-    <input type="radio" name="Condiments and Sauce" id="option-sauce" autocomplete="off"><b>Condiments and Sauces</b></label>
   <label class="btn btn-outline-success">
     <input type="radio" name="Desserts" id="option-dessert" autocomplete="off"><b>Dessert</b></label>
 </div>

@@ -14,7 +14,7 @@ SERVER_PORT = 3306
 DB_USERNAME = "DbMysql11"
 DB_PASSWORD = "DbMysql11"
 DB_NAME = "DbMysql11"
-VALID_RANDOM_PORT = 40326
+VALID_RANDOM_PORT = 40329
 
 
 NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol",

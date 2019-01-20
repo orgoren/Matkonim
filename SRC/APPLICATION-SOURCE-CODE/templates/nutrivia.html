@@ -164,13 +164,13 @@ function show_question() {
 	        $("#error-header").show();
 	        return;
 	    }
-	    var printables = [data.question.question, data.question.answer_a, data.question.answer_b, data.question.answer_c, data.question.answer_d];
+	    var printables = [next_question['question'], next_question['answer_a'], next_question['answer_b'], next_question['answer_c'], next_question['answer_d']];
 	    for (var i in printables){
 	        for (var nutri in nutritions_convert){
 	            printables[i] = printables[i].replace(nutri, nutritions_convert[nutri]);
 	        }
 	    }
-		localStorage.setItem('correct',data.question.correct);
+		localStorage.setItem('correct',next_question['correct']);
     	$("#question").text(printables[0]);
     	$("#answer_a").html(printables[1]);
     	$("#answer_a").prop("disabled", false);

@@ -7,10 +7,10 @@ from flask import Flask, render_template, redirect, url_for, request, make_respo
 from gevent.pywsgi import WSGIServer
 import sshtunnel
 import getpass
-import queries
+import queries_old as queries
 import re
 import random
-from utils import *
+from utils_old import *
 import json
 
 

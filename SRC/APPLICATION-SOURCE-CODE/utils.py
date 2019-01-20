@@ -37,7 +37,7 @@ def connect_to_db(query=""):
 						 user=DB_USERNAME,         # your username
 						 passwd=DB_PASSWORD,  # your password
 						 db=DB_NAME,
-						 port = 3307)        # name of the data base
+						 port = 3306)        # name of the data base
 	cur = con.cursor(mdb.cursors.DictCursor)
 	if query == "":
 		print "ERROR: no query in input"

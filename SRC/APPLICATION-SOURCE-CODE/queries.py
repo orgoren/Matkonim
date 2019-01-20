@@ -630,8 +630,8 @@ INNER JOIN (
 	SELECT r2i.ingredient_id as ingredient_id, count(r2i.recipe_id) as cnt
 	FROM 		RECIPE2INGREDIENTS r2i
 	INNER JOIN 	INGREDIENT_NUTRITION inn on r2i.ingredient_id = inn.ingredient_id
-	INNER JOIN 	NUTRITIONS n on n.nutrition_id = inn.nutrition_id,
-				RECOMMEND_BY_AGE_GENDER as rbag
+	INNER JOIN 	NUTRITIONS n on n.nutrition_id = inn.nutrition_id
+	INNER JOIN	RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = n.nutrition_id
 	WHERE
 		n.nutrition_id = <NUTRITION_ID>
 		AND

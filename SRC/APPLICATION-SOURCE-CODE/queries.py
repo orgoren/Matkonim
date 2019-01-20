@@ -353,87 +353,9 @@ def get_query3(nutritions_values, meal_option, age, gender):
 	q = re.sub("<NUT_NUM>", str(len(nuts_filter)), q, re.MULTILINE)
 	return q
 
+
 ################################
 ########### QUERY 4 ############
-################################
-
-# The query for getting food recipe by meal option if no daily values are chosen
-query4_no_nutritions = """SELECT DISTINCT fr.recipe_id as recipe_id
-FROM FOOD_RECIPES fr
-WHERE MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\")  """
-
-# The query for getting a food recipe given daily values by specific meal, gender, age
-# and nutritional values requested
-query4 = """SELECT DISTINCT fr.recipe_id as recipe_id
-FROM FOOD_RECIPES fr 
-INNER JOIN VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on fr.recipe_id = vrnw.recipe_id
-INNER JOIN RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = vrnw.nutrition_id
-INNER JOIN NUTRITIONS n on rbag.nutrition_id = n.nutrition_id
-WHERE
-rbag.age = <AGE> AND
-rbag.is_female = <GENDER> AND
-MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\") 
-<FILTER_BY_NUTRITIONS>
-<NUTRITIONS_CHECK>"""
-
-# A function that receives the nutritional preferences, age, and gender,
-# and build the queries for getting a full day meal plan according to them.
-def get_query4(nutritions_values, age, gender):
-	q = query4
-
-	q = re.sub("<GENDER>", gender, q, re.MULTILINE)
-	q = re.sub("<AGE>", age, q, re.MULTILINE)
-	
-	nuts_filter = []
-	nuts_check = []
-
-	for nut in NUTRITIONS:
-		if nut == "alcohol":
-			continue
-
-		if nutritions_values[nut] != "" and nutritions_values[nut] != "Don't Care" and nutritions_values[nut] != "d":
-			nline1 = NUTRITIONS_CHECK_for_query3_4
-			nline1 = re.sub("<NUT_KEY>", nut, nline1)
-			try:
-				val = float(nutritions_values[nut]) / float(100)
-			except:
-				val = nutritions_values[nut]
-				print "ERROR: expected int value, but for:", nut, "got:", val
-				return ""
-
-			nline1 = re.sub("<NUT_VAL>", "<PRECENTAGE> * " + str(val), nline1, re.MULTILINE)
-			nline2 = re.sub("<NUT_KEY>", nut, FILTER_BY_NUTRITIONS_for_query3_4)
-
-			nuts_filter.append(nline2)
-			nuts_check.append(nline1)
-
-	if len(nuts_filter) == 0:
-		q = query4_no_nutritions
-	else:
-
-		nutritions_filter = " OR ".join(nuts_filter)
-		nutritions_filter = "AND (" + nutritions_filter + ")"
-		nutritions_check = "\n".join(nuts_check)
-
-		q = re.sub("<FILTER_BY_NUTRITIONS>", nutritions_filter, q, re.MULTILINE)
-		q = re.sub("<NUTRITIONS_CHECK>", nutritions_check, q, re.MULTILINE)
-		q = re.sub("<NUT_NUM>", str(len(nuts_filter)), q, re.MULTILINE)
-
-	queries = {}
-
-	for meal in FULL_DAY_MEALS:
-		meal_q = q
-		meal_option = FULL_DAY_MEALS[meal]["meal"]
-		meal_precentage = FULL_DAY_MEALS[meal]["precentage"]
-		meal_q = re.sub("<MEAL_OPTION>", meal_option, meal_q, re.MULTILINE)
-		meal_q = re.sub("<PRECENTAGE>", str(meal_precentage), meal_q, re.MULTILINE)
-		queries[meal] = meal_q
-
-	return queries
-
-
-################################
-########### QUERY 5 ############
 ################################
 
 # The query for getting food or cocktail recipes according to unwanted ingredients
@@ -493,11 +415,6 @@ def get_query5(allergans, option):
 			algqueries.append(re.sub("<ALG>", allergan, alg_query_t, re.MULTILINE))
 		else:
 			algqueries.append("")
-
-
-	print "============================="
-	print algqueries
-	print "-============================"
 
 	query = re.sub("<ALG_QUERY_1>", algqueries[0], query, re.MULTILINE)
 	query = re.sub("<ALG_QUERY_2>", algqueries[1], query, re.MULTILINE)

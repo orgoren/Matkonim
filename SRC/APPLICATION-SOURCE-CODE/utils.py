@@ -20,18 +20,10 @@ VALID_RANDOM_PORT = 40326
 USERNAME = ""
 PASSWORD = ""
 
-BREAKFAST_PRECANTAGE = 0.3
-LUNCH_PRECENTAGE = 0.4
-DINNER_PRECENTAGE = 0.3
 
-#NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol", "potassium",
-#				"lactose", "vitaminC", "saturated",  "dietary_fiber",  "calories_kcal", "alcohol"]
 
 NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol",
 				"lactose", "saturated",  "calories_kcal", "alcohol"]
-
-#MEAL_OPTIONS = ["Main Dishes", "Desserts", "Side Dishes", "Appetizers", "Salads", "Breakfast and Brunch", "Breads", 
-#				"Soups", "Condiments and Sauce", "Snacks", "Lunch", "Full Day"]
 
 MEAL_OPTIONS = ["Breakfast and Brunch", "Desserts", "Lunch", "Main Dishes", "Side Dishes"]
 
@@ -44,10 +36,6 @@ KEY_TO_AGE_RANGES = {"0" : "14-18", "1" : "19-30", "2" : "31-40", "3" : "41-50",
 PREP_TIMES = {"d" : "dont care", "1" : "30", "2" : "45", "3" : "60", "4" : "90", "5" : "120", "6" : "180"}
 
 GENDERS = ["male", "female"]
-
-FULL_DAY_MEALS = {	"breakfast" : {"meal" : "Breakfast and Brunch", "precentage" : BREAKFAST_PRECANTAGE}, 
-					"lunch"     : {"meal" : "Lunch",                "precentage" : LUNCH_PRECENTAGE}, 
-					"dinner"    : {"meal" : "Main Dishes",          "precentage" : DINNER_PRECENTAGE}}
 
 def connect_to_db(query=""):#username='', password=''):
 	with sshtunnel.SSHTunnelForwarder(
@@ -292,10 +280,10 @@ def get_random_question():
 			age = random.randint(0, 6)
 			gender = random.randint(0, 1)
 			nutrition = connect_to_db(queries.trivia_2_get_random_nutrition)
-			precentage = float(random.randint(10, 30)) / 100
-			min_recipes = random.randint(1, 10)
+			precentage = float(random.randint(5, 20)) / 100
+			min_recipes = random.randint(1, 5)
 			ingredient_details = connect_to_db(queries.get_trivia_3(age, gender, nutrition[0]["nutrition_id"], precentage, min_recipes))
-			print ingredient_details
+
 		question[correct_answer] = ingredient_details[0]["ingredient_name"]
 
 		question["question"] = "Which of the following ingredients that is at least {}% {} from the daily intake of {} at ages {}, appears in the most recipes?(clue: more than {} recipes)".format(int(precentage * 100),

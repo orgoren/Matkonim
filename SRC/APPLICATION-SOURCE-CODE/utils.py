@@ -33,7 +33,7 @@ PREP_TIMES = {"d" : "dont care", "1" : "30", "2" : "45", "3" : "60", "4" : "90",
 GENDERS = ["male", "female"]
 
 def connect_to_db(query=""):
-	con = mdb.connect(host='nova.cs.tau.ac.il',    # your host, usually localhost
+	con = mdb.connect(host='mysqlsrv1.cs.tau.ac.il',    # your host, usually localhost
 						 user=DB_USERNAME,         # your username
 						 passwd=DB_PASSWORD,  # your password
 						 db=DB_NAME,

@@ -112,23 +112,6 @@
       </div>
     </div>
   </div>
-
-    <!-- SCORE MODAL -->
-  <div class="modal" id="score-modal" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-md">
-      <div class="modal-content">
-        <div class="modal-header">
-           <h4 class="modal-title">Your Current Score:</h4>
-        </div>
-        <div id="score-modal-body" class="modal-body">
-          <p></p>
-      </div>
-          <div class="modal-footer">
-          <p class="small" style="font-size:60%;float:right;margin-bottom:0;">this pop-up will close automatically</p>
-          </div>
-    </div>
-  </div>
-</div>
 </div>
 </header>
 
@@ -137,8 +120,6 @@
 var nutritions_convert = {'sugar': 'Sugar', 'iron': 'Iron', 'calcium': 'Calcium', 'sodium': 'Sodium',
 'protein': 'Protein', 'cholesterol': 'Cholesterol', 'lactose': 'Lactose', 'saturated': 'Saturated Fat',
 'alcohol': 'Alcohol', 'calories_kcal': 'Calories'};
-
-var curr_score = 0;
 
 var dict = {
 	"answer_a":"A",
@@ -152,7 +133,6 @@ $(document).ready(function(){
 	$("#error-header").hide();
 	$("#correctModal").modal("hide");
 	$("#incorrectModal").modal("hide");
-	$("#score-modal").modal("hide");
 });
 
 function StartTrivia() {
@@ -173,8 +153,6 @@ function GetQuestion() {
   $("#answer_c").prop("disabled", true);
   $("#answer_d").html("loading...");
   $("#answer_d").prop("disabled", true);
-  $("#score-modal").modal("show");
-  $("#score-modal-body").html(curr_score + " correct answers");
   	$.getJSON('/getQuestion', {}, function(data) {
 	    if ((typeof data.question.question === 'undefined') || (typeof data.question.answer_a === 'undefined') ||
 	    (typeof data.question.answer_b === 'undefined') || (typeof data.question.answer_c === 'undefined') ||
@@ -182,7 +160,6 @@ function GetQuestion() {
 	        $("#trivia-screen").hide();
 	        $("#correctModal").modal("hide");
 	        $("#incorrectModal").modal("hide");
-	        $("#score-modal").modal("hide");
 	        $("#start-screen").hide();
 	        $("#next-question").hide();
 	        $("#error-header").show();
@@ -204,14 +181,12 @@ function GetQuestion() {
     	$("#answer_c").prop("disabled", false);
     	$("#answer_d").html(printables[4]);
     	$("#answer_d").prop("disabled", false);
-    	$("#score-modal").modal("hide");
-	});
+   	});
 }
 function CheckAnswer(){
 	var tmp = localStorage.getItem('correct');
 	if (event.target.id === tmp){
 		$("#correctModal").modal("show");
-		curr_score += 1;
 	} else {
 		var text = "Correct answer is: " + dict[tmp];
 		$("#incorrectModal").modal("show");

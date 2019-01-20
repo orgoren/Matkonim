@@ -607,83 +607,54 @@ def get_query_trivia_2(recipe_id1, recipe_id2, recipe_id3 ,recipe_id4, nutrition
 	return re.sub("<NUTRITION_ID>", str(nutrition_id), query, re.MULTILINE)
 
 ################################
-###########  TRIVIA2 ###########
+###########  TRIVIA3 ###########
 ################################
-trivia_3_by_recommended_day_intake = """
-SELECT * 
-FROM 		RECOMMEND_BY_AGE_GENDER rbag 
-INNER JOIN 	NUTRITIONS n on rbag.nutrition_id = rbag.nutrition_id
-INNER JOIN 	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on n.nutrition_id = vrnw.nutrition_id
-WHERE
-rbag.age = <AGE> AND 
-rbag.gender = <GENDER> AND 
-n.nutrition_name = <NUT_KEY> AND
-vrnw.weight / rbag.weight_mg > <RANDOM_NUM>
+
+
+trivia_3_get_random_ingredient = """
+SELECT ingredient_id, ingredient_name
+FROM INGREDIENTS 
+WHERE ingredient_id <> <INGREDIENT_ID>
+LIMIT 3
 """
 
-
-trivia3_take_two = """
-SELECT *
-FROM 		RECIPE2INGREDIENTS r2i
-INNER JOIN 	INGREDIENT_NUTRITION inn on r2i.ingredient_id = inn.ingredient_id
-INNER JOIN 	NUTRITIONS n on n.nutrition_id = inn.nutrition_id
-			RECOMMEND_BY_AGE_GENDER as rbag
-WHERE
-(
-	n.nutrition_name = "<NUTRITION_NAME>"
-	AND
-	(	i.ingrdient_name = "<INGREDIENT_1>" OR 
-		i.ingrdient_name = "<INGREDIENT_2>" OR 
-		i.ingrdient_name = "<INGREDIENT_3>" OR 
-		i.ingrdient_name = "<INGREDIENT_4>" 
-	)
-	AND
-	rbag.age = <AGE> AND rbag.gender = <GENDER>
-	AND
-	inn.weight_mg_from_ingredient / rbag.weight_mg > <PERCENTAGE>
-)
-GROUP BY r2i.ingredient_id
-HAVING COUNT(r2i.recipe_id) >= ALL (
-	SELECT count(r2i2.recipe_id)
-	FROM RECIPE2INGREDIENTS r2i2
-	INNER JOIN INGREDIENTS i2 on r2i2.ingredient_id = i2.ingredient_id
+trivia3_get_max_ingredient_of_precentage_from_nutrition = """
+SELECT i.ingredient_name
+FROM INGREDIENTS i
+INNER JOIN (
+	SELECT r2i.ingredient_id as ingredient_id, count(r2i.recipe_id) as cnt
+	FROM 		RECIPE2INGREDIENTS r2i
+	INNER JOIN 	INGREDIENT_NUTRITION inn on r2i.ingredient_id = inn.ingredient_id
+	INNER JOIN 	NUTRITIONS n on n.nutrition_id = inn.nutrition_id,
+				RECOMMEND_BY_AGE_GENDER as rbag
 	WHERE
-	(
-		i2.ingrdient_name = "<INGREDIENT_1>" OR 
-		i2.ingrdient_name = "<INGREDIENT_2>" OR 
-		i2.ingrdient_name = "<INGREDIENT_3>" OR 
-		i2.ingrdient_name = "<INGREDIENT_4>"
-	)
-	GROUP BY r2i2.ingredient_id
-)
+		n.nutrition_id = <NUTRITION_ID>
+		AND
+		rbag.age = <AGE> AND rbag.is_female = <GENDER>
+		AND
+		(
+			(n.is_max = 1 and inn.weight_mg_from_ingredient / rbag.weight_mg <= <RANDOM_PRECENTAGE>)
+			OR
+			(n.is_max = 0 and inn.weight_mg_from_ingredient / rbag.weight_mg >= <RANDOM_PRECENTAGE>)
+		)
+	GROUP BY r2i.ingredient_id, r2i.recipe_id
+	ORDER BY cnt DESC
+) INGREDIENTS_COUNT on i.ingredient_id = INGREDIENTS_COUNT.ingredient_id
+HAVING INGREDIENTS_COUNT.cnt > <MIN_RECIPES>
+LIMIT 1
 """
 
-trivia3_take_three = """
-select *
-from INGREDIENTS iii
-inner join
-(SELECT r2i.ingredient_id as ingredient_id, count(r2i.recipe_id) as cnt
-FROM 		RECIPE2INGREDIENTS r2i
-INNER JOIN 	INGREDIENT_NUTRITION inn on r2i.ingredient_id = inn.ingredient_id
-INNER JOIN 	NUTRITIONS n on n.nutrition_id = inn.nutrition_id,
-			RECOMMEND_BY_AGE_GENDER as rbag
-WHERE
-	n.nutrition_name = "sugar"
-	AND
-	rbag.age = 2 AND rbag.gender = "male"
-	AND
-	(
-		(n.max_or_min = "max" and inn.weight_mg_from_ingredient / rbag.weight_mg <= 0.2)
-		OR
-		(n.max_or_min = "min" and inn.weight_mg_from_ingredient / rbag.weight_mg >= 0.2)
-	)
-GROUP BY r2i.ingredient_id, r2i.recipe_id
-ORDER BY cnt DESC
+def get_trivia_3(age, gender, nutrition_id, precentage, min_recipes):
+	q = trivia3_get_max_ingredient_of_precentage_from_nutrition
+	q = re.sub("<NUTRITION_ID>", nutrition_id, q)
+	q = re.sub("<AGE>", age, q)
+	q = re.sub("<GENDER>", gender, q)
+	q = re.sub("<RANDOM_PRECENTAGE>", precentage, q)
+	q = re.sub("<MIN_RECIPES>", min_recipes, q)
+	return q
 
-) vvv on iii.ingredient_id = vvv.ingredient_id
-HAVING vvv.cnt > 10
-LIMIT 4
-"""
+def get_query_trivia_3_random_ingredients(ingredient_id):
+	return re.sub("<INGREDIENT_ID>", ingredient_id, trivia_3_get_random_ingredient)
 
 
 ###############################################################################################
@@ -1047,6 +1018,55 @@ FROM	( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where MATCH(course) AGAINST("
 		( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where MATCH(course) AGAINST("Main Dishes") as dinner_r
 ORDER BY RAND()
 limit 30000"""
+
+trivia_3_by_recommended_day_intake = """
+SELECT * 
+FROM 		RECOMMEND_BY_AGE_GENDER rbag 
+INNER JOIN 	NUTRITIONS n on rbag.nutrition_id = rbag.nutrition_id
+INNER JOIN 	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on n.nutrition_id = vrnw.nutrition_id
+WHERE
+rbag.age = <AGE> AND 
+rbag.gender = <GENDER> AND 
+n.nutrition_name = <NUT_KEY> AND
+vrnw.weight / rbag.weight_mg > <RANDOM_NUM>
+"""
+
+
+trivia3_take_two = """
+SELECT *
+FROM 		RECIPE2INGREDIENTS r2i
+INNER JOIN 	INGREDIENT_NUTRITION inn on r2i.ingredient_id = inn.ingredient_id
+INNER JOIN 	NUTRITIONS n on n.nutrition_id = inn.nutrition_id
+			RECOMMEND_BY_AGE_GENDER as rbag
+WHERE
+(
+	n.nutrition_name = "<NUTRITION_NAME>"
+	AND
+	(	i.ingrdient_name = "<INGREDIENT_1>" OR 
+		i.ingrdient_name = "<INGREDIENT_2>" OR 
+		i.ingrdient_name = "<INGREDIENT_3>" OR 
+		i.ingrdient_name = "<INGREDIENT_4>" 
+	)
+	AND
+	rbag.age = <AGE> AND rbag.gender = <GENDER>
+	AND
+	inn.weight_mg_from_ingredient / rbag.weight_mg > <PERCENTAGE>
+)
+GROUP BY r2i.ingredient_id
+HAVING COUNT(r2i.recipe_id) >= ALL (
+	SELECT count(r2i2.recipe_id)
+	FROM RECIPE2INGREDIENTS r2i2
+	INNER JOIN INGREDIENTS i2 on r2i2.ingredient_id = i2.ingredient_id
+	WHERE
+	(
+		i2.ingrdient_name = "<INGREDIENT_1>" OR 
+		i2.ingrdient_name = "<INGREDIENT_2>" OR 
+		i2.ingrdient_name = "<INGREDIENT_3>" OR 
+		i2.ingrdient_name = "<INGREDIENT_4>"
+	)
+	GROUP BY r2i2.ingredient_id
+)
+"""
 
 def get_query5_old(allergans, option):
 	if option == "Cocktail":

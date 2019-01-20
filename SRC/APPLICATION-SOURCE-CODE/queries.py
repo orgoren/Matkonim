@@ -646,11 +646,11 @@ LIMIT 1
 
 def get_trivia_3(age, gender, nutrition_id, precentage, min_recipes):
 	q = trivia3_get_max_ingredient_of_precentage_from_nutrition
-	q = re.sub("<NUTRITION_ID>", nutrition_id, q)
-	q = re.sub("<AGE>", age, q)
-	q = re.sub("<GENDER>", gender, q)
-	q = re.sub("<RANDOM_PRECENTAGE>", precentage, q)
-	q = re.sub("<MIN_RECIPES>", min_recipes, q)
+	q = re.sub("<NUTRITION_ID>", str(nutrition_id), q, re.MULTILINE)
+	q = re.sub("<AGE>", str(age), q, re.MULTILINE)
+	q = re.sub("<GENDER>", str(gender), q, re.MULTILINE)
+	q = re.sub("<RANDOM_PRECENTAGE>", str(precentage), q, re.MULTILINE)
+	q = re.sub("<MIN_RECIPES>", str(min_recipes), q, re.MULTILINE)
 	return q
 
 def get_query_trivia_3_random_ingredients(ingredient_id):

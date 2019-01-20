@@ -615,11 +615,12 @@ trivia_3_get_random_ingredient = """
 SELECT ingredient_id, ingredient_name
 FROM INGREDIENTS 
 WHERE ingredient_id <> <INGREDIENT_ID>
+ORDER BY RAND()
 LIMIT 3
 """
 
 trivia3_get_max_ingredient_of_precentage_from_nutrition = """
-SELECT i.ingredient_name
+SELECT i.ingredient_name, i.ingredient_id
 FROM INGREDIENTS i
 INNER JOIN (
 	SELECT r2i.ingredient_id as ingredient_id, count(r2i.recipe_id) as cnt
@@ -631,16 +632,12 @@ INNER JOIN (
 		n.nutrition_id = <NUTRITION_ID>
 		AND
 		rbag.age = <AGE> AND rbag.is_female = <GENDER>
-		AND
-		(
-			(n.is_max = 1 and inn.weight_mg_from_ingredient / rbag.weight_mg <= <RANDOM_PRECENTAGE>)
-			OR
-			(n.is_max = 0 and inn.weight_mg_from_ingredient / rbag.weight_mg >= <RANDOM_PRECENTAGE>)
-		)
+		AND 
+		inn.weight_mg_from_ingredient / rbag.weight_mg >= <RANDOM_PRECENTAGE>
 	GROUP BY r2i.ingredient_id, r2i.recipe_id
+	HAVING cnt >= <MIN_RECIPES>
 	ORDER BY cnt DESC
 ) INGREDIENTS_COUNT on i.ingredient_id = INGREDIENTS_COUNT.ingredient_id
-HAVING INGREDIENTS_COUNT.cnt > <MIN_RECIPES>
 LIMIT 1
 """
 
@@ -654,7 +651,7 @@ def get_trivia_3(age, gender, nutrition_id, precentage, min_recipes):
 	return q
 
 def get_query_trivia_3_random_ingredients(ingredient_id):
-	return re.sub("<INGREDIENT_ID>", ingredient_id, trivia_3_get_random_ingredient)
+	return re.sub("<INGREDIENT_ID>", str(ingredient_id), trivia_3_get_random_ingredient)
 
 
 ###############################################################################################

@@ -39,9 +39,11 @@ VALUES = {"None" : "None", "1" : "None", "d": "dont care", "2" : "less than 5%",
 
 AGE_RANGES = {"14_18" : "0", "19_30" : "1", "31_40" : "2", "41_50" : "3", "51_60" : "4", "61_70" : "5", "71" : "6"}
 
+KEY_TO_AGE_RANGES = {"0" : "14-18", "1" : "19-30", "2" : "31-40", "3" : "41-50", "4" : "51-60", "5" : "61-70", "6" : "71 or higher"}
+
 PREP_TIMES = {"d" : "dont care", "1" : "30", "2" : "45", "3" : "60", "4" : "90", "5" : "120", "6" : "180"}
 
-GENDERS = ["female", "male"]
+GENDERS = ["male", "female"]
 
 FULL_DAY_MEALS = {	"breakfast" : {"meal" : "Breakfast and Brunch", "precentage" : BREAKFAST_PRECANTAGE}, 
 					"lunch"     : {"meal" : "Lunch",                "precentage" : LUNCH_PRECENTAGE}, 
@@ -212,7 +214,7 @@ def get_query_results(query, option):
 
 
 def get_random_question():
-	question_type = random.randint(1,2)
+	question_type = random.randint(1,3)
 
 	answers = ["answer_a", "answer_b", "answer_c", "answer_d"]
 	correct_answer = random.choice(answers)
@@ -244,7 +246,8 @@ def get_random_question():
 			answer = random.choice(answers)
 			question[answer] = nutritions_details[i]["nutrition_name"]
 			answers.remove(answer)
-	else:
+
+	elif question_type == 2:
 		# get random nutrition for question
 		nutrition_details = connect_to_db(queries.trivia_2_get_random_nutrition)
 		nutrition_name = nutrition_details[0]["nutrition_name"]
@@ -274,6 +277,29 @@ def get_random_question():
 		for i in range(3):
 			answer = random.choice(answers)
 			question[answer] = recipes_names[i]
+			answers.remove(answer)
+
+	else:
+		ingredient_details = ()
+
+		while len(ingredient_details) == 0:
+			age = random.randint(0, 6)
+			gender = random.randint(0, 1)
+			nutrition = connect_to_db(queries.trivia_2_get_random_nutrition)
+			precentage = float(random.randint(10, 30)) / 100
+			min_recipes = random.randint(1, 10)
+			ingredient_details = connect_to_db(queries.get_trivia_3(age, gender, nutrition[0]["nutrition_id"], precentage, min_recipes))
+			print ingredient_details
+		question[correct_answer] = ingredient_details[0]["ingredient_name"]
+
+		question["question"] = "Which of the following ingredients that is at least {}% {} from the daily intake of {} at ages {}, appears in the most recipes?(clue: more than {} recipes)".format(int(precentage * 100),
+							   nutrition[0]["nutrition_name"], GENDERS[gender] + "s", KEY_TO_AGE_RANGES[str(age)], min_recipes)
+
+		other_ingredients = connect_to_db(queries.get_query_trivia_3_random_ingredients(ingredient_details[0]["ingredient_id"]))
+
+		for i in range(3):
+			answer = random.choice(answers)
+			question[answer] = other_ingredients[i]["ingredient_name"]
 			answers.remove(answer)
 
 	return question

@@ -86,17 +86,8 @@ def daily_meal_plan():
 			# Build query from our inputs
 			q = queries.get_query3(nutritions_values, meal_option, age, gender)
 
-			# For daily meal plan, we get a dictionary, otherwise a single query
-			if type(q) == dict:
-				res = {}
-				for meal in q:
-					query = q[meal]
-					meal_option = FULL_DAY_MEALS[meal]["meal"]
-					# Get query results from DB
-					res[meal] = get_query_results(query, meal_option)
-			else:
-				# Get query results from DB
-				res = get_query_results(q, meal_option)
+			# Get query results from DB
+			res = get_query_results(q, meal_option)
 			return redirect(url_for('daily_meal_plan_results', query_res=json.dumps(res)))
 
 

@@ -5,8 +5,6 @@ import datetime
 import MySQLdb as mdb
 from flask import Flask, render_template, redirect, url_for, request, make_response, session, g, abort, flash, jsonify
 from gevent.pywsgi import WSGIServer
-import sshtunnel
-import getpass
 import queries
 import re
 import random
@@ -192,10 +190,6 @@ def getQuestion():
 
 
 if __name__ == '__main__':
-	# app.run(port=8888, host="0.0.0.0", debug=True)
 	http_server = WSGIServer(('0.0.0.0', VALID_RANDOM_PORT), app)
-	# global USERNAME
-	# global PASSWORD
-	get_username_and_password()
 	print "server started"
 	http_server.serve_forever()

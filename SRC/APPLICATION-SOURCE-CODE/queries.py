@@ -35,8 +35,8 @@ WHERE		r2i.recipe_id = <RECIPE_ID>"""
 
 # A query to get the nutritional values of a certain recipe
 get_nutritionals_query = """SELECT DISTINCT n.nutrition_name as nutrition_name, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
-FROM		INGREDIENT_NUTRITION inn
-INNER JOIN 	NUTRITIONS n on n.nutrition_id = inn.nutrition_id
+FROM		NUTRITIONS n
+INNER JOIN 	INGREDIENT_NUTRITION inn on n.nutrition_id = inn.nutrition_id
 INNER JOIN	RECIPE2INGREDIENTS r2i on inn.ingredient_id = r2i.ingredient_id
 WHERE 		r2i.recipe_id = <RECIPE_ID>
 GROUP BY 	r2i.recipe_id, inn.nutrition_id"""
@@ -275,10 +275,10 @@ query3 = """SELECT DISTINCT fr.recipe_id
 FROM 	FOOD_RECIPES as fr
 INNER JOIN (
 SELECT 		DISTINCT COUNT(fr.recipe_id) as cnt, fr.recipe_id as recipe_id
-FROM 		FOOD_RECIPES fr 
-INNER JOIN 	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on fr.recipe_id = vrnw.recipe_id
-INNER JOIN 	RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = vrnw.nutrition_id
-INNER JOIN 	NUTRITIONS n on n.nutrition_id = rbag.nutrition_id
+FROM 		NUTRITIONS n
+INNER JOIN  RECOMMEND_BY_AGE_GENDER rbag on n.nutrition_id = rbag.nutrition_id
+INNER JOIN 	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on rbag.nutrition_id = vrnw.nutrition_id
+INNER JOIN 	FOOD_RECIPES fr on fr.recipe_id = vrnw.recipe_id
 WHERE
 rbag.is_female = <GENDER> AND
 rbag.age = <AGE> AND
@@ -372,8 +372,8 @@ GROUP BY
 
 alg_query = """<AND> ar.recipe_id NOT IN (
 	SELECT DISTINCT r2i.recipe_id
-	FROM		RECIPE2INGREDIENTS r2i 
-	INNER JOIN 	INGREDIENTS ing on r2i.ingredient_id = ing.ingredient_id
+	FROM		INGREDIENTS ing 
+	INNER JOIN 	RECIPE2INGREDIENTS r2i on r2i.ingredient_id = ing.ingredient_id
 	WHERE MATCH(
 				ing.ingredient_name
 	)
@@ -433,16 +433,16 @@ FROM NUTRITIONS n
 INNER JOIN
 (
 	SELECT DISTINCT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
-	FROM		RECIPE2INGREDIENTS r2i 
-	INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
+	FROM		INGREDIENT_NUTRITION inn 
+	INNER JOIN 	RECIPE2INGREDIENTS r2i on inn.ingredient_id = r2i.ingredient_id
 	WHERE		r2i.recipe_id = <RECIPE_ID>
 	GROUP BY r2i.recipe_id, inn.nutrition_id
 ) vrnw on n.nutrition_id = vrnw.nutrition_id
 INNER JOIN(
 			SELECT DISTINCT v.recipe_id, MAX(v.weight) as max_weight
 			FROM (SELECT DISTINCT r2i.recipe_id as recipe_id, inn.nutrition_id as nutrition_id, SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
-				FROM		RECIPE2INGREDIENTS r2i 
-				INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
+				FROM		INGREDIENT_NUTRITION inn 
+				INNER JOIN 	RECIPE2INGREDIENTS r2i on inn.ingredient_id = r2i.ingredient_id
 				WHERE		r2i.recipe_id = <RECIPE_ID>
 				GROUP BY r2i.recipe_id, inn.nutrition_id) AS v
 			GROUP BY v.recipe_id 
@@ -491,8 +491,8 @@ GROUP BY 	r2i.recipe_id, inn.nutrition_id
 HAVING weight >= ALL
 (
 	SELECT 		DISTINCT SUM(r2i.servings * inn.weight_mg_from_ingredient) as weight
-	FROM		RECIPE2INGREDIENTS r2i 
-	INNER JOIN 	INGREDIENT_NUTRITION inn on inn.ingredient_id = r2i.ingredient_id
+	FROM		INGREDIENT_NUTRITION inn 
+	INNER JOIN 	RECIPE2INGREDIENTS r2i on inn.ingredient_id = r2i.ingredient_id
 	WHERE		inn.nutrition_id = <NUTRITION_ID> AND
 				(
 					r2i.recipe_id = <RECIPE_ID1> OR
@@ -531,7 +531,7 @@ def get_query_trivia_2(recipe_id1, recipe_id2, recipe_id3 ,recipe_id4, nutrition
 
 # Gets 4 random ingredients other than <INGREDIENT_ID>
 trivia_3_get_random_ingredient = """
-SELECT ingredient_id, ingredient_name
+SELECT DISTINCT ingredient_id, ingredient_name
 FROM INGREDIENTS 
 WHERE ingredient_id <> <INGREDIENT_ID>
 ORDER BY RAND()
@@ -541,14 +541,14 @@ LIMIT 3
 # Gets the ingredient, which has <RANDOM_PRECENTAGE> of <NUTRITION_ID> from the daily intake for <AGE>,<GENDER>,
 # and appears in most of the recipes having clue - more than <MIN_RECIPES> recipes
 trivia3_get_max_ingredient_of_precentage_from_nutrition = """
-SELECT i.ingredient_name, i.ingredient_id
+SELECT DISTINCT i.ingredient_name, i.ingredient_id
 FROM INGREDIENTS i
 INNER JOIN (
 	SELECT r2i.ingredient_id as ingredient_id, count(r2i.recipe_id) as cnt
-	FROM 		RECIPE2INGREDIENTS r2i
-	INNER JOIN 	INGREDIENT_NUTRITION inn on r2i.ingredient_id = inn.ingredient_id
-	INNER JOIN 	NUTRITIONS n on n.nutrition_id = inn.nutrition_id
-	INNER JOIN	RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = n.nutrition_id
+	FROM 		NUTRITIONS n
+	INNER JOIN 	INGREDIENT_NUTRITION inn on n.nutrition_id = inn.nutrition_id
+	INNER JOIN  RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = n.nutrition_id
+	INNER JOIN 	RECIPE2INGREDIENTS r2i on r2i.ingredient_id = inn.ingredient_id
 	WHERE
 		n.nutrition_id = <NUTRITION_ID>
 		AND

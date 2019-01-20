@@ -5,8 +5,6 @@ import datetime
 import MySQLdb as mdb
 from flask import Flask, render_template, redirect, url_for, request, make_response, session, g, abort, flash
 from gevent.pywsgi import WSGIServer
-import sshtunnel
-import getpass
 import queries
 import re
 import random
@@ -17,9 +15,6 @@ DB_USERNAME = "DbMysql11"
 DB_PASSWORD = "DbMysql11"
 DB_NAME = "DbMysql11"
 VALID_RANDOM_PORT = 40326
-USERNAME = ""
-PASSWORD = ""
-
 
 
 NUTRITIONS = [	"sugar",   "iron",     "calcium", "sodium", "protein", "cholesterol",
@@ -37,46 +32,30 @@ PREP_TIMES = {"d" : "dont care", "1" : "30", "2" : "45", "3" : "60", "4" : "90",
 
 GENDERS = ["male", "female"]
 
-def connect_to_db(query=""):#username='', password=''):
-	with sshtunnel.SSHTunnelForwarder(
-			('nova.cs.tau.ac.il', 22),
-			ssh_username=USERNAME,
-			ssh_password=PASSWORD,
-			remote_bind_address=("mysqlsrv1.cs.tau.ac.il", 3306),
-			local_bind_address=("127.0.0.1", 3307)
-	) as tunnel:
-		con = mdb.connect(host='127.0.0.1',    # your host, usually localhost
-							 user=DB_USERNAME,         # your username
-							 passwd=DB_PASSWORD,  # your password
-							 db=DB_NAME,
-							 port = 3307)        # name of the data base
-		cur = con.cursor(mdb.cursors.DictCursor)
-		if query == "":
-			print "ERROR: no query in input"
-			cur.close()
-			return None
-
-		try:
-			print("************* QUERY **************")
-			print(query)
-			print("*********** END QUERY ************")
-			cur.execute(query)
-			ans = cur.fetchall()
-		except Exception as e:
-			print "ERROR: couldn't execute and fetch from db:", e
-			cur.close()
-			return None
-
+def connect_to_db(query=""):
+	con = mdb.connect(host='127.0.0.1',    # your host, usually localhost
+						 user=DB_USERNAME,         # your username
+						 passwd=DB_PASSWORD,  # your password
+						 db=DB_NAME,
+						 port = 3307)        # name of the data base
+	cur = con.cursor(mdb.cursors.DictCursor)
+	if query == "":
+		print "ERROR: no query in input"
 		cur.close()
-		return ans
+		return None
+	try:
+		print("************* QUERY **************")
+		print(query)
+		print("*********** END QUERY ************")
+		cur.execute(query)
+		ans = cur.fetchall()
+	except Exception as e:
+		print "ERROR: couldn't execute and fetch from db:", e
+		cur.close()
+		return None
 
-
-def get_username_and_password():
-	global USERNAME
-	global PASSWORD
-	USERNAME = raw_input("enter username (for nova): ")
-	PASSWORD = getpass.getpass("enter password (for nova): ")
-
+	cur.close()
+	return ans
 
 def get_nutritions_values(form, is_food=True):
 	nutritions_values = {}
@@ -297,38 +276,3 @@ def get_random_question():
 			answers.remove(answer)
 
 	return question
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

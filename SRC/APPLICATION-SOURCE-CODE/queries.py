@@ -275,7 +275,7 @@ INNER JOIN 	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on fr.recipe_id = vrnw.recipe_id
 INNER JOIN 	RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = vrnw.nutrition_id
 INNER JOIN 	NUTRITIONS n on n.nutrition_id = rbag.nutrition_id
 WHERE
-rbag.gender = \"<GENDER>\" AND
+rbag.is_female = <GENDER> AND
 rbag.age = <AGE> AND
 MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\") 
 <FILTER_BY_NUTRITIONS>
@@ -289,12 +289,12 @@ FILTER_BY_NUTRITIONS_for_query3_4 = "MATCH(n.nutrition_name) AGAINST(\"<NUT_KEY>
 NUTRITIONS_CHECK_for_query3_4 = """AND	(	n.nutrition_name <> \"<NUT_KEY>\" OR 
 		(
 			(
-				n.max_or_min = \"min\" AND
+				n.is_max = 0 AND
 				vrnw.weight / rbag.weight_mg >= <NUT_VAL>
 			)
 			OR
 			(
-				n.max_or_min = \"max\" AND
+				n.is_max = 1 AND
 				vrnw.weight / rbag.weight_mg <= <NUT_VAL>
 			)
 		)
@@ -303,9 +303,7 @@ NUTRITIONS_CHECK_for_query3_4 = """AND	(	n.nutrition_name <> \"<NUT_KEY>\" OR
 # A function that receives meal option, age, gender and nutritional values, and returns the query
 # for food recipes by daily values.
 def get_query3(nutritions_values, meal_option, age, gender):
-	# If it's FullDay then need to use query #4
-	if meal_option == "Full Day":
-		return get_query4(nutritions_values, age, gender)
+
 
 	q = re.sub("<MEAL_OPTION>", meal_option, query3, re.MULTILINE)
 	q = re.sub("<GENDER>", gender, q, re.MULTILINE)
@@ -366,7 +364,7 @@ INNER JOIN RECOMMEND_BY_AGE_GENDER rbag on rbag.nutrition_id = vrnw.nutrition_id
 INNER JOIN NUTRITIONS n on rbag.nutrition_id = n.nutrition_id
 WHERE
 rbag.age = <AGE> AND
-rbag.gender = "<GENDER>" AND
+rbag.is_female = <GENDER> AND
 MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\") 
 <FILTER_BY_NUTRITIONS>
 <NUTRITIONS_CHECK>"""
@@ -1016,7 +1014,7 @@ FROM	( SELECT DISTINCT recipe_id FROM FOOD_RECIPES where MATCH(course) AGAINST("
 ORDER BY RAND()
 limit 30000"""
 
-trivia_3_by_recommended_day_intake = """
+trivia_3_by_recommended_day_intake_old = """
 SELECT * 
 FROM 		RECOMMEND_BY_AGE_GENDER rbag 
 INNER JOIN 	NUTRITIONS n on rbag.nutrition_id = rbag.nutrition_id
@@ -1029,7 +1027,7 @@ vrnw.weight / rbag.weight_mg > <RANDOM_NUM>
 """
 
 
-trivia3_take_two = """
+trivia3_take_two_old = """
 SELECT *
 FROM 		RECIPE2INGREDIENTS r2i
 INNER JOIN 	INGREDIENT_NUTRITION inn on r2i.ingredient_id = inn.ingredient_id

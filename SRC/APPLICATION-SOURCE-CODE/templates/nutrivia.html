@@ -141,11 +141,12 @@ $(document).ready(function(){
 function StartTrivia() {
 	$("body,html").css({"overflow":"hidden"});
 	$("#start-screen").hide();
+	show_question();
 	$("#next-question").show();
 	$("#trivia-screen").show();
 	$("#error-header").hide();
-	show_question();
 }
+	
 function get_question() {
   $.getJSON('/getQuestion', function(data) {
 	    next_question = data.question;

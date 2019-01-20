@@ -445,7 +445,7 @@ GROUP BY
 allergies_query = """SELECT DISTINCT ar.recipe_id AS recipe_id, ar.recipe_name AS recipe_name
 FROM 		ALL_RECIPES AS ar 
 INNER JOIN 	RECIPE2INGREDIENTS r2i on ar.recipe_id = r2i.recipe_id
-INNER JOIN  <FOOD_DRINK>
+INNER JOIN	<FOOD_DRINK>
 WHERE
 		<FOOD_DRINK_FIELDS>
 		<ALG_QUERY_1>
@@ -485,7 +485,7 @@ def get_query5(allergans, option):
 		query = re.sub("<FOOD_DRINK_FIELDS>", "", query, re.MULTILINE)
 	else:
 		query = re.sub("<FOOD_DRINK>", "FOOD_RECIPES fr on r2i.recipe_id = fr.recipe_id", allergies_query, re.MULTILINE)
-		my_food_fields = re.sub("<MEAL_OPTIONS>", option, food_fields, re.MULTILINE)
+		my_food_fields = re.sub("<MEAL_OPTION>", option, food_fields, re.MULTILINE)
 		query = re.sub("<FOOD_DRINK_FIELDS>", my_food_fields, query, re.MULTILINE)
 
 	for allergan in allergans:

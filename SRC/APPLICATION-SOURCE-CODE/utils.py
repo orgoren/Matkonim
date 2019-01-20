@@ -119,8 +119,11 @@ def get_meal_option(form, is_meal_plan=False):
 def get_gender(form):
 	for gender in GENDERS:
 		if str(form.get(gender)) == "on":
-			return gender
-	return "female"
+			if gender == "male":
+				return "0"
+			else:
+				return "1"
+	return "1"
 
 def get_prep_time(form):
 	b = str(form.get("prep"))
@@ -189,7 +192,10 @@ def get_query_results(query, option):
 		details_ans = connect_to_db(details_query)
 
 		result["recipe_name"] = details_ans[0]["recipe_name"]
-		result["is_alcoholic"] = details_ans[0]["is_alcoholic"]
+		if details_ans[0]["is_alcoholic"] == '\x00':
+			result["is_alcoholic"] = "0"
+		else:
+			result["is_alcoholic"] = "1"
 		result["serving_glass"] = details_ans[0]["serving_glass"]
 		result["picture"] = details_ans[0]["picture"]
 		result["cocktail_details"] = details_ans[0]["cocktail_details"]

@@ -60,14 +60,14 @@ WHERE		ar.recipe_id = <RECIPE_ID>"""
 
 # The query if no nutritional preferences are chosen
 query1_no_nutritions = """SELECT DISTINCT fr.recipe_id
-FROM FOOD_RECIPES as fr
-WHERE MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\") 
+FROM	FOOD_RECIPES as fr
+WHERE	MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\") 
 <PREP_TIME_LINE>"""
 
 # The query for food recipes by given nutritional preferences
 query1 = """SELECT DISTINCT fr.recipe_id
-FROM 	FOOD_RECIPES as fr
-INNER JOIN (SELECT DISTINCT COUNT(fr.recipe_id) as cnt, fr.recipe_id as recipe_id
+FROM 		FOOD_RECIPES as fr
+INNER JOIN	(SELECT DISTINCT COUNT(fr.recipe_id) as cnt, fr.recipe_id as recipe_id
 FROM		FOOD_RECIPES fr
 INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on fr.recipe_id = vrnw.recipe_id
 INNER JOIN	NUTRITIONS n on vrnw.nutrition_id = n.nutrition_id
@@ -80,9 +80,9 @@ GROUP BY fr.recipe_id
 ) RECIPE_COUNTERS on RECIPE_COUNTERS.recipe_id = fr.recipe_id
 WHERE RECIPE_COUNTERS.cnt = <NUT_NUM>"""
 
-FILTER_BY_NUTRITIONS_for_query1_2 = "n.nutrition_name = \"<NUT_KEY>\""
+FILTER_BY_NUTRITIONS_for_query1_2 = "MATCH(n.nutrition_name) AGAINST(\"<NUT_KEY>\")"
 
-NUTRITIONS_CHECK_for_query1_2 = """AND	(n.nutrition_name <> \"<NUT_KEY>\" OR vrnw.precentage <NUT_IF>)"""
+NUTRITIONS_CHECK_for_query1_2 = """AND	(NOT MATCH(n.nutrition_name) AGAINST(\"<NUT_KEY>\") OR vrnw.precentage <NUT_IF>)"""
 
 prep_time_line = "AND fr.prep_time_in_minutes <= <PREP_TIME>"
 
@@ -167,8 +167,8 @@ FROM COCKTAIL_RECIPES as cr
 
 # The query for cocktail recipes by given nutritional preferences
 query2 = """SELECT DISTINCT cr.recipe_id
-FROM	COCKTAIL_RECIPES cr
-INNER JOIN (SELECT DISTINCT COUNT(cr.recipe_id) as cnt, cr.recipe_id as recipe_id
+FROM		COCKTAIL_RECIPES cr
+INNER JOIN	(SELECT DISTINCT COUNT(cr.recipe_id) as cnt, cr.recipe_id as recipe_id
 FROM		COCKTAIL_RECIPES cr
 INNER JOIN	VIEW_RECIPE_NUTRITIONS_WEIGHTS vrnw on cr.recipe_id = vrnw.recipe_id
 INNER JOIN	NUTRITIONS n on vrnw.nutrition_id = n.nutrition_id
@@ -262,7 +262,7 @@ def get_query2(nutritions_values):
 # The query for getting food recipe by meal option if no daily values are chosen
 query3_no_nutritions = """SELECT DISTINCT fr.recipe_id
 FROM FOOD_RECIPES as fr
-WHERE MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\")  """
+WHERE MATCH(fr.course) AGAINST(\"<MEAL_OPTION>\")"""
 
 # The query for getting a food recipe given daily values by specific meal, gender, age
 # and nutritional values requested
@@ -284,7 +284,7 @@ GROUP by fr.recipe_id
 ) RECIPE_COUNTERS on RECIPE_COUNTERS.recipe_id = fr.recipe_id
 WHERE RECIPE_COUNTERS.cnt = <NUT_NUM>"""
 
-FILTER_BY_NUTRITIONS_for_query3_4 = "n.nutrition_name = \"<NUT_KEY>\" "
+FILTER_BY_NUTRITIONS_for_query3_4 = "MATCH(n.nutrition_name) AGAINST(\"<NUT_KEY>\")"
 
 NUTRITIONS_CHECK_for_query3_4 = """AND	(	n.nutrition_name <> \"<NUT_KEY>\" OR 
 		(

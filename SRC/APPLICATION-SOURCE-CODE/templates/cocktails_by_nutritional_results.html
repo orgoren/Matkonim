@@ -116,9 +116,8 @@ function show_results(){
 		$("#found-header").show();
 		$("#results-container").show();
 	}
-	alert(query_res['is_alcoholic']);
 	var is_alcohol_str = "of course!";
-	if ((query_res['is_alcoholic'] === '0') || (query_res['is_alcoholic'] == 0)){
+	if ((query_res['is_alcoholic'] === '0') || (query_res['is_alcoholic'] === 0)){
 	    is_alcohol_str = "nope";
 	}
 	$("#is-alcohol").html("<span style='text-decoration: underline;'>Is it alcoholic</span>: " + is_alcohol_str);

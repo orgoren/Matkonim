@@ -147,41 +147,40 @@ function StartTrivia() {
 	show_question();
 }
 function get_question() {
-  $.getJSON('/getQuestion', {}, function(data) {
+  $.getJSON('/getQuestion', function(data) {
 	    next_question = data.question;
  	});
 }
 
 function show_question() {
-  if ((typeof next_question['question'] === 'undefined') || (typeof next_question['answer_a'] === 'undefined') ||
-	    (typeof next_question['answer_b'] === 'undefined') || (typeof next_question['answer_c'] === 'undefined') ||
-	    (typeof next_question['answer_d'] === 'undefined') || (typeof next_question['correct'] === 'undefined')){
-	        $("#trivia-screen").hide();
-	        $("#correctModal").modal("hide");
-	        $("#incorrectModal").modal("hide");
-	        $("#start-screen").hide();
-	        $("#next-question").hide();
-	        $("#error-header").show();
-	        return;
+    if ((typeof next_question['question'] === 'undefined') || (typeof next_question['answer_a'] === 'undefined') ||
+    (typeof next_question['answer_b'] === 'undefined') || (typeof next_question['answer_c'] === 'undefined') ||
+    (typeof next_question['answer_d'] === 'undefined') || (typeof next_question['correct'] === 'undefined')){
+        $("#trivia-screen").hide();
+	    $("#correctModal").modal("hide");
+	    $("#incorrectModal").modal("hide");
+	    $("#start-screen").hide();
+	    $("#next-question").hide();
+	    $("#error-header").show();
+	    return;
+	}
+	var printables = [next_question['question'], next_question['answer_a'], next_question['answer_b'], next_question['answer_c'], next_question['answer_d']];
+	for (var i in printables){
+	    for (var nutri in nutritions_convert){
+	        printables[i] = printables[i].replace(nutri, nutritions_convert[nutri]);
 	    }
-	    var printables = [next_question['question'], next_question['answer_a'], next_question['answer_b'], next_question['answer_c'], next_question['answer_d']];
-	    for (var i in printables){
-	        for (var nutri in nutritions_convert){
-	            printables[i] = printables[i].replace(nutri, nutritions_convert[nutri]);
-	        }
-	    }
-		localStorage.setItem('correct',next_question['correct']);
-    	$("#question").text(printables[0]);
-    	$("#answer_a").html(printables[1]);
-    	$("#answer_a").prop("disabled", false);
-    	$("#answer_b").html(printables[2]);
-    	$("#answer_b").prop("disabled", false);
-    	$("#answer_c").html(printables[3]);
-    	$("#answer_c").prop("disabled", false);
-    	$("#answer_d").html(printables[4]);
-    	$("#answer_d").prop("disabled", false);
- 	});
- 	 get_question();
+	}
+	localStorage.setItem('correct',next_question['correct']);
+	$("#question").text(printables[0]);
+	$("#answer_a").html(printables[1]);
+	$("#answer_a").prop("disabled", false);
+	$("#answer_b").html(printables[2]);
+	$("#answer_b").prop("disabled", false);
+	$("#answer_c").html(printables[3]);
+	$("#answer_c").prop("disabled", false);
+	$("#answer_d").html(printables[4]);
+	$("#answer_d").prop("disabled", false);
+ 	get_question();
 }
 
 function CheckAnswer(){

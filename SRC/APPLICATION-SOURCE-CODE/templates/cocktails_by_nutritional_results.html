@@ -117,9 +117,11 @@ function show_results(){
 		$("#results-container").show();
 	}
 	var is_alcohol_str = "of course!";
-	if ((query_res['is_alcoholic'] === '0') || (query_res['is_alcoholic'] === 0)){
+	if ((query_res['is_alcoholic'] === '0') || (query_res['is_alcoholic'] === 0) ||
+	(query_res['is_alcoholic'] === false) || (query_res['is_alcoholic'] === 'false')){
 	    is_alcohol_str = "nope";
 	}
+	$("#is-alcohol").html("<span style='text-decoration: underline;'>Is it alcoholic</span>: " + is_alcohol_str);
 	$("#is-alcohol").html("<span style='text-decoration: underline;'>Is it alcoholic</span>: " + is_alcohol_str);
 	$("#nutri-res-table tbody tr").remove();
     var curr_nutritions = query_res['nutritions'];

@@ -23,14 +23,14 @@ nutrition = {
 
 age_gender_queries = ""
 # define sql queries
-add_age_gender = """INSERT INTO RECOMMEND_BY_AGE_GENDER (gender, age, nutrition_id, weight_mg) VALUES ('{}',{},{},{});"""
+add_age_gender = """INSERT INTO RECOMMEND_BY_AGE_GENDER (is_female, age, nutrition_id, weight_mg) VALUES ({},{},{},{});"""
 
 with open(INPUT_FILE, 'r') as fin:
     reader = csv.reader(fin, lineterminator='\n')
     for row in reader:
         if row[0] != 'male' and row[0] != 'female':
             continue
-        gender = row[0]
+        gender = 1 if row[0] == 'female' else 0
         age = row[1]
         for nutrition_id in range(0,len(row[2:])):
 	        if (gender, age, nutrition_id, row[2+nutrition_id]) not in age_gender:

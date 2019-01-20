@@ -135,18 +135,16 @@ $(document).ready(function(){
 	$("#error-header").hide();
 	$("#correctModal").modal("hide");
 	$("#incorrectModal").modal("hide");
-	 get_question();
+	get_question();
 });
 
 function StartTrivia() {
 	$("body,html").css({"overflow":"hidden"});
 	$("#start-screen").hide();
-	show_question();
-	$("#next-question").show();
 	$("#trivia-screen").show();
+	show_question();
 	$("#error-header").hide();
 }
-	
 function get_question() {
   $.getJSON('/getQuestion', function(data) {
 	    next_question = data.question;
@@ -161,7 +159,6 @@ function show_question() {
 	    $("#correctModal").modal("hide");
 	    $("#incorrectModal").modal("hide");
 	    $("#start-screen").hide();
-	    $("#next-question").hide();
 	    $("#error-header").show();
 	    return;
 	}
